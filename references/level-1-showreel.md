@@ -22,8 +22,8 @@ for small labels, <texture: grain / paper / glass / none>. Do NOT use: <ban list
 THROUGH-LINE: one continuous shot where <ONE object> never cuts: it <technique 1>, becomes <technique 2>,
 ... and ends as <the lockup>. (A new technique every ~2 s.)
 CHROME: label each technique in a corner (01/0N <name> … 0N/0N lockup), a timecode, a progress bar.
-FORMAT: HyperFrames (start with /hyperframes), <1920x1080 | 1080x1920> at 60 fps, deterministic and seek-safe.
-GATES: snapshot every phase, fix anything that overlaps or lands off-beat, `npx hyperframes check` passes,
+FORMAT: HyperFrames (start with /hyperframes), <1080x1920 (default) | 1920x1080> at 60 fps, deterministic and seek-safe.
+GATES: snapshot every phase, fix anything that overlaps or lands off-beat, `hf check` passes,
 render to renders/<name>.mp4 and open it.
 ```
 
@@ -45,8 +45,11 @@ render to renders/<name>.mp4 and open it.
 - Optional: synthesized SFX without music (`references/sound-design.md`): a soft tick per technique, a
   pop on the press, a whoosh on the burst. Still $0.
 
-## Gates
+## Beat sheet and gates
 
-Snapshot every phase (`npx hyperframes snapshot <dir> --at <phase midpoints>`), run the critique loop once
-(`references/critique-loop.md`; axes: composition, motion, typography, polish), and pass `check` with 0 errors.
-Render and open it.
+Write `STORYBOARD.md`, the Beat sheet: one Shot per technique (its time slot, label, the hand-over into the next).
+Stop at Checkpoint 1 (SKILL.md) before building.
+
+Snapshot every phase (`SKILL/scripts/hf snapshot <dir> --at <phase midpoints>`), run the critique loop once
+(`references/critique-loop.md`; a fresh Critic; axes: composition, motion, typography, polish), and pass `check` with 0 errors.
+Render, then the final Critic pass, and open it.

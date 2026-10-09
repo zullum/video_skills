@@ -13,7 +13,7 @@ Animator, Composer, Sound Designer, Editor, Render. Each role adds a colour unti
 ```
 You are the director, writer, animator, composer, sound designer and render engineer for a short story
 film made entirely in code. It must have real storytelling, a great score, full sound design and fluid
-animation. Work autonomously; make every decision; say what you chose in one line.
+animation. Make every decision; say what you chose in one line; stop only at the two Checkpoints.
 THE FILM IN ONE LINE: "<title>": <who> <wants what> <and what changes>. <60-75> s.
 STORY (keep the arc, improve the details):
  1 Hook (0-5 s): <one striking image + one line of text>
@@ -38,13 +38,14 @@ DELIVER: MP4, contact sheet, final beat sheet with timestamps, chosen take + why
 ## Pipeline
 
 1. `bash SKILL/scripts/new_project.sh videos/<name> 3`. Write BRIEF.md and frame.md (palette as a story
-   progression, e.g. night `#070B16` → a role hue per world → daylight).
+   progression, e.g. night `#070B16` → a role hue per world → daylight) and the Beat sheet in STORYBOARD.md.
+   **Checkpoint 1**: the Beat sheet (and the Narration script, if any).
 2. **Score** in `audio/song.json` (score mode). Describe the arc in the caption in time order and use section
    tags with directions (`[Intro - solo soft piano, no drums]`). Set `drop_window` and `arc` to your beat sheet
    (`templates/score.json` is the example). Duration = film + 2-4 s.
 3. `run_music.sh` → `rank_takes.py` (arc fit, a clear drop inside the window, a quiet start, a resolving tail,
    no early ending). If nothing fits, make the caption more explicit about the quiet start and the breakdown
-   before the drop, and run 4 new seeds. The example needed 2 rounds (8 takes).
+   before the drop, and run 4 new seeds. The example needed 2 rounds (8 takes). **Checkpoint 2**: the ranked Takes and your pick.
 4. `timing.py --take <best>` → beats, downbeats, `drop`, `novelty` (candidate section changes), loudness. **Re-time
    the beat sheet to the music**: every shot change on a downbeat, the turn/lift on the first big entry, the climax
    exactly on `drop`. `trim.sh` to the musical end, and the film is exactly that long.

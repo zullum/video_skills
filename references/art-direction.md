@@ -1,8 +1,10 @@
 # Art direction: pick one, commit, ban the rest
 
 ## The process
-1. Read the other projects in this workspace (their `frame.md` / `BRIEF.md`) and list their palettes, fonts and signature
-   techniques. That list, plus the generic AI look, is your **ban list**.
+1. Read every project in `~/myprojects/musicmodel/videos/*` and `~/myprojects/original_viral_claude_video/videos/*` (their
+   `frame.md` / `BRIEF.md`) and list their palettes, fonts and signature techniques. That list, plus the generic AI look, is
+   your **ban list**. A Visual style the user names wins over the ban; the ban then covers that earlier video's palette,
+   fonts and signature techniques, so the style comes out looking new.
 2. Pick ONE named direction that fits the message (below, or invent one) and write it into `frame.md`: the concept angle in
    one paragraph, a palette table (hex + role, never pure #000/#fff), 2-3 fonts with jobs, materials, motion rules,
    transitions, and the ban list.
@@ -34,3 +36,8 @@ search the registry first) · noir (high-contrast light pools, venetian shadows)
 - Transitions with intent: shape-mask reveal, liquid iris, slice shutter, zoom-through, push-through match-cut, light-leak
   crossfade, a hard cut on the drop. Avoid generic crossfades, colour-bar wipes and white flashes unless they're the idea.
 - Corner chrome (labels, timecode, counters, a section tag) keeps the frame alive and makes it read as designed.
+
+## Portrait safe zones (1080x1920)
+Reels and TikTok cover the edges with their own UI. Keep text and key objects out of the top ~250 px, the bottom ~420 px
+and the right ~120 px; backgrounds and decorative motion may run full-bleed. Corner chrome sits inside the zones. Write
+the zones into `frame.md`; the Critic grades them under composition.

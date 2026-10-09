@@ -13,8 +13,8 @@ passes, the outro). Every word lands on its sung onset and every cut on a downbe
 
 ```
 You are the director, songwriter, animator, sound designer and render engineer for a lyric music video
-made entirely in code. Work autonomously: make every decision yourself, say what you chose in one line,
-keep going until a verified MP4 exists.
+made entirely in code. Make every decision yourself, say what you chose in one line, stop only at the
+two Checkpoints (Beat sheet + lyrics, chosen Take), and keep going until a verified MP4 exists.
 THE FILM: a <30-40> s, <energy> kinetic lyric video for an original song about <topic>, where every word,
 cut and hit is locked to the vocal. <Maximal / restrained>, but clean, readable and intentional.
 THE SONG: original, catchy, about <topic> (hook: "<hook line>"). Short punchy lines, a chantable hook
@@ -35,11 +35,13 @@ audio, in sync. DELIVER: MP4, contact sheet, lyrics, chosen take + why, all take
 
 1. `bash SKILL/scripts/new_project.sh videos/<name> 2`. Write BRIEF.md, frame.md and STORYBOARD.md (worlds per section).
 2. **Write the song** into `audio/song.json` (see `references/music.md`: caption, lyrics, bpm, duration = target + 2 s, seeds).
+   **Checkpoint 1**: the Beat sheet and the lyrics.
 3. `bash SKILL/scripts/music/run_music.sh <project>`: 4 takes (waits in line if another chat is generating).
 4. `bash SKILL/scripts/music/stems.sh <project> seed11 seed23 seed47 seed89`: vocal stems + transcripts for EVERY take.
 5. `SKILL/scripts/py SKILL/scripts/music/rank_takes.py <project>`. Pick the top take unless the numbers show
    a problem (no drop, band thins out, tempo drift). If the best lyric match is under ~0.6, rewrite the caption
    (stress "every word crisp and intelligible") or simplify the lyrics, and run 4 NEW seeds.
+   **Checkpoint 2**: the ranked Takes and your pick.
 6. `SKILL/scripts/py SKILL/scripts/music/timing.py <project> --take <best>`. Read the report: check every `*`
    word (subst / token-fill / onset-fill) against the energy and phrase gaps, and note "unsung" lines (show
    them as a title over the instrumental tail, or drop them).

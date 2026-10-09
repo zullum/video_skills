@@ -4,7 +4,7 @@ What separates level 3 from a one-shot: Claude grades its own work and fixes it 
 
 ## Procedure (each round)
 
-1. **Capture**: `npx hyperframes snapshot <project> --at <t1>,<t2>,...` at every scene's midpoint plus the key moments (word
+1. **Capture**: `SKILL/scripts/hf snapshot <project> --at <t1>,<t2>,...` at every scene's midpoint plus the key moments (word
    onsets, the turn, the drop, the end card). After rendering, `scripts/qa/contact_sheet.sh` gives one labelled grid.
 2. **Look** at every image yourself (Read the PNGs/JPG). Don't score from memory of the code.
 3. **Score** every scene 1-10 on the level's axes, in a table in your notes:

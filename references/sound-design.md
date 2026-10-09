@@ -2,8 +2,7 @@
 
 Motion graphics without sound feel like a slideshow. Sound is where it starts to feel like a real video. No downloads, no
 stock sites: `scripts/sfx/sfx_lib.py` synthesizes everything with numpy (48 kHz stereo, seeded, so the same cues always
-give the same audio). If the HyperFrames media-use skill is installed you may also use its free SFX pack, but the
-synthesized set is enough.
+give the same audio).
 
 ## The 18 effects
 
