@@ -1,0 +1,7 @@
+#!/bin/sh
+# The only way viral-motion runs HyperFrames. No Gemini, ever: the keys are stripped from the environment,
+# and every snapshot gets `--describe false` (HyperFrames otherwise sends frames to Gemini when a key is set).
+#
+#   hf <hyperframes args...>        e.g. hf check, hf snapshot . --at 1,2.5, hf render -o renders/x.mp4
+if [ "${1:-}" = snapshot ]; then set -- "$@" --describe false; fi
+exec env -u GEMINI_API_KEY -u GOOGLE_API_KEY npx --yes hyperframes "$@"

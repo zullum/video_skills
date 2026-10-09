@@ -21,9 +21,9 @@ step() { printf '\n== %s\n' "$1"; }
 step "sound effects (numpy)"
 "$SKILL_DIR/scripts/py" "$SKILL_DIR/scripts/sfx/build_sfx.py" "$T" || exit 1
 step "hyperframes check"
-(cd "$T" && npx --yes hyperframes check) || echo "(check reported issues; continuing to render)"
+(cd "$T" && "$SKILL_DIR/scripts/hf" check) || echo "(check reported issues; continuing to render)"
 step "render"
-(cd "$T" && npx --yes hyperframes render -o renders/selftest.mp4 --fps 30 --workers 2) || { echo "render failed"; exit 1; }
+(cd "$T" && "$SKILL_DIR/scripts/hf" render -o renders/selftest.mp4 --fps 30 --workers 2) || { echo "render failed"; exit 1; }
 step "A/V check"
 "$SKILL_DIR/scripts/py" "$SKILL_DIR/scripts/qa/av_check.py" "$T/renders/selftest.mp4" --expect 1.0 --duration 3 || exit 1
 echo

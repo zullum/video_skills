@@ -27,7 +27,7 @@ for take in "$@"; do
   ffmpeg -loglevel error -y -i "$out/vocals.wav" -ac 1 -ar 16000 "$out/vocals16k.wav"
   if [ ! -f "$out/transcript.json" ]; then
     echo "[$(date +%T)] transcribe $take (vocal stem)"
-    (cd "$out" && npx --yes hyperframes transcribe vocals16k.wav -d . --json >/dev/null 2>"$out/transcribe.log") \
+    (cd "$out" && "$SKILL_DIR/scripts/hf" transcribe vocals16k.wav -d . --json >/dev/null 2>"$out/transcribe.log") \
       || echo "transcription failed for $take (see $out/transcribe.log)" >&2
   fi
   echo "  $take -> $out"

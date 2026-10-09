@@ -4,7 +4,7 @@
 #   contact_sheet.sh <video.mp4> <out.jpg> [t1 t2 ...]      (no times: 12 evenly spaced frames)
 #
 # Use scene midpoints and key moments (word onsets, the drop, the answer landing). For the critique loop
-# BEFORE rendering, use `npx hyperframes snapshot <project> --at t1,t2,...` instead (no render needed).
+# BEFORE rendering, use `SKILL/scripts/hf snapshot <project> --at t1,t2,...` instead (no render needed).
 set -eu
 in="${1:?usage: contact_sheet.sh <video.mp4> <out.jpg> [t1 t2 ...]}"
 out="${2:?out.jpg}"

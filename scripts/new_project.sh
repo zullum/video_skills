@@ -16,7 +16,7 @@ if [ -e "$dir/index.html" ]; then
 fi
 parent="$(dirname "$dir")"
 mkdir -p "$parent"
-(cd "$parent" && npx --yes hyperframes init "$(basename "$dir")" --non-interactive --example=blank --skill=general-video >/dev/null)
+(cd "$parent" && HYPERFRAMES_SKIP_SKILLS=1 "$SKILL_DIR/scripts/hf" init "$(basename "$dir")" --non-interactive --example=blank --skill=general-video >/dev/null)
 P="$(cd "$dir" && pwd)"
 mkdir -p "$P/audio" "$P/renders"
 if [ "$level" = 2 ]; then
