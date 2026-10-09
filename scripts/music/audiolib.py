@@ -1,4 +1,4 @@
-"""Shared audio analysis for motion-studio (numpy + ffmpeg only, deterministic).
+"""Shared audio analysis for viral-motion (numpy + ffmpeg only, deterministic).
 
 Beat grid, downbeats, loudness, musical end, drop detection, section novelty, 30/60 fps envelopes,
 drum hits, vocal onsets, lyric-sheet parsing and lyric-to-transcript alignment.

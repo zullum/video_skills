@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Prove the core pipeline works end to end: synthesized SFX -> HyperFrames check -> render -> A/V sync check.
 #
-#   selftest.sh [out-dir]          default: ~/motion-studio/_selftest
+#   selftest.sh [out-dir]          default: ~/viral-motion/_selftest
 #
 # Renders a 3-second 960x540 clip (a dot lands on an impact, a word wipes in on a whoosh). Takes ~1 minute.
 set -u
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-T="${1:-$HOME/motion-studio/_selftest}"
+T="${1:-$HOME/viral-motion/_selftest}"
 mkdir -p "$T/audio" "$T/renders"
 cp "$SKILL_DIR/templates/selftest/index.html" "$T/index.html"
 cat > "$T/audio/sfx_cues.json" <<'JSON'

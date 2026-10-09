@@ -25,7 +25,7 @@ TECHNIQUES to reach for: real 3D (Three.js chrome/glass type, a camera flying th
 shader backgrounds (liquid, displacement, kaleidoscope), particle typography that assembles and explodes,
 mask and shape reveals, grid multiplication, SVG morphs, speed ramps, audio-reactive elements driven by
 the measured track. Search the registry before hand-building any named effect.
-MUSIC: local and free with motion-studio's pipeline (≥4 takes, rank on the vocal stem, word timing).
+MUSIC: local and free with viral-motion's pipeline (≥4 takes, rank on the vocal stem, word timing).
 SFX: synthesized at the exact cut/hit times, mixed under the music.
 GATES: check passes with 0 errors; critique loop until every scene is 8+/10 (max 3 rounds); the MP4 has
 audio, in sync. DELIVER: MP4, contact sheet, lyrics, chosen take + why, all take paths, timing.json.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start a motion-studio project: a HyperFrames project + the audio files for its level.
+# Start a viral-motion project: a HyperFrames project + the audio files for its level.
 #
 #   new_project.sh <project-dir> <level>        level: 1 (showreel, no music) | 2 (lyric music video) | 3 (story film)
 #

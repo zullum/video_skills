@@ -236,7 +236,7 @@ os.makedirs(os.path.join(P, "audio"), exist_ok=True)
 json.dump(timing, open(os.path.join(P, "audio", "timing.json"), "w"), indent=1)
 os.makedirs(os.path.join(P, "assets", "js"), exist_ok=True)
 with open(os.path.join(P, "assets", "js", "timing.js"), "w") as f:
-    f.write("/* generated from audio/timing.json by motion-studio timing.py: do not edit */\n")
+    f.write("/* generated from audio/timing.json by viral-motion timing.py: do not edit */\n")
     f.write("window.TIMING = " + json.dumps(timing, separators=(",", ":")) + ";\n")
 
 # ---- report
