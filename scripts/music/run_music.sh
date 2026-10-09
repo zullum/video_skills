@@ -15,7 +15,7 @@ SEEDS="$*"
 ACE="${MOTION_STUDIO_ACESTEP:-}"
 [ -z "$ACE" ] && [ -f "$SKILL_DIR/.acestep" ] && ACE="$(cat "$SKILL_DIR/.acestep")"
 if [ -z "$ACE" ] || [ ! -f "$ACE/pyproject.toml" ]; then
-  echo "ACE-Step is not installed yet. Run: bash \"$SKILL_DIR/scripts/setup.sh\" --music" >&2
+  echo "ACE-Step not found. Run: bash \"$SKILL_DIR/scripts/check.sh\"" >&2
   exit 2
 fi
 [ -f "$P/audio/song.json" ] || { echo "missing $P/audio/song.json (see references/music.md)" >&2; exit 2; }

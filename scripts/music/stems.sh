@@ -12,7 +12,7 @@ shift
 [ $# -gt 0 ] || { echo "name at least one take (e.g. seed11)" >&2; exit 2; }
 ACE="${MOTION_STUDIO_ACESTEP:-}"
 [ -z "$ACE" ] && [ -f "$SKILL_DIR/.acestep" ] && ACE="$(cat "$SKILL_DIR/.acestep")"
-[ -n "$ACE" ] && [ -f "$ACE/pyproject.toml" ] || { echo "ACE-Step not installed: bash \"$SKILL_DIR/scripts/setup.sh\" --music" >&2; exit 2; }
+[ -n "$ACE" ] && [ -f "$ACE/pyproject.toml" ] || { echo "ACE-Step not found: bash \"$SKILL_DIR/scripts/check.sh\"" >&2; exit 2; }
 
 for take in "$@"; do
   take="${take%.wav}"

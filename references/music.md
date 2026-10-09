@@ -2,7 +2,7 @@
 
 ACE-Step 1.5 (MIT) runs on this computer: Apple Silicon (MPS + MLX), NVIDIA (CUDA), or CPU (slow).
 The turbo model makes a 40 s take in well under a minute on an M-series Mac once loaded. Disk: about 11 GB
-of models + its Python environment. Installed by `setup.sh --music` (path saved in `SKILL/.acestep`).
+of models + its Python environment. Already installed here; `scripts/check.sh` verifies it (path saved in `SKILL/.acestep`).
 
 ## audio/song.json
 
