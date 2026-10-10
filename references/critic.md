@@ -84,8 +84,9 @@ the wrong Shot, a render glitch.
 - 6: Dead-centre stacking with empty corners for a whole Shot, competing focal points, text over text or over a key
   object, or something clipped by the frame edge.
 - **Portrait safe zones** (1080x1920; `frame.md` has the numbers): Reels and TikTok cover the top ~250 px, the bottom
-  ~420 px and the right ~120 px (about 13 %, 22 % and 11 % of the frame). Text or a key object inside a zone caps
-  that Shot's composition at 6. Backgrounds, decorative motion and corner chrome placed by `frame.md` are fine.
+  ~420 px and the right ~120 px (about 13 %, 22 % and 11 % of the frame). On-screen text or the Shot's focal object
+  resting in a zone caps that Shot's composition at 6. Passing through on an entrance or exit doesn't count, nor does
+  background detail (lit windows, backgrounds, decorative motion, corner chrome placed by `frame.md`).
 
 **Motion** (levels 1-2) / **motion fluidity** (level 3)
 - 10: Every Shot's frames show purposeful change (start, middle and end all differ); mid-move frames catch smear,
