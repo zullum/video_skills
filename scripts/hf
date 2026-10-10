@@ -4,4 +4,6 @@
 #
 #   hf <hyperframes args...>        e.g. hf check, hf snapshot . --at 1,2.5, hf render -o renders/x.mp4
 if [ "${1:-}" = snapshot ]; then set -- "$@" --describe false; fi
+# `hf tts` (Kokoro) runs in the skill's Python 3.12 venv: Homebrew's Python can't install kokoro-onnx.
+if [ "${1:-}" = tts ]; then export HYPERFRAMES_PYTHON="$(cd "$(dirname "$0")/.." && pwd)/.venv/bin/python"; fi
 exec env -u GEMINI_API_KEY -u GOOGLE_API_KEY npx --yes hyperframes "$@"

@@ -115,6 +115,7 @@ Then pick ONE bold, cohesive art direction (see `references/art-direction.md`) a
 
 plan → music + timing → stills (a key frame of every shot) → full animation pass → polish → sound + mix → check → render → verify
 
+- Levels 2-3, the mix: `SKILL/scripts/py SKILL/scripts/qa/mix_check.py index.html --out renders/mix_sim.wav` passes (-14 LUFS ±1, true peak ≤ -1 dBTP; `references/narration.md`).
 - `SKILL/scripts/hf check` passes with **0 errors**. Fix contrast, layout and lint findings properly. Only mark truly decorative elements with `data-layout-ignore` / `data-layout-allow-overlap`.
 - **Critique loop** (`references/critique-loop.md`): take snapshots (`SKILL/scripts/hf snapshot`) at every Shot's midpoint and key moments. A **fresh Critic agent** per round (`references/critic.md`), never the Crew, grades each Shot 1-10 on the level's axes and writes down the 3 worst problems. Fix them and repeat until every Grade is 8+ (max 1 round for level 1, 3 for level 2, 4 for level 3). Level 3 also runs the animation map and removes dead zones.
 - Render: `SKILL/scripts/hf render -o renders/<name>.mp4 --fps <fps> --workers 2` (2 workers: other chats may be rendering).
@@ -147,5 +148,8 @@ Open the MP4 (`open` on macOS). Then tell the user, briefly:
 | `scripts/music/trim.sh <take.wav> <end> <out.wav>` | trim to the musical end with a fade |
 | `scripts/music/score_viz.py` | bake the real score's waveform + piano roll into JSON for an on-screen "composer" |
 | `scripts/sfx/build_sfx.py <project>` | `audio/sfx_cues.json` + scene `*.motion.json` events → SFX stems + cue sheet |
+| `scripts/sfx/duck_lane.py <wav[@start]...> --base <vol>` | `data-automation` lane ducking the Score -10 dB under Narration |
+| `scripts/recording/pipeline.sh <memo> <script> <out> <lang>` | the user's Recording → `clean.wav` + `recording.json` (lines, words, Shots); exit 3 = hard fail |
+| `scripts/qa/mix_check.py index.html` | predicted loudness of the render's mix: the -14 LUFS gate |
 | `scripts/qa/av_check.py <mp4>` | audio stream, length, hit sync |
 | `scripts/qa/contact_sheet.sh <mp4> <jpg> [t...]` | labelled frame grid |

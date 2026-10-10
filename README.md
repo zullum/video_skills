@@ -54,8 +54,9 @@ examples/prompts/           the three real prompts the example videos were made 
 scripts/check.sh            checks the local toolchain (installs nothing)
 scripts/hf                  the only way to run HyperFrames: no Gemini keys, no frame descriptions
 scripts/music/              ACE-Step generation, stems, take ranking, beat + lyric timing, trimming
-scripts/sfx/                the numpy sound-effect library + cue builder
-scripts/qa/                 A/V sync check, contact sheets
+scripts/sfx/                the numpy sound-effect library + cue builder, the Narration duck lane
+scripts/recording/          the user's voice Recording → clean stem, word timing, Shots
+scripts/qa/                 mix loudness gate, A/V sync check, contact sheets
 templates/                  song / score / cue templates, a self-test clip
 ```
 

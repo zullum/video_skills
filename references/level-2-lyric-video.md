@@ -58,7 +58,7 @@ audio, in sync. DELIVER: MP4, contact sheet, lyrics, chosen take + why, all take
    index.html's head. Scenes read `window.TIMING` (see "Driving animation from timing" below).
 10. SFX (`references/sound-design.md`): whooshes peaking on cuts, impacts on slams, a riser ending on the drop,
     glitch ticks, sparkles. Mix under the song with /hyperframes-audio.
-11. Gates: check → critique loop (axes: composition, motion, typography, **lyric sync**, polish) → render → `av_check.py --expect <drop>`.
+11. Gates: `mix_check.py` (-14 LUFS, `references/narration.md`) → check → critique loop (axes: composition, motion, typography, **lyric sync**, polish) → render → `av_check.py --expect <drop>`.
 
 ## Driving animation from timing
 

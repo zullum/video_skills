@@ -40,15 +40,19 @@ DELIVER: MP4, contact sheet, final beat sheet with timestamps, chosen take + why
 1. `bash SKILL/scripts/new_project.sh videos/<name> 3`. Write BRIEF.md and frame.md (palette as a story
    progression, e.g. night `#070B16` → a role hue per world → daylight) and the Beat sheet in STORYBOARD.md.
    **Checkpoint 1**: the Beat sheet (and the Narration script, if any).
+   **With a Recording**, the user then sends the memo: time it before any music (`references/recording.md`).
 2. **Score** in `audio/song.json` (score mode). Describe the arc in the caption in time order and use section
    tags with directions (`[Intro - solo soft piano, no drums]`). Set `drop_window` and `arc` to your beat sheet
-   (`templates/score.json` is the example). Duration = film + 2-4 s.
+   (`templates/score.json` is the example). Duration = film + 2-4 s. With a Recording, the film
+   length and `drop_window` come from it.
 3. `run_music.sh` → `rank_takes.py` (arc fit, a clear drop inside the window, a quiet start, a resolving tail,
    no early ending). If nothing fits, make the caption more explicit about the quiet start and the breakdown
    before the drop, and run 4 new seeds. The example needed 2 rounds (8 takes). **Checkpoint 2**: the ranked Takes and your pick.
 4. `timing.py --take <best>` → beats, downbeats, `drop`, `novelty` (candidate section changes), loudness. **Re-time
    the beat sheet to the music**: every shot change on a downbeat, the turn/lift on the first big entry, the climax
-   exactly on `drop`. `trim.sh` to the musical end, and the film is exactly that long.
+   exactly on `drop`. `trim.sh` to the musical end, and the film is exactly that long. With a Recording, Shot changes
+   stay on the voice, only the climax visuals land on `drop`, and `trim.sh` cuts to the film length.
+   English Narration: one Kokoro line per Shot now, with the fit rule (`references/narration.md`).
 5. STORYBOARD.md: one `## Frame N` block per shot with its global slot, local start, on-screen text, payoffs
    (a visual payoff every 3-5 s), transition, cited blueprint/rules, sky/colour state, and sfx. Use a **seam model**:
    montage slots carry ~0.4 s of pre-roll and post-roll so index.html can run a push-through match-cut centred
@@ -66,8 +70,9 @@ DELIVER: MP4, contact sheet, final beat sheet with timestamps, chosen take + why
    audio). **Scenes are transparent**: they never paint an opaque full-bleed ground.
 10. Sound (`references/sound-design.md`): storyboard-level cues + every scene's events → `build_sfx.py` → stems.
     Mix with /hyperframes-audio: duck the score under the key hits, a "story filter" on the score (low-pass during
-    the freeze that snaps open on the turn), room tone only in the quiet parts, a master limiter.
-11. Gates: check (0 errors) → critique loop (axes: story clarity, composition, motion fluidity, typography,
+    the freeze that snaps open on the turn), room tone only in the quiet parts, a master limiter. With Narration
+    (a Recording or Kokoro), duck the score under it with `duck_lane.py` (`references/narration.md`).
+11. Gates: `mix_check.py` (-14 LUFS) → check (0 errors) → critique loop (axes: story clarity, composition, motion fluidity, typography,
     sync with music and sound, polish) → `node ~/.claude/skills/hyperframes-animation/scripts/animation-map.mjs <project>`
     and remove dead zones → render → `av_check.py --expect <turn> <drop>`.
 
