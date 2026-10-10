@@ -140,8 +140,9 @@ Open the MP4 (`open` on macOS). Then tell the user, briefly:
 | `scripts/new_project.sh <dir> <level> [format]` | HyperFrames project (portrait by default) + audio templates |
 | `scripts/selftest.sh [dir]` | SFX → check → render → A/V check on a 3 s clip |
 | `scripts/music/run_music.sh <project> [seeds]` | generate + decode ACE-Step takes under the one-job lock |
-| `scripts/music/stems.sh <project> <take...>` | demucs vocal/instrumental stems + vocal-stem transcript |
-| `scripts/music/rank_takes.py <project>` | rank takes: lyrics sung (song) or story-arc fit (score), early-ending check |
+| `scripts/music/own_track.sh <project> <file> <seconds>` | the user's own Track → `audio/takes/own.wav`; exit 3 = shorter than the video |
+| `scripts/music/stems.sh <project> <take...>` | demucs vocal/instrumental stems + whisper DTW vocal-stem transcript |
+| `scripts/music/rank_takes.py <project>` | rank takes: lyrics sung (song) or story-arc fit (score), early-ending check; rejects lost lines |
 | `scripts/music/timing.py <project> --take seedN` | beats, downbeats, drop, sections, word onsets, envelopes → `audio/timing.json` + `assets/js/timing.js` |
 | `scripts/music/trim.sh <take.wav> <end> <out.wav>` | trim to the musical end with a fade |
 | `scripts/music/score_viz.py` | bake the real score's waveform + piano roll into JSON for an on-screen "composer" |

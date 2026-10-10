@@ -44,6 +44,8 @@ params = GenerationParams(
     duration=float(CFG["duration"]),
     inference_steps=int(CFG.get("inference_steps", 8)),
     shift=float(CFG.get("shift", 3.0)),
+    use_cot_caption=False,  # on by default it rewrites the caption ("female lead vocal" became "male vocal")
+    use_cot_language=False,  # on by default it overrides vocal_language
 )
 
 if os.environ.get("MOTION_STUDIO_DRY_RUN") == "1":
@@ -90,8 +92,13 @@ print("LM:", status, flush=True)
 if not ok:
     sys.exit(1)
 
+if LM_BACKEND == "mlx":
+    import mlx.core as mx  # noqa: E402
+
 for seed in SEEDS:
     CURRENT["seed"] = seed
+    if LM_BACKEND == "mlx":
+        mx.random.seed(seed)  # the MLX LM is unseeded at batch 1, so the same seed gave a different Take
     config = GenerationConfig(batch_size=1, seeds=[seed], use_random_seed=False, audio_format="wav")
     result = generate_music(dit, lm, params, config, save_dir=OUT_DIR)
     if not result.success:

@@ -4,7 +4,9 @@
 
 Song mode (song.json "mode": "song"): how much of the lyric sheet is actually sung, in order (from the
 VOCAL-STEM transcript that stems.sh writes; run it on every take first), steady tempo, energy contrast,
-and whether the music lasts long enough.
+and whether the music lasts long enough. A take with a lyric line of which no word was heard (exactly or
+nearly) is REJECTED: unsung (one take sang no Chorus) or too garbled to read along, and ranked below every
+other take.
 Score mode ("mode": "score"): fit of the loudness curve to the story arc (song.json "arc": [[t, 0..1], ...]),
 a clear drop inside "drop_window", a quiet start and a resolving tail.
 
@@ -31,7 +33,9 @@ names = [n.replace(".wav", "") for n in sys.argv[2:]] or sorted(
 MODE = CFG.get("mode", "score" if CFG.get("instrumental") else "song")
 TARGET = float(CFG.get("target_duration", float(CFG["duration"]) - 2))
 HINT = CFG.get("bpm")
-sheet = [A.norm_word(w) for ln in A.parse_lyrics(CFG.get("lyrics", "")) for w in ln["words"]]
+LINES = A.parse_lyrics(CFG.get("lyrics", ""))
+sheet = [A.norm_word(w) for ln in LINES for w in ln["words"]]
+line_of = [li for li, ln in enumerate(LINES) for _ in ln["words"]]
 
 
 def arc_curve(n):
@@ -66,6 +70,10 @@ for name in names:
             al = A.align(sheet, heard)
             r["lyric_match"] = round(sum(1 for j, k in al if k in ("exact", "fuzzy")) / len(sheet), 2)
             r["heard"] = " ".join(h["norm"] for h in heard)
+            # a substitution doesn't count: one take sang the verse twice instead of the Chorus, and the aligner
+            # had paired every Chorus word with a repeated verse word
+            sung = {line_of[i] for i, (_, kind) in enumerate(al) if kind in ("exact", "fuzzy")}
+            r["unsung_lines"] = [ln["text"] for li, ln in enumerate(LINES) if li not in sung]
             score += 10 * r["lyric_match"]
         else:
             r["lyric_match"] = None
@@ -89,7 +97,7 @@ for name in names:
     r["score"] = round(score, 2)
     rows.append(r)
 
-rows.sort(key=lambda r: -r["score"])
+rows.sort(key=lambda r: (bool(r.get("unsung_lines")), -r["score"]))
 json.dump({"mode": MODE, "target_duration": TARGET, "ranking": rows}, open(os.path.join(TAKES, "ranking.json"), "w"), indent=1)
 print(f"mode: {MODE}   target length: {TARGET}s   (higher score = better)")
 for r in rows:
@@ -97,6 +105,10 @@ for r in rows:
     print(f"{r['score']:6.2f}  {r['take']:9s} {extra:12s} bpm {r['bpm']:6.1f} (drift {r['tempo_drift']})  "
           f"ends {r['musical_end']:5.1f}s (full band to {r['sustain_end']:.1f}s)  drop {r['drop_t']}s +{r['drop_jump_db']}dB  {r.get('warning', '')}")
     print(f"         energy/s {r['energy_per_s']}")
+    if r.get("unsung_lines"):
+        print(f"         REJECTED, line not heard (unsung or garbled): {' / '.join(r['unsung_lines'])}")
+if MODE == "song" and rows and all(r.get("unsung_lines") for r in rows):
+    print("\nEvery take loses a lyric line: run 4 NEW seeds (simpler lyrics, a clearer caption) or suggest the user's own song.")
 if MODE == "song" and any(r["lyric_match"] is None for r in rows):
     print("\nlyric_match is missing for some takes: run scripts/music/stems.sh on them first (vocal stem + transcript).")
 print(f"\nwrote {os.path.join(TAKES, 'ranking.json')}")

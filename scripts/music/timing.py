@@ -91,6 +91,15 @@ if lyr and os.path.exists(tx_path):
     on_t, on_s, phrases = A.vocal_onsets(os.path.join(stem_dir, "vocals16k.wav") if os.path.exists(os.path.join(stem_dir, "vocals16k.wav")) else os.path.join(stem_dir, "vocals.wav"))
     T = [heard[j]["start"] if j is not None else None for j, _ in al]
     SRC = [k if j is not None else None for j, k in al]
+    # line guard: a match > 2 s after its own line's previous word but < 1 s before the next line's first heard
+    # word is alignment drift (an unheard word grabbing an extra sung repeat), so treat it as unheard
+    for k in range(len(flat)):
+        if T[k] is None:
+            continue
+        prev = [T[q] for q in range(k) if flat[q][0] == flat[k][0] and T[q] is not None]
+        nxt = next(((T[q], flat[q][0]) for q in range(k + 1, len(flat)) if T[q] is not None), None)
+        if prev and nxt and nxt[1] != flat[k][0] and T[k] - prev[-1] > 2.0 and nxt[0] - T[k] < 1.0:
+            T[k], SRC[k] = None, None
 
     # 1. lines with some heard words: interpolate the gaps inside the line
     for li, ln in enumerate(lyr):

@@ -12,10 +12,11 @@ of models + its Python environment. Already installed here; `scripts/check.sh` v
 | `caption` | the sound, most important words first: genre, BPM, vocal (or "instrumental"), instruments, production, energy arc in time order. The examples are 450-900 characters. |
 | `lyrics` | `[section]` tags + lines. Score mode: tags with directions (`[Intro - solo soft piano, no drums]`), optionally a short wordless chant at the drop |
 | `instrumental` | `true` forces no vocals |
+| `language` | the vocal language as an ACE-Step code: `en` (default), `hr`/`sr` for Bosnian/Croatian/Serbian (there is no `bs`). stems.sh forces whisper to it |
 | `bpm`, `timesignature` | the requested tempo (also the hint for the beat tracker) |
 | `duration` | target length + 2-4 s (takes often end early; trim to the musical end later) |
 | `target_duration` | the length you need; takes whose music ends before it are penalised |
-| `seeds` | 4 per round; use NEW seeds for a new round |
+| `seeds` | 4 per round; use NEW seeds for a new round (the same seed gives back the same take, bit for bit) |
 | `drop_window`, `arc` | score mode: where the drop should be, and the target loudness curve `[[t, 0..1], ...]` |
 | `fps` | envelope rate in timing.json (30, or 60 for 60 fps pieces) |
 | `lm` | `acestep-5Hz-lm-0.6B` (fits 16 GB, the default) or `acestep-5Hz-lm-1.7B` (32 GB+) |
@@ -32,8 +33,8 @@ of models + its Python environment. Already installed here; `scripts/check.sh` v
 
 ```bash
 bash   SKILL/scripts/music/run_music.sh <project>                    # 4 takes → audio/takes/seed*.wav (waits for the lock)
-bash   SKILL/scripts/music/stems.sh <project> seed11 seed23 ...      # song mode: stems + vocal-stem transcript per take
-SKILL/scripts/py SKILL/scripts/music/rank_takes.py <project>         # ranking table + audio/takes/ranking.json
+bash   SKILL/scripts/music/stems.sh <project> seed11 seed23 ...      # song mode: stems + whisper vocal-stem transcript per take
+SKILL/scripts/py SKILL/scripts/music/rank_takes.py <project>         # ranking table + audio/takes/ranking.json (rejects lost lines)
 SKILL/scripts/py SKILL/scripts/music/timing.py <project> --take seed23   # audio/timing.json + assets/js/timing.js
 bash   SKILL/scripts/music/trim.sh <project>/audio/takes/seed23.wav <duration> <project>/assets/audio/song.wav
 ```
@@ -58,13 +59,30 @@ background commands.
 - **Recognisers mishear sung words** ("vibe" → "eye", "render" → "Brenda", "type it out, hit enter" → "something else
   should insert"). timing.py aligns the lyric sheet to what was heard **in order**, so misheard words keep their time.
   Unheard lines are mapped onto the leftover tokens or the vocal onsets, phrase by phrase, and flagged with `*`.
+- **Word times come from whisper's DTW.** stems.sh runs the user's whisper.cpp large-v3-turbo on the vocal stem with
+  `-nfa --dtw` (flash attention silently turns DTW off), the language forced and no lyric prompt; whisper_to_transcript.py
+  takes each word's DTW time minus 0.3 s (whisper's late bias on singing). Mean onset error 0.27 s, against 1.19 s for
+  `hyperframes transcribe`, which reads token offsets. Auto-detect heard "Music Outro"; a lyric prompt echoes unsung lines.
+- **A take that loses a line is rejected.** rank_takes.py rejects a take if any lyric line has no word heard exactly or
+  nearly: one take sang the verse twice instead of the Chorus, and the video would show words nobody sings.
+- **Seeds are exact.** gen_song.py seeds the MLX LM per take and turns off ACE-Step's caption and language rewriting
+  (on by default; it turned "female lead vocal" into "male vocal").
+- **Bosnian/Croatian/Serbian songs mostly fail.** A Croatian take was only partly intelligible, and on its vocal stem
+  whisper heard only "hvala to pratite" (a stock hallucination). Warn the user and offer their own song early.
 - **The drop decides the downbeat.** Kick-based downbeat guessing gets breakbeats wrong by two beats. timing.py anchors
   the bar on the drop (the sharpest rise into the loudest sustained section).
 - **ACE-Step doesn't hit the requested BPM exactly** (140 → 139.7-140.0). Always use the measured grid.
 - Don't download other models or edit ACE-Step's code beyond the shipped patch.
 
-## Can't run the music model?
+## The user's own Track
 
-Not enough disk, or an old machine: use music the user owns (any WAV/MP3). Copy it to `audio/takes/user.wav`, write a
-song.json with the lyrics (if any) and the bpm, then run stems.sh (needs the music studio for demucs; without it, skip
-stems and time the cuts from the beat grid only) and `timing.py --take user`.
+Music the user owns (any WAV/MP3): a song plus its lyrics as text (Lyric video) or an instrumental (Story film). It's
+also the way out when the music model can't run (not enough disk, an old machine). No Takes, no ranking, no Checkpoint 2.
+
+1. `bash SKILL/scripts/music/own_track.sh <project> <file> <video-seconds>` → `audio/takes/own.wav`. **Exit 3 is a stop**:
+   the file is shorter than the video. Tell the user exactly that and wait for a new file.
+2. song.json: `mode`, `language`, `bpm` if known, and for a song the `lyrics` sung inside the video length only
+   (timing.py lists any later line as unsung).
+3. A song: `stems.sh <project> own`. Then `timing.py <project> --take own --end <video-seconds>`.
+4. `trim.sh <project>/audio/takes/own.wav <video-seconds> <project>/assets/audio/song.wav 2` (a 2 s fade). A longer
+   Track cut this way is a soft flag: report it at delivery.

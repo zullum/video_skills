@@ -349,7 +349,8 @@ def align(sheet, heard, gap=-1.2, subst=-1.0):
     for i, a in enumerate(sheet):
         for j, b in enumerate(heard):
             s = _sim(a, b["norm"])
-            score[i, j] = 3.0 if s == 1.0 else 2.0 if s >= 0.75 else subst
+            # graded substitution: a near-miss ("vibe" heard as "eye") beats an unrelated word
+            score[i, j] = 3.0 if s == 1.0 else 2.0 if s >= 0.75 else subst + 1.5 * s
     for i in range(1, n + 1):
         for j in range(1, m + 1):
             opts = (S[i - 1, j - 1] + score[i - 1, j - 1], S[i - 1, j] + gap, S[i, j - 1] + gap)

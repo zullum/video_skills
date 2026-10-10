@@ -36,11 +36,16 @@ audio, in sync. DELIVER: MP4, contact sheet, lyrics, chosen take + why, all take
 1. `bash SKILL/scripts/new_project.sh videos/<name> 2`. Write BRIEF.md, frame.md and STORYBOARD.md (worlds per section).
 2. **Write the song** into `audio/song.json` (see `references/music.md`: caption, lyrics, bpm, duration = target + 2 s, seeds).
    **Checkpoint 1**: the Beat sheet and the lyrics.
+   **Own song** (the user's file plus its lyrics): skip steps 3-5 and Checkpoint 2. Run `own_track.sh` (stops if the
+   file is shorter than the video), `stems.sh <project> own`, then step 6 with `--take own --end <length>` and step 7
+   with a 2 s fade (`references/music.md`, "The user's own Track").
 3. `bash SKILL/scripts/music/run_music.sh <project>`: 4 takes (waits in line if another chat is generating).
-4. `bash SKILL/scripts/music/stems.sh <project> seed11 seed23 seed47 seed89`: vocal stems + transcripts for EVERY take.
+4. `bash SKILL/scripts/music/stems.sh <project> seed11 seed23 seed47 seed89`: vocal stems + whisper transcripts (the
+   language forced from song.json) for EVERY take.
 5. `SKILL/scripts/py SKILL/scripts/music/rank_takes.py <project>`. Pick the top take unless the numbers show
-   a problem (no drop, band thins out, tempo drift). If the best lyric match is under ~0.6, rewrite the caption
-   (stress "every word crisp and intelligible") or simplify the lyrics, and run 4 NEW seeds.
+   a problem (no drop, band thins out, tempo drift). A REJECTED take (a lyric line unsung or garbled) is never the pick.
+   If the best lyric match is under ~0.6, or every take is rejected, rewrite the caption (stress "every word crisp and
+   intelligible") or simplify the lyrics, and run 4 NEW seeds. If every take is rejected, also suggest the user's own song.
    **Checkpoint 2**: the ranked Takes and your pick.
 6. `SKILL/scripts/py SKILL/scripts/music/timing.py <project> --take <best>`. Read the report: check every `*`
    word (subst / token-fill / onset-fill) against the energy and phrase gaps, and note "unsung" lines (show
