@@ -60,6 +60,8 @@ That's how a film gets hundreds of effects that land on the exact frame.
 - Typing: one `key` per character, `heavy` on spaces and enter. Slams: `glitch`. Counters: `tick` / `shutter`, accelerating.
 - Gains: UI detail -15 to -20 dB, transitions -6 to -10 dB, hits -6 to 0 dB. Under a full band, lift montage effects
   +2 to +4 dB so they read through. Let the storyboard-level hit own its moment and drop scene events that would fight it.
+- These gains are relative: build_sfx.py peak-normalises each bus to -3 dBFS, so lowering a cue's `gain_db` raises
+  everything else. Set the bus level with its `<audio>` `data-volume` (about 0.5 under a hot song) until `mix_check` passes.
 
 ## Mixing (in index.html, with /hyperframes-audio)
 
