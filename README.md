@@ -58,6 +58,7 @@ scripts/sfx/                the numpy sound-effect library + cue builder, the Na
 scripts/recording/          the user's voice Recording → clean stem, word timing, Shots
 scripts/qa/                 mix loudness gate, A/V sync check, contact sheets
 templates/                  song / score / cue templates, a self-test clip
+assets/watercolor/          the Watercolor engine: washes, ink boil, paper, an example scene
 ```
 
 Third-party licences: see LICENSES.md.
