@@ -41,7 +41,7 @@ audio, in sync. DELIVER: MP4, contact sheet, lyrics, chosen take + why, all take
    with a 2 s fade (`references/music.md`, "The user's own Track").
 3. `bash SKILL/scripts/music/run_music.sh <project>`: 4 takes (waits in line if another chat is generating).
 4. `bash SKILL/scripts/music/stems.sh <project> seed11 seed23 seed47 seed89`: vocal stems + whisper transcripts (the
-   language forced from song.json) for EVERY take.
+   language forced from song.json) for EVERY take: name the takes run_music.sh listed (song.json's seeds).
 5. `SKILL/scripts/py SKILL/scripts/music/rank_takes.py <project>`. Pick the top take unless the numbers show
    a problem (no drop, band thins out, tempo drift). A REJECTED take (a lyric line unsung or garbled) is never the pick.
    If the best lyric match is under ~0.6, or every take is rejected, rewrite the caption (stress "every word crisp and
