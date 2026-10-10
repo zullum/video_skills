@@ -1,7 +1,7 @@
 # Third-party components
 
-Nothing third-party is bundled in this skill except a small patch file. Everything below was installed from
-its official source on this machine, under its own licence. `scripts/check.sh` verifies it.
+Nothing third-party is bundled in this skill except a small patch file and the Critic's calibration frames. The
+rest was installed from its official source on this machine, under its own licence. `scripts/check.sh` verifies it.
 
 | component | how it's used | licence |
 |---|---|---|
@@ -13,6 +13,7 @@ its official source on this machine, under its own licence. `scripts/check.sh` v
 | Kokoro-82M via `kokoro-onnx` (`hf tts`) | English Narration | Apache-2.0 / MIT |
 | GSAP 3 | loaded from the jsDelivr CDN by compositions | GSAP standard licence (free, including commercial use) |
 | uv | Python project manager used to run ACE-Step | MIT / Apache-2.0 |
+| `assets/critic-frames/` (16 PNGs) | the Critic's "10" anchor: frames of the viral videos and "The Lantern", grabbed from YouTube video zke3bTtvmLo | © their authors; local reference only, never redistribute |
 
 Music you generate with ACE-Step and sound effects synthesized by `scripts/sfx/sfx_lib.py` are yours to use.
 Fonts: use the HyperFrames bundled fonts or SIL Open Font License fonts (Google Fonts). Don't ship proprietary fonts.
