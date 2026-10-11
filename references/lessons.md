@@ -11,6 +11,12 @@
 - When index.html owns a continuous environment (sky, HUD, grain), **scenes must be transparent**: never paint an opaque
   full-bleed ground in a scene.
 - Overlap scene hosts by a few tenths of a second where the incoming world reveals itself over the outgoing one.
+- **Masked type parked outside its mask still counts as text**: `hf check` reports `content_overlap` between invisible
+  words. Set `visibility: hidden` on anything fully outside its mask, and land a word swap on its beat (old word out first).
+- **A texture canvas over type** (grain, fibre, ink dropout) makes `hf check` call every word `text_occluded`: a canvas
+  counts as opaque, and the canvas's own waiver is ignored. Put `data-layout-allow-occlusion` on the text elements and keep
+  them hit-testable (`pointer-events: auto`): flagged text that hit-testing never reaches is skipped by the contrast audit,
+  which then prints `0/0 text checks` and still passes.
 - Render with `--workers 2`: other chats may be rendering at the same time.
 - HyperFrames refuses to render with less than 1 GB free disk. Check `df -h ~` before a long render.
 - Use absolute paths in background shell commands.
