@@ -20,6 +20,7 @@ prompt and its rubric. You capture, spawn, read, fix and stop.
    `SKILL/scripts/hf snapshot <project> --at <t1>,<t2>,... --no-end -o <project>/critique/round-N`
    It writes `frame-NN-at-<t>s.png` per time plus `contact-sheet*.jpg`. The times, in global seconds:
    - every Shot: its start (+0.2-0.3 s, past the incoming transition), its middle, its end (-0.1 s);
+   - every Shot change: one frame mid-transition, so the Critic can see the planned hand-over (match-cut, mask, shared object);
    - the key moments: word onsets (level 2: the first word of every lyric line and every hook word), the turn, the
      drop, the end card;
    - every hit (the drop, impacts, slams, cuts on downbeats, the `av_check --expect` times) plus the frame before it
