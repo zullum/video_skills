@@ -67,7 +67,7 @@ prompt and its rubric. You capture, spawn, read, fix and stop.
 
    ```bash
    n=0; for t in <times>; do ffmpeg -v error -y -ss "$t" -i renders/<name>.mp4 -frames:v 1 \
-     "critique/final/frame-$(printf %02d $n)-at-${t}s.png"; n=$((n+1)); done
+     "critique/final/frame-$(printf %02d $n)-at-$(printf %g $t)s.png"; n=$((n+1)); done
    bash SKILL/scripts/qa/contact_sheet.sh renders/<name>.mp4 critique/final/contact-sheet.jpg <times>
    ```
 3. Spawn a fresh Critic with the same prompt, but `Round: final`, `Frames: critique/final/frames.md`,
