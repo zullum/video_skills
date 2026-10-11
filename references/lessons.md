@@ -7,10 +7,14 @@
 - Deterministic only: seeded randomness (no `Math.random()`), no `Date`, no network fetches at render time.
 - **Fonts:** bundled fonts render without setup (Montserrat, Oswald, League Gothic, Archivo Black, Space Mono, IBM Plex Mono,
   JetBrains Mono, Source Code Pro, …). For any other font, download the OFL woff2/ttf (Google Fonts) into `assets/fonts/`
-  and declare `@font-face`.
+  and declare `@font-face`. Lint checks each file: declare the faces and a class per family (`.f-display`) in index.html
+  and use only the classes in sub-compositions, or each one fails `font_family_without_font_face`.
 - When index.html owns a continuous environment (sky, HUD, grain), **scenes must be transparent**: never paint an opaque
   full-bleed ground in a scene.
-- Overlap scene hosts by a few tenths of a second where the incoming world reveals itself over the outgoing one.
+- Overlap scene hosts by a few tenths of a second where the incoming world reveals itself over the outgoing one. But
+  with transparent scenes, the outgoing host must end before the incoming one shows, or both draw at once.
+- `hf check` counts any full-frame `<canvas>` or gradient overlay above text (vignette, rain) as an opaque occluder
+  (`text_occluded`) unless its own `opacity` is under 0.6: set it to ~0.55 and strengthen its colours to match.
 - **Masked type parked outside its mask still counts as text**: `hf check` reports `content_overlap` between invisible
   words. Set `visibility: hidden` on anything fully outside its mask, and land a word swap on its beat (old word out first).
 - **A texture canvas over type** (grain, fibre, ink dropout) makes `hf check` call every word `text_occluded`: a canvas
