@@ -20,7 +20,7 @@ finished videos:
 `SKILL` below means the folder this file is in. Run Python scripts with `SKILL/scripts/py` (its Python 3.12
 venv has numpy). Run shell scripts with `bash`. Run HyperFrames only as `SKILL/scripts/hf <args>`.
 
-## Cost: $0. Keep it that way.
+## Cost: nothing. Keep it that way.
 
 HyperFrames (open source) renders. ACE-Step 1.5 (MIT) makes the music on this computer. demucs splits
 the vocals. The user's whisper.cpp build (`~/myprojects/whisper.cpp`, large-v3-turbo) times the words. Every sound effect
@@ -105,7 +105,7 @@ Then pick ONE bold, cohesive art direction (see `references/art-direction.md`) a
 ## 3. Build (through HyperFrames)
 
 1. Start the project from `~/myprojects/musicmodel`: `bash SKILL/scripts/new_project.sh videos/<name> <1|2|3> [portrait|landscape|square]` (portrait by default). It runs `hf init` and adds `audio/song.json` / `audio/sfx_cues.json` templates.
-2. Invoke **/hyperframes** (mandatory entry point) and follow **/general-video** for the composition. Treat your director's brief as the confirmed brief (flow automation, storyboard no). Use /hyperframes-animation for blueprints and rules and /hyperframes-registry before hand-building any named effect (`SKILL/scripts/hf catalog --query "<effect>" --json`).
+2. Invoke **/hyperframes** (mandatory entry point) and follow **/general-video** for the composition. Treat your director's brief as the confirmed brief (flow automation, storyboard no). Its final Studio preview and "render now?" question are not stops here: render after the Critique loop (§4). Use /hyperframes-animation for blueprints and rules and /hyperframes-registry before hand-building any named effect (`SKILL/scripts/hf catalog --query "<effect>" --json`).
 3. Levels 2-3: **music first, then timing, then animation.** Every animation time comes from `audio/timing.json`. Never guess a beat. See `references/music.md`.
    With a Recording, time it first: Shot times come from it (`references/recording.md`). English Narration: `references/narration.md`.
 4. Multi-scene pieces: one sub-composition per scene. Level 3 builds scenes with parallel sub-agents (2-3 scenes per worker, all workers in one wave), each writing its `compositions/frames/<id>.html` and a `<id>.motion.json` of the events that need sound.
