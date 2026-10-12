@@ -63,6 +63,10 @@ prompt and its rubric. You capture, spawn, read, fix and stop.
    re-render, and run it again):
    `mkdir -p critique/final && SKILL/scripts/py SKILL/scripts/qa/av_check.py renders/<name>.mp4 --expect <hits> --duration <length> | tee critique/final/av_check.txt`
    A video without sound (a silent Showreel) skips it: write `silent` into that file.
+   In a dense mix (a Score under a Recording) `av_check`'s onset matcher can land on a note or a syllable instead of a
+   quiet cue and report "OUT OF SYNC" for a render that is exact (Abeceda: four false FAILs, 0 ms by correlation). Run
+   `SKILL/scripts/py SKILL/scripts/qa/sync_check.py renders/<name>.mp4 renders/mix_sim.wav --at <hits>` as well and
+   treat that one as the verdict for quiet cues; keep `av_check` for stream presence, length and level.
 2. Capture the same times from the MP4, not from the composition, and label them in `critique/final/frames.md`:
 
    ```bash
