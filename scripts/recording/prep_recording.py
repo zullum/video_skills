@@ -64,6 +64,9 @@ def main():
     chain = [f"atrim=start={start:.3f}:end={end:.3f}", "asetpts=PTS-STARTPTS", "highpass=f=80"]
     if not a.no_denoise:
         chain.append(f"afftdn=nr=10:nf={nf}:tn=1")
+    # a soft compressor before loudnorm: at -16 LUFS the raw voice peaked at -1.5 dBFS (14.5 dB crest), so with the
+    # Score and SFX underneath the mix gate failed on peaks (+0.7 dBTP). Compressed, the voice peaks near -5 dBFS.
+    chain.append("acompressor=threshold=0.063:ratio=3:attack=5:release=120:makeup=2")
     chain += ["afade=t=in:d=0.05", f"afade=t=out:st={end - start - 0.15:.3f}:d=0.15",
               "pan=stereo|c0=c0|c1=c0"]                            # stereo BEFORE loudness
     pre = ",".join(chain)

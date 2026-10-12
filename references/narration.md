@@ -9,7 +9,7 @@ Never use /media-use for voice: it has Gemini TTS paths.
 ```bash
 SKILL/scripts/hf tts "<line>" -v af_heart -o <project>/audio/narration/s03.raw.wav --json    # → durationSeconds
 mkdir -p <project>/assets/audio/narration
-ffmpeg -v error -y -i <project>/audio/narration/s03.raw.wav -af "pan=stereo|c0=c0|c1=c0,loudnorm=I=-16:TP=-1.5:LRA=11" \
+ffmpeg -v error -y -i <project>/audio/narration/s03.raw.wav -af "pan=stereo|c0=c0|c1=c0,acompressor=threshold=0.063:ratio=3:attack=5:release=120:makeup=2,loudnorm=I=-16:TP=-3:LRA=11" \
   -ar 48000 -c:a pcm_s24le <project>/assets/audio/narration/s03.wav
 ```
 

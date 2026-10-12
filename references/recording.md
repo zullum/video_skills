@@ -33,6 +33,21 @@ The `HARD FAIL` line says which of the two it is:
 
 Tell the user exactly what's wrong (quote the line) and wait for a new file. Never cut Shots from a failed Recording.
 
+## Chants and repeated lines: write the script as sung, and check the Shots
+
+The script is also whisper's prompt, and a repetitive text (a children's alphabet song: "Slovo A. A kao auto. A, a,
+auto. A kao auto.") makes whisper unstable: the same memo gave 88%, 13% and 11% "heard" for three near-identical
+scripts. What worked (first real Recording, 2026-10-12):
+- List every repeat exactly as sung, one script line per section, and no more than was sung. Extra or missing
+  repeats shift the in-order alignment: one stutter ("Č, č, čokolada") pushed the next line's start 4 s early
+  with a PASS.
+- After a pass, always compare each line's `start` with whisper's raw DTW onsets of its first word
+  (`whisper.json`, `t_dtw` / 100 s, minus ~0.12): a PASS with low-confidence (`*`) words in the last lines means
+  the Shots may be wrong, and the user's ear is the judge.
+- A short memo (under ~30 s) of a sung or chanted text may need `-l hr` with a separated vocal stem
+  (`python -m demucs --two-stems vocals`, the ACE-Step venv has it): whisper on the full mix heard only
+  "Hvala što pratite".
+
 ## Soft flags: carry on, report at delivery
 
 `recording.json` `flags` (also printed):

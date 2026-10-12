@@ -49,7 +49,11 @@ if a.duration and abs(fmt_dur - a.duration) > 0.1:
 if au:
     x = A.load(a.video)
     rms = np.sqrt(np.mean(x**2))
-    print(f"audio level: {20 * np.log10(rms + 1e-9):.1f} dB RMS, peak {20 * np.log10(np.abs(x).max() + 1e-9):.1f} dBFS")
+    # the peak is read from the stereo channels: the mono downmix above adds +3 dB for centred sound and showed
+    # a clean mix at +1.0 dBFS
+    st = np.frombuffer(subprocess.run(["ffmpeg", "-loglevel", "error", "-i", a.video, "-vn", "-ar", "48000", "-f", "f32le", "-"],
+                                      capture_output=True, check=True).stdout, dtype=np.float32)
+    print(f"audio level: {20 * np.log10(rms + 1e-9):.1f} dB RMS (mono), sample peak {20 * np.log10(np.abs(st).max() + 1e-9):.1f} dBFS (stereo)")
     if rms < 1e-4:
         print("FAIL: the audio track is silent")
         ok = False

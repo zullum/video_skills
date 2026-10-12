@@ -12,7 +12,9 @@ src="${2:?music file}"
 want="${3:?video seconds}"
 [ -f "$src" ] || { echo "missing $src" >&2; exit 2; }
 mkdir -p "$P/audio/takes"
-ffmpeg -loglevel error -y -i "$src" -vn -ar 48000 -ac 2 -c:a pcm_s16le "$P/audio/takes/own.wav" \
+# loudnorm: the mix gate (mix_check.py) wants about -14 LUFS in the final mix, and a user file can be anywhere (the
+# first smoke test, a quiet intro, measured -22.6 LUFS and failed the gate). One pass, true peak -2 dBTP.
+ffmpeg -loglevel error -y -i "$src" -vn -af "loudnorm=I=-14:TP=-2:LRA=11" -ar 48000 -ac 2 -c:a pcm_s16le "$P/audio/takes/own.wav" \
   || { echo "ffmpeg could not read $src" >&2; exit 2; }
 have="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$P/audio/takes/own.wav")"
 if awk -v h="$have" -v w="$want" 'BEGIN { exit !(h < w) }'; then

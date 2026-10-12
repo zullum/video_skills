@@ -137,6 +137,17 @@ outside `draw`; `draw(t)` clears and repaints everything from `t` alone, driven 
 - **Story film**: as Level 3 already requires, index.html owns the environment (here the paper) and Shots are
   transparent. A seam can be the next Shot's first washes sweeping in over the outgoing one (overlap the hosts).
 
+## Lessons from the Story-film test render (Abeceda)
+
+- Text overlays that sit under the multiplied paper trip the layout check ("text_occluded"). Mark each overlay
+  text node (and word span) `data-layout-allow-occlusion`; the paper canvas carries the attribute too.
+- A **solid** object's paint-in reads as a translucent grey slab at p < 0.5 (the meadow shows through). Keep its
+  paint-in short (0.4 s), start it before its Shot's first beat, and never film a hit while it is half painted.
+- A hit needs a visible change in one frame: pop the object in at its final paint (group `t0` + a back-eased scale),
+  don't rely on a paint-in that is at p = 0.03 on the hit frame.
+- Shots as data: `assets/watercolor/book.js` mounts a Shot from groups of washes (move / rot / squash / bob / exit,
+  a per-group speed `k`), so a Shot file is a list, not a draw routine.
+
 ## Check
 
 `SKILL/scripts/hf check` with 0 errors, then seek safety: snapshot the same times forward and in reverse (two
