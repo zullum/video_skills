@@ -40,6 +40,10 @@ Then install for the tool you use (copies the skill; add `--link` to symlink so 
 
 ### Claude Code
 
+Working inside this repo? Nothing to install: `.claude/skills/sprite-video` links to the skill, so Claude
+Code loads it automatically in any session opened on this repository.
+
+
 ```bash
 bash install.sh claude                       # → ~/.claude/skills/sprite-video (all projects)
 bash install.sh claude --project /path/to/project   # → /path/to/project/.claude/skills/
