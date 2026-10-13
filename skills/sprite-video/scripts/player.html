@@ -34,7 +34,8 @@ const AX = num('ax', CW / 2), AY = num('ay', CH / 2), CX = num('cx', CW / 2), CX
 const POP = Q.get('pop'), popAt = POP === null ? null : (starts.find(([f]) => String(f) === POP) || [0, 1e9])[1] / FPS;
 const bottoms = F.map(f => f.y + f.h * (f.s || 1)), minBottom = Math.min(...bottoms);
 // frames that reach the cell's bottom edge are CUT there (waist-up shots): keep that edge off screen
-const CUT = Math.max(...bottoms) > CH - 25 && Q.get('noclamp') === null;
+// (a full-body frame standing on a floor line is not cut, even when its feet touch the cell bottom)
+const CUT = Math.max(...bottoms) > CH - 25 && !FR.floor && Q.get('noclamp') === null;
 const ease = x => x < .5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2;
 function camAt(t) {
   const e = ease(Math.min(Math.max((t - ZS) / Math.max(ZE - ZS, 1e-6), 0), 1));

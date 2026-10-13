@@ -10,6 +10,10 @@
 #                 of the cell width) must not move. Use it when the head stays still (flex, curls); the
 #                 model drifts a few px from row to row, which shows as a jump. Skip it when the whole
 #                 body moves (push-up) and the cells are already locked by the template.
+#   --ground      align every frame on its planted foot: the heel (left end of the lowest ink) and
+#                 the sole stay where they are in frame 0. Use it for standing moves (squat, lunge,
+#                 jumps land) where the model slides the feet a few % per cell. Adds a floor line
+#                 under the sole when --floor found none.
 import sys, os, json, argparse, numpy as np
 from PIL import Image
 from scipy import ndimage
@@ -21,6 +25,7 @@ ap.add_argument("sheet"); ap.add_argument("out")
 ap.add_argument("--cols", type=int, required=True); ap.add_argument("--rows", type=int, required=True)
 ap.add_argument("--floor", action="store_true"); ap.add_argument("--drop", default="")
 ap.add_argument("--keep-small", action="store_true"); ap.add_argument("--anchor", default="")
+ap.add_argument("--ground", action="store_true")
 A = ap.parse_args(); os.makedirs(A.out, exist_ok=True)
 drop = {int(x) for x in A.drop.split(",") if x}
 a = np.array(Image.open(A.sheet).convert("RGB")).astype(int); H, W = a.shape[:2]
@@ -68,9 +73,13 @@ for k in range(A.cols * A.rows):
         if len(rows):
             top = rows[0]; band = keep[top:top + int(.08 * ch), c0:c1]
             anc = [float(m_ + c0 + np.where(band)[1].mean()), float(m_ + top)]
+    gnd = None
+    if A.ground:                                                       # heel x, sole y of the planted foot
+        yb = np.where(keep.any(1))[0].max(); band = keep[max(yb - int(.07 * ch), 0):yb + 1]
+        gnd = [float(m_ + np.where(band.any(0))[0].min()), float(m_ + yb)]
     name = f"f{len(frames):02d}.svg"
     trace2.trace(cc.astype("uint8"), pal, BGQ, f"{A.out}/{name}")
-    frames.append(dict(file=name, src=k, x=float(m_ + bx0), y=float(m_ + by0), w=int(bx1 - bx0), h=int(by1 - by0), anc=anc))
+    frames.append(dict(file=name, src=k, x=float(m_ + bx0), y=float(m_ + by0), w=int(bx1 - bx0), h=int(by1 - by0), anc=anc, gnd=gnd))
     print(k, "->", name)
 fl = None
 if floors:
@@ -80,6 +89,11 @@ if A.anchor and frames and frames[0]["anc"]:
     anchor = frames[0]["anc"]                                        # shift every frame onto frame 0's head
     for f in frames:
         if f["anc"]: f["x"] += anchor[0] - f["anc"][0]; f["y"] += anchor[1] - f["anc"][1]
+if A.ground and frames and frames[0]["gnd"]:
+    g0 = frames[0]["gnd"]                                            # shift every frame onto frame 0's foot
+    for f in frames:
+        if f["gnd"]: f["x"] += g0[0] - f["gnd"][0]; f["y"] += g0[1] - f["gnd"][1]
+    if fl is None: fl = [g0[1] - 1, g0[1] + 4]
 d = dict(cell=[cw, ch], bg=list(BGQ), floor=fl, anchor=anchor, frames=frames)
 json.dump(d, open(f"{A.out}/frames.json", "w"), indent=1)
 open(f"{A.out}/frames.js", "w").write("window.FR=" + json.dumps(d) + ";")

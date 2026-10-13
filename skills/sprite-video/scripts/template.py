@@ -14,6 +14,7 @@
 #   "cols": 6, "rows": 4, "cell": [640, 540],
 #   "fit": "stretch" | {"height": 0.9, "x": 0, "anchor": "bottom"},   # how the base sits in a cell
 #   "trim": 10,                       # px cut from left/top/right of the base (generated images often have a frame line)
+#   "crop": [x0, y0, x1, y1],         # optional: use only this box of the base (BASE pixels); frames the figure
 #   "floor": {"y": 434, "x": [80, 835], "width": 4},    # optional: floor line kept out of the rotating figure
 #   "cells": [ {}, {"rotate": {"pivot": [190, 430], "deg": -2.5},
 #                   "erase": [[[578,228],[660,222],[712,436],[590,436]]],
@@ -21,6 +22,12 @@
 #                   "guide": [[[615,203],[578,301],[620,400]]],
 #                   "circle": [[620,400]]}, ... ]       # missing cells = plain copy of the base
 # }
+# Multi-joint rigs (squat, lunge, sit-up): instead of one "rotate", give a cell "pieces". Each piece
+# cuts a polygon of the base figure, rotates it about "pivot" by "deg" and puts the pivot at "to":
+#   "pieces": [{"poly": [[x,y],...], "pivot": [x,y], "to": [x,y], "deg": 30}, ...]
+# Pieces are pasted in list order (later ones on top); parts of the figure in no piece are dropped.
+# Positive deg = clockwise on screen. "erase", "keep" and the guides are then in plain cell pixels.
+# See examples/squat_spec.py (foot fixed, shin -> knee -> thigh -> hip -> torso, arms kept level).
 import sys, json, math, numpy as np
 from PIL import Image, ImageDraw
 
@@ -33,6 +40,7 @@ def rot(p, piv, deg):
 def fitted_base(spec):
     b = Image.open(spec["base"]).convert("RGB"); t = spec.get("trim", 0)
     if t: b = b.crop((t, t, b.width - t, b.height))
+    if spec.get("crop"): b = b.crop(tuple(spec["crop"]))
     cw, ch = spec["cell"]; a = np.array(b)
     bg = tuple(int(v) for v in np.median(a[5:60, 5:min(200, a.shape[1])].reshape(-1, 3), 0))
     cell = Image.new("RGB", (cw, ch), bg); fit = spec.get("fit", "stretch")
@@ -44,6 +52,19 @@ def fitted_base(spec):
         y = ch - bb.height if fit.get("anchor", "bottom") == "bottom" else 0
         cell.paste(bb, (int(fit.get("x", 0)), y))
     return cell, bg
+
+def place_pieces(cell0, fig, pieces):
+    """Paste rotated/moved polygons of the base figure onto a transparent cell (RGBA)."""
+    cw, ch = cell0.size; out = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+    src = cell0.convert("RGBA"); src.putalpha(Image.fromarray((fig * 255).astype("uint8")))
+    for pc in pieces:
+        pm = Image.new("L", (cw, ch), 0); ImageDraw.Draw(pm).polygon([tuple(p) for p in pc["poly"]], fill=255)
+        part = src.copy(); part.putalpha(Image.fromarray(np.minimum(np.array(src.split()[3]), np.array(pm))))
+        r = math.radians(pc.get("deg", 0)); co, si = math.cos(r), math.sin(r)
+        (px, py), (tx, ty) = pc["pivot"], pc.get("to", pc["pivot"])
+        aff = (co, si, px - co * tx - si * ty, -si, co, py + si * tx - co * ty)   # output -> source
+        out.alpha_composite(part.transform((cw, ch), Image.AFFINE, aff, resample=Image.BICUBIC))
+    return out
 
 def build(spec):
     cell0, bg = fitted_base(spec); cw, ch = spec["cell"]; C, R = spec["cols"], spec["rows"]
@@ -63,6 +84,9 @@ def build(spec):
         if fl: d.line([(fl["x"][0], fl["y"]), (fl["x"][1], fl["y"])], fill=(20, 20, 24), width=fl.get("width", 4))
         m = Image.fromarray((fig * 255).astype("uint8")); figim = cell0
         rt = c.get("rotate")
+        if c.get("pieces"):                                            # multi-joint rig: compose pieces
+            figim, m, rt = place_pieces(cell0, fig, c["pieces"]), None, None
+            m = figim.split()[3]; figim = figim.convert("RGB")
         if rt:
             piv, deg = rt["pivot"], rt["deg"]
             figim = cell0.rotate(-deg, center=tuple(piv), resample=Image.BICUBIC)

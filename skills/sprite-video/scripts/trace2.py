@@ -26,7 +26,9 @@ def ink_paths(rgb, up=4, lo=45, hi=95):
     return f'<path fill="{INK}" fill-rule="evenodd" d="{"".join(d)}"/>'
 def fill_layer(rgb, pal, bg, up=2):
     L = rgb[..., :3] @ np.array([.299, .587, .114])
-    line = ndimage.binary_dilation(L < 95, iterations=2)          # include the anti-aliased rim (else a pale halo)
+    # ink = what ink_paths draws (L below the 45..95 midpoint); dark gray fills (shorts, L ~ 90) are NOT
+    # ink, else they get refilled from the nearest light pixel and show a cream stripe inside the outline
+    line = ndimage.binary_dilation(L < 72, iterations=2)          # include the anti-aliased rim (else a pale halo)
     idx = ndimage.distance_transform_edt(line, return_distances=False, return_indices=True)
     filled = rgb[idx[0], idx[1]].astype("uint8")                     # push fills under the ink
     im = Image.fromarray(filled).filter(ImageFilter.MedianFilter(5)).resize(
