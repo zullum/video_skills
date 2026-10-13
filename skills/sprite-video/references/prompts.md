@@ -25,6 +25,10 @@ Full body side view (whole-body motion):
 > and toes at about 80% of the image height. The whole body is visible, centered, and spans about 70%
 > of the image width. Plain flat cream background (#F7EEDF), nothing else, no shadow, no text.
 
+The model often draws the floor line in the wrong place (in the squat test it ran behind the shins,
+130 px above the soles). Look before rigging: `examples/squat_spec.py` removes such a line, and the
+template and the player draw their own floor.
+
 Style description used for the blue character: "light blue muscular faceless body, glowing white
 eyes, thick clean black outlines, simple cel shading, dark gray shorts with drawstring, barefoot".
 
@@ -76,6 +80,24 @@ In ALL 9 cells the body is already placed at the right angle, but the near arm w
 - Then remove every trace of red: no red lines or dots may remain.
 STRICT RULES: do NOT move, resize, rotate or re-crop the body, head, legs, feet, hand or the black floor line in any cell; keep each body exactly at the angle and place it has in the template. Keep the gray grid lines exactly where they are. Same flat cartoon style, thick black outlines, white glowing eye, plain cream background. No numbers, no text.
 ```
+
+## Multi-joint rig (pieces placed by FK, model repairs the joints)
+
+Template from `examples/squat_spec.py` (foot fixed, shin/thigh/torso rotated, arms kept level). Worked
+first try: 8 clean frames, feet and hands where the rig put them.
+
+```text
+FINISH this ANIMATION SPRITE SHEET of a bodyweight squat, seen from the side: a 4 x 2 grid of 8 cells (frames 1 to 8, left to right, top to bottom). Frame 1 is standing tall, frame 8 is the bottom of the squat; the frames between go smoothly down.
+Cell 1 is the finished key frame. In cells 2 to 8 the body was roughly cut into parts (foot, shin, thigh, torso with head, arms) and each part is already placed at the right angle and position, but the joints show hard cuts, gaps, overlaps and straight seams. In each of these cells:
+- Redraw the character as ONE clean, continuous body in exactly this pose: smooth bent knee, smooth hip crease where the thigh meets the shorts, the shorts wrapping naturally around the bent hip and thigh, a continuous back and chest, and the straight arms attached cleanly at the shoulder, pointing straight forward and level with the floor.
+- Remove every straight cut line, seam, gap, step in the outline and leftover fragment.
+- Same muscular design, same light blue colour, same cel shading, same thick black outline and the same glowing white eye as cell 1.
+STRICT RULES: do NOT move, resize, rotate or re-crop the parts; keep the head, hands, feet, knee and hips exactly where they are in each cell. The feet stay flat on the black floor line in the same place in every cell. Keep the gray grid lines and the floor lines exactly where they are. Same flat cartoon style, plain cream background. No numbers, no text, no extra characters.
+```
+
+The model removed the template's floor lines and the shorts drawstring in cells 2–8 (cell 1 kept
+it, a small pop between frame 1 and 2). Slice with `--ground`, which puts the floor back. To avoid the
+pop, erase small details like the drawstring from the base before building the template.
 
 ## Checks after every generation
 

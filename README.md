@@ -7,8 +7,9 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
 
 <p>
-<img src="assets/flex.gif" width="45%" alt="flex animation">
-<img src="assets/pushup.gif" width="45%" alt="push-up animation">
+<img src="assets/flex.gif" width="38%" alt="flex animation">
+<img src="assets/pushup.gif" width="38%" alt="push-up animation">
+<img src="assets/squat.gif" width="18%" alt="squat animation">
 </p>
 
 ## How it works (short)
@@ -16,7 +17,8 @@ Agent skills for making short animated videos cheaply, without video-generation 
 1. Generate a **base pose** of the character (1 image, 2K).
 2. Build a **template**: the base pasted into every cell of a grid, plus red guides (lines, circles,
    shoulder-elbow-wrist dots) where a limb must go. For whole-body moves the body is roughly rigged in
-   code (e.g. rotated about the toes for a push-up).
+   code (rotated about the toes for a push-up; for a squat, cut into foot/shin/thigh/torso/arm pieces
+   placed by forward kinematics).
 3. Nano Banana fills the template in **one call**: every cell becomes one animation frame, same size
    and position, limb drawn along the guides.
 4. Code slices the sheet, traces each frame to **SVG** (potrace ink + vtracer colour fills), aligns
@@ -112,6 +114,6 @@ skills/sprite-video/
   scripts/player.html    frame sequencer + camera (push-in, pan, punch), floor line
   scripts/shoot.cjs      film the player to MP4 / PNG, --scale 2 for 4K
   references/            prompt templates, film-critic checklist, costs
-  examples/              push-up IK rig, flex all-cells template, arm-raise guides
+  examples/              push-up IK rig, squat multi-joint rig, flex all-cells template, arm-raise guides
 install.sh               installer for Claude Code / Codex / Antigravity
 ```

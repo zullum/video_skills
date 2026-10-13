@@ -60,8 +60,14 @@ python3 scripts/template.py spec.json template.png
 - Limb motion with a still body (flex, curl, wave): 6×4 cells, `"fit": {"height": 0.9}`, empty
   `cells` → base in every cell. If the start of the motion is large (arm hanging → horizontal), make a
   second small sheet (4×2) with angle guides for those in-betweens.
-- Whole-body motion (push-up, squat, sit-up): 3×3 cells, every cell rigged + guided. Copy and adapt
-  `examples/pushup_spec.py`.
+- Whole-body motion around ONE pivot (push-up, plank rock): 3×3 cells, every cell rigged + guided.
+  Copy and adapt `examples/pushup_spec.py`.
+- Whole-body motion with several joints (squat, lunge, sit-up, deadlift): cut the base into
+  `pieces` (foot, shin, thigh, torso + head, arms) and place them by forward kinematics, one cell per
+  frame. Copy and adapt `examples/squat_spec.py` (4×2 cells, tall cells, `ASPECT=3:2`). The model
+  only has to repair the joints; it got all 8 squat frames right on the first call.
+- Pick the grid so a cell has the figure's shape: a standing full body wants tall cells (4×2 at 3:2),
+  a lying push-up wide cells (3×3 at 16:9). A wrong cell shape makes the figure tiny.
 Open the template and check guides sit where the limb should be.
 
 ### 3. Sprite sheet (1 call per sheet, 2K)
@@ -77,9 +83,12 @@ If an extra sheet's colours drifted from the main one, fix before slicing:
 ```bash
 python3 scripts/slice.py sheet.png frames --cols 6 --rows 4 --keep-small --anchor 0.18,0.42   # still head
 python3 scripts/slice.py sheet.png frames --cols 3 --rows 3 --floor                           # floor scene
+python3 scripts/slice.py sheet.png frames --cols 4 --rows 2 --ground                          # feet planted (squat)
 python3 scripts/merge.py all --ref=main main_extra:0-6 main:8-23                              # join sheets
 ```
 `--anchor` = column band (fractions of cell width) containing the head; aligns frames that drift.
+`--ground` = lock the planted foot (heel + sole) to frame 0 and add a floor line if the model dropped
+it. Use it for every standing move: without it the squat feet slid 30 px (5 % of the cell) per cycle.
 
 ### 5. Film (free)
 Copy `scripts/player.html` next to the frames folder, then:
@@ -91,6 +100,9 @@ node scripts/shoot.cjs "player.html?dir=all&seq=$(python3 -c 'import urllib.pars
 - Cycles: `rep=[[0,10],[1,3],...,[8,5],[7,2],...,[0,4]]&reps=3&tail=20` (push-up: slow down, fast up).
 - Camera: slow push-in `z0=1&z1=1.1` anchored on the action (`ax`,`ay` in cell px), optional pan
   `cx`→`cx2`, `pop=<frame>` punch at a peak. The view never shows a frame's cut edge.
+- Full body on a floor: anchor the zoom on the floor (`ay`=floor y, `ax`=`cx`=figure centre) and keep
+  `z` near 1 (e.g. `z0=0.96&z1=1.04`); a push-in on the hips cuts the head and the floor off. Squat
+  timing that read well: `rep=[[0,10],[1,4],[2,3],[3,3],[4,3],[5,3],[6,4],[7,12],[6,3],[5,2],[4,2],[3,2],[2,2],[1,3]]`.
 - `--scale 2` = 3840×2160. Use `--still 1.0 --scale 2` for a single 4K PNG to inspect.
 
 ### 6. Critique (3 rounds, free)

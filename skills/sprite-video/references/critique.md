@@ -13,7 +13,9 @@ look, list problems, fix, render again. Prefer cheap fixes (sequence, camera, sl
 | Sheet switch boil | body details change when frames come from another sheet | switch sheets during motion, drop duplicate held frames |
 | Detached limb | arm separate from the shoulder, gap at the joint | regenerate with "repair the shoulder"; never composite parts from different sheets |
 | Wrong mechanics | e.g. push-up elbow only goes back | change the IK guide (elbow flare = shorter upper arm), regenerate that sheet |
-| Contact points slide | hands/toes move on the floor | keep the hand box (`keep`), floor drawn by the player, no alignment on moving bodies |
+| Contact points slide | hands/toes move on the floor | keep the hand box (`keep`), floor drawn by the player; standing moves: `slice.py --ground` |
+| Cream stripe inside dark clothes | pale band between the outline and dark gray shorts | fixed in `trace2.py` (dark fills are not ink); re-slice old frames |
+| Head or floor cut by the zoom | full-body shot, push-in on the hips | anchor on the floor (`ay`), `z` 0.96–1.04 |
 | Motion lines jump | lines appear on different sides frame to frame | use the frames whose lines agree, hold the last one |
 | Eye glow / shine lost | white turned cream | keep white in the palette (it is fixed in `slice.py`); don't recolour near-white fills |
 | Blur / soft lines | raster upscaling | trace at native size with `trace2.py`, film with `--scale 2` |
