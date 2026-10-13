@@ -1,0 +1,7 @@
+{
+ "base": "base.png",
+ "cols": 6, "rows": 4, "cell": [640, 540],
+ "fit": {"height": 0.9, "x": 0, "anchor": "bottom"},
+ "trim": 10,
+ "cells": []
+}

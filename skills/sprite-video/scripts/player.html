@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;overflow:hidden;width:1920px;height:1080px}
+#cam{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#cam img{position:absolute;display:none}
+#floor{position:absolute;left:0;width:1920px;background:#141418;z-index:2;display:none}
+</style></head><body><div id="cam"><div id="floor"></div></div>
+<script>const Q = new URLSearchParams(location.search); const DIR = Q.get("dir") || "frames";
+document.write(`<script src="${DIR}/frames.js"><\/script>`);</script>
+<script>
+// Sprite-sheet player: shows one SVG frame at a time in CELL coordinates and films it with a camera.
+// Query parameters (all optional except seq or rep):
+//   dir=frames            folder written by slice.py / merge.py
+//   seq=[[i,n],...]       show frame i for n video frames (30 fps), in order
+//   rep=[[i,n],...]&reps=3&tail=20   repeat a cycle (e.g. a push-up rep), then hold frame rep[0] for tail
+//   z0=1&z1=1.1           zoom from z0 to z1 ...
+//   zs=0&ze=<end>         ... between these seconds (ease in-out)
+//   ax,ay                 zoom anchor in cell px (stays still on screen), default cell centre
+//   cx,cx2                horizontal view centre at start / end (slow pan), default cell centre
+//   pop=<frame index>     small punch-in when that frame first appears (a flex peak)
+// The view never goes below the lowest frame edge, so a figure cut at the cell bottom never floats.
+document.body.style.background = `rgb(${FR.bg})`;
+const FPS = 30, F = FR.frames, cam = document.getElementById('cam'), floor = document.getElementById('floor'), imgs = [];
+for (const f of F) { const im = new Image(); im.src = DIR + '/' + f.file; cam.appendChild(im); imgs.push(im); }
+let SEQ;
+if (Q.get('seq')) SEQ = JSON.parse(Q.get('seq'));
+else { const REP = JSON.parse(Q.get('rep')); SEQ = []; for (let r = 0; r < Number(Q.get('reps') || 3); r++) SEQ.push(...REP);
+       SEQ.push([REP[0][0], Number(Q.get('tail') || 20)]); }
+const starts = []; let acc = 0; for (const [f, n] of SEQ) { starts.push([f, acc]); acc += n; }
+window.duration = acc / FPS;
+const [CW, CH] = FR.cell, num = (k, d) => Q.get(k) === null ? d : Number(Q.get(k));
+const W0 = Math.max(CW, CH * 16 / 9), H0 = W0 * 9 / 16;
+const Z0 = num('z0', 1), Z1 = num('z1', 1.1), ZS = num('zs', 0), ZE = num('ze', window.duration);
+const AX = num('ax', CW / 2), AY = num('ay', CH / 2), CX = num('cx', CW / 2), CX2 = num('cx2', CX);
+const POP = Q.get('pop'), popAt = POP === null ? null : (starts.find(([f]) => String(f) === POP) || [0, 1e9])[1] / FPS;
+const bottoms = F.map(f => f.y + f.h * (f.s || 1)), minBottom = Math.min(...bottoms);
+// frames that reach the cell's bottom edge are CUT there (waist-up shots): keep that edge off screen
+const CUT = Math.max(...bottoms) > CH - 25 && Q.get('noclamp') === null;
+const ease = x => x < .5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2;
+function camAt(t) {
+  const e = ease(Math.min(Math.max((t - ZS) / Math.max(ZE - ZS, 1e-6), 0), 1));
+  let z = Z0 + (Z1 - Z0) * e;
+  if (popAt !== null && t >= popAt) z += .035 * Math.exp(-(t - popAt) * 10);
+  const w = W0 / z, h = H0 / z, cx = CX + (CX2 - CX) * e;
+  const x0 = cx - w / 2 + (AX - cx) * (1 - 1 / z);           // AX keeps its place on screen while zooming
+  let y0 = AY - (AY - (CH - H0) / 2) / z;                     // so does AY
+  if (CUT) y0 = Math.min(y0, minBottom - h);                  // never show below the frames' cut edge
+  return { x0, y0, k: 1920 / w };
+}
+window.render = t => {
+  const n = Math.floor(t * FPS + 1e-6); let cur = SEQ[0][0];
+  for (const [f, s] of starts) if (n >= s) cur = f;
+  const c = camAt(t);
+  F.forEach((f, i) => {
+    const im = imgs[i]; im.style.display = i === cur ? 'block' : 'none'; if (i !== cur) return;
+    im.style.width = f.w * (f.s || 1) * c.k + 'px';
+    im.style.left = (f.x - c.x0) * c.k + 'px'; im.style.top = (f.y - c.y0) * c.k + 'px';
+  });
+  if (FR.floor) { floor.style.display = 'block';
+    floor.style.top = (FR.floor[0] - c.y0) * c.k + 'px'; floor.style.height = Math.max((FR.floor[1] - FR.floor[0]) * c.k, 2) + 'px'; }
+};
+Promise.all(imgs.map(i => i.decode())).then(() => { render(0); window.ready = true; });
+</script></body></html>
