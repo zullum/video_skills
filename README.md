@@ -10,6 +10,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 <img src="assets/flex.gif" width="38%" alt="flex animation">
 <img src="assets/pushup.gif" width="38%" alt="push-up animation">
 <img src="assets/squat.gif" width="18%" alt="squat animation">
+<img src="assets/fly.gif" width="45%" alt="incline dumbbell fly with chest highlight">
 </p>
 
 ## How it works (short)
@@ -23,7 +24,9 @@ Agent skills for making short animated videos cheaply, without video-generation 
    and position, limb drawn along the guides.
 4. Code slices the sheet, traces each frame to **SVG** (potrace ink + vtracer colour fills), aligns
    frames, and films them with a slow camera at **3840×2160**.
-5. The agent reviews every frame like a film critic (shake, floating torso, jumps, missing
+5. Optional: one more cheap edit (1K) paints the working muscles red on the sheet; the player fades
+   them in as a pulsing highlight (e.g. chest and front delts in a fly).
+6. The agent reviews every frame like a film critic (shake, floating torso, jumps, missing
    in-betweens) and fixes it over three rounds.
 
 Why 2K is enough: the SVG keeps edges sharp at any size, so the 4K video comes from the vector, not
@@ -111,9 +114,10 @@ skills/sprite-video/
   scripts/trace2.py      two-layer vectorizer: potrace ink + vtracer fills
   scripts/colorfix.py    match an extra sheet's colours to the main sheet
   scripts/merge.py       join frames from several sheets
+  scripts/muscles.py     working-muscle overlay per frame from one marked copy of the sheet
   scripts/player.html    frame sequencer + camera (push-in, pan, punch), floor line
   scripts/shoot.cjs      film the player to MP4 / PNG, --scale 2 for 4K
   references/            prompt templates, film-critic checklist, costs
-  examples/              push-up IK rig, squat multi-joint rig, flex all-cells template, arm-raise guides
+  examples/              push-up IK rig, squat multi-joint rig, two-arm fly guides, flex all-cells template, arm-raise guides
 install.sh               installer for Claude Code / Codex / Antigravity
 ```

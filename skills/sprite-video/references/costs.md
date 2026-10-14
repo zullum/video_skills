@@ -18,6 +18,10 @@ Fast 4K ~$1.50, Standard 4K ~$3.00. Check current prices at https://ai.google.de
 Measured on the squat test (2026-10-13): base 2K + one 4×2 grid 2K = 2 calls = **$0.20** for a 6.3 s
 4K clip (3 reps), no retries.
 
+Measured on the incline fly test (2026-10-13): base 2K + grid 2K + muscle map 1K = **$0.27** for a
+6 s 4K clip with highlighted muscles. Spent $0.44 with two misses (a first grid whose middle frames
+looked like a press, and a muscle map made on the base image).
+
 Note: "2K" means ~2.5–2.8 K pixels on the long side (16:9 → 2752×1536, 3:2 → 2528×1696).
 
 Measured in the first project: flex clip $0.71 and push-up clip $0.50 including misses, before the

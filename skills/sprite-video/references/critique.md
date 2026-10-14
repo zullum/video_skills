@@ -15,6 +15,9 @@ look, list problems, fix, render again. Prefer cheap fixes (sequence, camera, sl
 | Wrong mechanics | e.g. push-up elbow only goes back | change the IK guide (elbow flare = shorter upper arm), regenerate that sheet |
 | Contact points slide | hands/toes move on the floor | keep the hand box (`keep`), floor drawn by the player; standing moves: `slice.py --ground` |
 | Cream stripe inside dark clothes | pale band between the outline and dark gray shorts | fixed in `trace2.py` (dark fills are not ink); re-slice old frames |
+| Move reads as the wrong exercise | fly middle frames look like a press | fix the guides (straight arm, constant small bend), regenerate the sheet |
+| Prop flips orientation | dumbbell bar jumps 60° in one frame | bar-angle guide line per cell, turning evenly |
+| Muscle highlight slides off | red patch sits on the traps, misses the lower chest | mark the finished sheet, not the base (`muscles.py`) |
 | Head or floor cut by the zoom | full-body shot, push-in on the hips | anchor on the floor (`ay`), `z` 0.96–1.04 |
 | Motion lines jump | lines appear on different sides frame to frame | use the frames whose lines agree, hold the last one |
 | Eye glow / shine lost | white turned cream | keep white in the palette (it is fixed in `slice.py`); don't recolour near-white fills |

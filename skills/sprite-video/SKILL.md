@@ -66,6 +66,11 @@ python3 scripts/template.py spec.json template.png
   `pieces` (foot, shin, thigh, torso + head, arms) and place them by forward kinematics, one cell per
   frame. Copy and adapt `examples/squat_spec.py` (4×2 cells, tall cells, `ASPECT=3:2`). The model
   only has to repair the joints; it got all 8 squat frames right on the first call.
+- Both arms move, body still (flyes, lateral raises, front view): erase both arms in cells 2..N and
+  draw mirrored guides; copy `examples/fly_spec.py`. For a fly keep the elbow bend small and constant
+  (guides that bend the elbow freely made the middle frames read as a shoulder press), and add a short
+  red line through each hand circle for the dumbbell bar angle so it turns gradually instead of
+  flipping in the last frame.
 - Pick the grid so a cell has the figure's shape: a standing full body wants tall cells (4×2 at 3:2),
   a lying push-up wide cells (3×3 at 16:9). A wrong cell shape makes the figure tiny.
 Open the template and check guides sit where the limb should be.
@@ -89,6 +94,17 @@ python3 scripts/merge.py all --ref=main main_extra:0-6 main:8-23                
 `--anchor` = column band (fractions of cell width) containing the head; aligns frames that drift.
 `--ground` = lock the planted foot (heel + sole) to frame 0 and add a floor line if the model dropped
 it. Use it for every standing move: without it the squat feet slid 30 px (5 % of the cell) per cycle.
+
+### 4b. Working muscles (optional, 1 call at 1K, ~$0.07)
+To light up the muscles a move trains, edit the FINISHED SHEET once with Nano Banana (prompt
+`references/prompts.md` → "Muscle map"): the target muscles painted pure red in every cell. Then
+```bash
+python3 scripts/muscles.py sheet.png frames muscles_sheet.png
+```
+writes an overlay per frame (aligned on the ink, clipped to skin) and the player shows it with
+`hl=0.85&hlin=1.8&hlw=[0.7,...,1]` (max opacity, fade-in second, per-frame weights: brighter where the
+muscle is loaded). Mark the sheet, not the base image: the model redraws the torso slightly in every
+cell, and a map made on the base slid 10–20 px off the chest.
 
 ### 5. Film (free)
 Copy `scripts/player.html` next to the frames folder, then:
