@@ -7,13 +7,19 @@ import numpy as np
 from scipy.spatial import Delaunay
 from PIL import Image, ImageDraw, ImageFont
 
-# Paths: set these env vars (the original sandbox paths did not exist outside it; RAW_SHEET was undefined).
-#   YD_RAW_SHEET  3-pose sheet PNG (Pose 1 | Pose 2 | Pose 3, side by side)   [required]
+# Usage: python yellow_dude_4k_pipeline.py [POSE_SHEET]
+#   POSE_SHEET  pose sheet image, poses side by side (Pose 1 | Pose 2 | Pose 3 | ...).
+#               Default: ../assets/pullup_poses.jpg (4-pose pull-up example). Also settable via YD_RAW_SHEET.
+#               Any size works: the sheet is resized to 1376 px wide (Gemini 16:9 1K), which the pose crops expect.
+# Other env vars:
 #   YD_OUT_DIR    output folder (default ./yd_output)
 #   YD_INT_DIR    intermediate folder (default ./yd_intermediate)
-#   YD_AUDIO      30 s WAV for the video (default INT_DIR/yellow_dude_30s_audio.wav)
-#   YD_REF_IMG_1 / YD_REF_IMG_2  user reference images for the comparison panel
-RAW_SHEET = os.environ.get("YD_RAW_SHEET", "raw_sheet.png")
+#   YD_AUDIO      WAV for the video (optional; silent video if missing)
+#   YD_REF_IMG_2  reference image for the before/after comparison (optional; skipped if missing)
+import sys
+SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAW_SHEET = (sys.argv[1] if len(sys.argv) > 1 else
+             os.environ.get("YD_RAW_SHEET", os.path.join(SKILL_DIR, "assets", "pullup_poses.jpg")))
 OUT_DIR = os.environ.get("YD_OUT_DIR", "yd_output")
 INT_DIR = os.environ.get("YD_INT_DIR", "yd_intermediate")
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -41,6 +47,12 @@ def get_font(path, size):
         return ImageFont.load_default()
 
 raw_bgr = cv2.imread(RAW_SHEET)
+if raw_bgr is None:
+    sys.exit(f"Cannot read pose sheet: {RAW_SHEET}")
+SHEET_W = 1376  # pose crop columns below are tuned for this width
+if raw_bgr.shape[1] != SHEET_W:
+    _h = round(raw_bgr.shape[0] * SHEET_W / raw_bgr.shape[1])
+    raw_bgr = cv2.resize(raw_bgr, (SHEET_W, _h), interpolation=cv2.INTER_LANCZOS4)
 raw_rgb = cv2.cvtColor(raw_bgr, cv2.COLOR_BGR2RGB)
 
 def extract_clean_4x_pose_perfect(x0, x1, is_pose3=False):
@@ -961,27 +973,30 @@ grid_out_img.save(grid_v15_path)
 print("Saved v15 Flawless 24-frame grid to:", grid_v15_path)
 
 # 2. Save Before vs After comparison against user's `image_772201.jpg` and `image_77227a.jpg`!
-u2_im = Image.open(USER_IMG_2).convert("RGB")
-uw2, uh2 = u2_im.size
-# Render F02 (`char_idx = 1`) at matching zoom to compare directly against `image_77227a.jpg`!
-full_f02 = Image.new("RGBA", (CW, CH), (247, 245, 239, 255))
-f02_draw = ImageDraw.Draw(full_f02)
-for gx in range(0, CW, 42):
-    f02_draw.line([(gx, 0), (gx, CH)], fill=(234, 231, 223, 255), width=1)
-for gy in range(0, CH, 42):
-    f02_draw.line([(0, gy), (CW, gy)], fill=(234, 231, 223, 255), width=1)
-compose_character_v15(full_f02, 1, center_x=CW // 2, top_y=0, scale=1.0, show_aura=True, aura_strength=0.25, bar_half_width=220)
-after_u2 = full_f02.crop((102, 68, 378, 276)).resize((uw2, uh2), Image.Resampling.LANCZOS).convert("RGB")
+if os.path.exists(USER_IMG_2):
+    u2_im = Image.open(USER_IMG_2).convert("RGB")
+    uw2, uh2 = u2_im.size
+    # Render F02 (`char_idx = 1`) at matching zoom to compare directly against `image_77227a.jpg`!
+    full_f02 = Image.new("RGBA", (CW, CH), (247, 245, 239, 255))
+    f02_draw = ImageDraw.Draw(full_f02)
+    for gx in range(0, CW, 42):
+        f02_draw.line([(gx, 0), (gx, CH)], fill=(234, 231, 223, 255), width=1)
+    for gy in range(0, CH, 42):
+        f02_draw.line([(0, gy), (CW, gy)], fill=(234, 231, 223, 255), width=1)
+    compose_character_v15(full_f02, 1, center_x=CW // 2, top_y=0, scale=1.0, show_aura=True, aura_strength=0.25, bar_half_width=220)
+    after_u2 = full_f02.crop((102, 68, 378, 276)).resize((uw2, uh2), Image.Resampling.LANCZOS).convert("RGB")
 
-comp_u2 = Image.new("RGB", (uw2 * 2 + 40, uh2 + 80), (245, 245, 242))
-cd_u2 = ImageDraw.Draw(comp_u2)
-cd_u2.text((15, 18), "PRIJE (v14): Šiljak/artifakt i izbočina na podlaktici", font=get_font(FONT_BOLD, 18), fill=(200, 35, 25))
-cd_u2.text((uw2 + 30, 18), "SADA (v15 4K): 0% artifakata + prirodna kontura ruke", font=get_font(FONT_BOLD, 18), fill=(25, 145, 75))
-comp_u2.paste(u2_im, (10, 60))
-comp_u2.paste(after_u2, (uw2 + 30, 60))
-comp_u2_path = os.path.join(OUT_DIR, "red_arrows_arm_and_mouth_fixed_v15.png")
-comp_u2.save(comp_u2_path)
-print("Saved Before vs After arm & artifact comparison to:", comp_u2_path)
+    comp_u2 = Image.new("RGB", (uw2 * 2 + 40, uh2 + 80), (245, 245, 242))
+    cd_u2 = ImageDraw.Draw(comp_u2)
+    cd_u2.text((15, 18), "PRIJE (v14): Šiljak/artifakt i izbočina na podlaktici", font=get_font(FONT_BOLD, 18), fill=(200, 35, 25))
+    cd_u2.text((uw2 + 30, 18), "SADA (v15 4K): 0% artifakata + prirodna kontura ruke", font=get_font(FONT_BOLD, 18), fill=(25, 145, 75))
+    comp_u2.paste(u2_im, (10, 60))
+    comp_u2.paste(after_u2, (uw2 + 30, 60))
+    comp_u2_path = os.path.join(OUT_DIR, "red_arrows_arm_and_mouth_fixed_v15.png")
+    comp_u2.save(comp_u2_path)
+    print("Saved Before vs After arm & artifact comparison to:", comp_u2_path)
+else:
+    print("No YD_REF_IMG_2 given, skipping before/after comparison")
 
 # 3. Render full 30-second video: yellow_dude_flawless_4k_v15.mp4
 W, H = 1920, 1080
@@ -1210,15 +1225,13 @@ cmd = [
     "-pix_fmt", "rgb24",
     "-r", "30",
     "-i", "-",
-    "-i", AUDIO_WAV,
+] + (["-i", AUDIO_WAV] if os.path.exists(AUDIO_WAV) else []) + [
     "-c:v", "libx264",
     "-threads", "2",
     "-preset", "ultrafast",
     "-crf", "17",
     "-pix_fmt", "yuv420p",
-    "-c:a", "aac",
-    "-b:a", "192k",
-    "-shortest",
+] + (["-c:a", "aac", "-b:a", "192k", "-shortest"] if os.path.exists(AUDIO_WAV) else []) + [
     OUT_MP4_V15
 ]
 proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

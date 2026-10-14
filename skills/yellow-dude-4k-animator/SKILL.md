@@ -94,4 +94,5 @@ Before delivering any animation or video to the user, you **MUST** run a 3-round
 ## Bundled Scripts & Templates
 
 - **`scripts/yellow_dude_4k_pipeline.py`**: Complete, self-contained v15 Python + OpenCV + SciPy + PIL + FFmpeg production script implementing the 45-point outer/inner contour-following mesh, Dominant-Ink SDF blending, 4K overhand bar grip, Hollow-Body core/leg kinetics, and 4K gathered-mouth effort progression.
+- **`assets/pullup_poses.jpg`**: example pull-up pose sheet (dead hang → mid → peak → peak with red muscles), the script's default input. Pass another sheet as `python scripts/yellow_dude_4k_pipeline.py my_sheet.png` (or `YD_RAW_SHEET`). Poses must sit side by side in the same layout; the sheet is resized to 1376 px wide. A bigger source (1376×768 or more) gives cleaner edges than this small example.
 - **`references/remotion-and-hyperframes-templates.md`**: Ready-to-use Remotion (`YellowDudeRemotion.tsx`) and HeyGen HyperFrames (`yellow_dude_hyperframes.html`) 3-layer Z-depth templates.

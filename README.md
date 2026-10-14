@@ -5,7 +5,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | Skill | What it does |
 |---|---|
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
-| [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `scripts/yellow_dude_4k_pipeline.py` with `YD_RAW_SHEET` set to your 3-pose sheet (other paths: see the script header). |
+| [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `python scripts/yellow_dude_4k_pipeline.py [pose_sheet.png]`; without an argument it uses the example `assets/pullup_poses.jpg`. |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
@@ -124,5 +124,6 @@ skills/yellow-dude-4k-animator/
   SKILL.md               7 golden rules + 6-point critique protocol
   scripts/yellow_dude_4k_pipeline.py   v15 pipeline: 3 poses → 24 frames → 30 s 4K MP4
   references/            Remotion + HyperFrames 3-layer templates
+  assets/pullup_poses.jpg  example pose sheet (default input)
 install.sh               installer for Claude Code / Codex / Antigravity
 ```
