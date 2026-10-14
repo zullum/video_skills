@@ -5,6 +5,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | Skill | What it does |
 |---|---|
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
+| [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `scripts/yellow_dude_4k_pipeline.py` with `YD_RAW_SHEET` set to your 3-pose sheet (other paths: see the script header). |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
@@ -41,12 +42,12 @@ git clone https://github.com/zullum/video_skills.git
 cd video_skills
 ```
 
-Then install for the tool you use (copies the skill; add `--link` to symlink so `git pull` updates it):
+Then install for the tool you use (`install.sh` installs every skill in `skills/`; copies by default, add `--link` to symlink so `git pull` updates it):
 
 ### Claude Code
 
-Working inside this repo? Nothing to install: `.claude/skills/sprite-video` links to the skill, so Claude
-Code loads it automatically in any session opened on this repository.
+Working inside this repo? Nothing to install: `.claude/skills/` links to every skill, so Claude
+Code loads them automatically in any session opened on this repository.
 
 
 ```bash
@@ -85,7 +86,7 @@ bash install.sh all --deps     # installs the skill for every tool + Python pack
 
 ## Requirements
 
-- Python 3.10+ with `numpy scipy pillow vtracer potracer` (`pip install -r requirements.txt`)
+- Python 3.10+ with `numpy scipy pillow vtracer potracer` (+ `opencv-python-headless` for yellow-dude-4k-animator) (`pip install -r requirements.txt`)
 - Node 18+ with Playwright (`npm i -D playwright && npx playwright install chromium`) and `ffmpeg`
 - A Gemini API key in `GEMINI_API_KEY` (image model `gemini-3.1-flash-image`). Keep it in your
   environment or secret manager; never commit it.
@@ -119,5 +120,9 @@ skills/sprite-video/
   scripts/shoot.cjs      film the player to MP4 / PNG, --scale 2 for 4K
   references/            prompt templates, film-critic checklist, costs
   examples/              push-up IK rig, squat multi-joint rig, two-arm fly guides, flex all-cells template, arm-raise guides
+skills/yellow-dude-4k-animator/
+  SKILL.md               7 golden rules + 6-point critique protocol
+  scripts/yellow_dude_4k_pipeline.py   v15 pipeline: 3 poses → 24 frames → 30 s 4K MP4
+  references/            Remotion + HyperFrames 3-layer templates
 install.sh               installer for Claude Code / Codex / Antigravity
 ```

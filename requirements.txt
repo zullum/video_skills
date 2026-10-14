@@ -3,3 +3,4 @@ scipy
 pillow
 vtracer
 potracer
+opencv-python-headless
