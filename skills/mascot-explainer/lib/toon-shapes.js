@@ -30,7 +30,7 @@
       }
     }
     var content = T.el("div", { style: "position:absolute;left:" + (r - rr) + "px;top:" + (r - rr) + "px;width:" + 2 * rr +
-      "px;height:" + 2 * rr + "px;border-radius:50%;overflow:hidden;" }, it.inner);
+      "px;height:" + 2 * rr + "px;border-radius:50%;overflow:hidden;", "data-layout-allow-overflow": "" }, it.inner);
     T.el("circle", { cx: r, cy: r, r: rr, fill: "none", stroke: T.c(o.rim || "rim"), "stroke-width": Math.max(3, r * 0.035) },
       T.svg(it.inner, 2 * r, 2 * r));
     return { el: it.el, inner: it.inner, content: content, r: r, x: x, y: y };
