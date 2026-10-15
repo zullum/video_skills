@@ -5,6 +5,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | Skill | What it does |
 |---|---|
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
+| [`viral-motion`](skills/viral-motion/SKILL.md) | Motion-graphics videos at three levels (showreel, lyric video with an original song, story film with score and sound design) through HyperFrames. Music, voice and sound effects are made locally: **$0**, no Gemini. See [Viral Motion](#viral-motion). |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
@@ -80,14 +81,14 @@ copy it there as well.
 bash install.sh all --deps     # installs the skill for every tool + Python packages + Chromium
 ```
 
-## Requirements
+## Requirements (sprite-video)
 
 - Python 3.10+ with `numpy scipy pillow vtracer potracer` (`pip install -r requirements.txt`)
 - Node 18+ with Playwright (`npm i -D playwright && npx playwright install chromium`) and `ffmpeg`
 - A Gemini API key in `GEMINI_API_KEY` (image model `gemini-3.1-flash-image`). Keep it in your
   environment or secret manager; never commit it.
 
-## Cost
+## Cost (sprite-video)
 
 | | Price |
 |---|---|
@@ -99,6 +100,27 @@ bash install.sh all --deps     # installs the skill for every tool + Python pack
 | 5 s of Veo 3.1 for comparison | ~$0.40 (Lite 1080p) to ~$3.00 (Standard 4K) |
 
 Prices: Gemini API standard tier, October 2026. Check https://ai.google.dev/pricing.
+
+## Viral Motion
+
+A fork of the "Motion Studio" skill by its original author (the first commit under
+`skills/viral-motion` is that original, untouched; its git history shows every change since). It adds a
+Watercolor style, your own voice Recording (any language) or your own music, English Kokoro narration, a
+separate Critic, two checkpoints and portrait 1080x1920 by default. Details: [its README](skills/viral-motion/README.md).
+
+Setup (macOS, Apple Silicon recommended). Install it with `install.sh` like any skill, then run
+`bash ~/.claude/skills/viral-motion/scripts/check.sh`: it installs nothing and prints the fix for each
+missing piece:
+
+- Node 22+, `ffmpeg`, the HyperFrames CLI + its Chrome, and the HyperFrames skills (`npx hyperframes skills`)
+- ACE-Step 1.5 for music (~11 GB of models, keep ~10 GB more free while generating): put its checkout path
+  in `SKILL/.acestep` and apply `scripts/music/acestep-mps-bf16.patch`; demucs in its venv
+- whisper.cpp with the `large-v3-turbo` and `large-v3` models at `~/myprojects/whisper.cpp` (word timing)
+- the skill's own Python 3.12 venv (`numpy soundfile kokoro-onnx`) and the Kokoro voice models
+- `GEMINI_API_KEY` / `GOOGLE_API_KEY` blank in the sessions that make videos
+
+Level 1 (showreel) needs only the first line. Prove the setup with `scripts/selftest.sh`.
+`install.sh` replaces an installed copy, including its `.venv` and `.acestep`, so re-run `check.sh` after it.
 
 ## Repo layout
 
@@ -115,5 +137,11 @@ skills/sprite-video/
   scripts/shoot.cjs      film the player to MP4 / PNG, --scale 2 for 4K
   references/            prompt templates, film-critic checklist, costs
   examples/              push-up IK rig, squat multi-joint rig, flex all-cells template, arm-raise guides
+skills/viral-motion/
+  SKILL.md               levels, director's brief, ban list, checkpoints, quality gates
+  references/            level guides, music, sound design, narration, recording, critic, watercolor, lessons
+  scripts/               check, hf (HyperFrames without Gemini), music, sfx, recording, qa
+  assets/                Watercolor engine, the Critic's reference frames
+  examples/ templates/   the three original prompts, song / score / cue templates, a self-test clip
 install.sh               installer for Claude Code / Codex / Antigravity
 ```
