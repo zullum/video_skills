@@ -1,0 +1,28 @@
+{
+ "name": "coral-teal-demo",
+ "size": [
+  1920,
+  1080
+ ],
+ "fps": 30,
+ "palette": {
+  "bgDeep": "#0E2F38",
+  "bgMid": "#1D5C66",
+  "bgLight": "#7FB8B5",
+  "panel": "#CFE8E4",
+  "ink": "#141418",
+  "skin": "#FF8A5B",
+  "shorts": "#23305A",
+  "sleeve": "#FFFFFF",
+  "accent": "#FFD166",
+  "text": "#FFFFFF",
+  "rim": "#FFFFFF"
+ },
+ "chroma": "#00B140",
+ "mix": {
+  "music": 0.5,
+  "sfx": 0.6
+ },
+ "voice": "af_heart",
+ "character": "a bald, muscular, friendly cartoon man with coral-orange skin, white eye slits, a small mouth, navy athletic shorts, white wristbands on both wrists, barefoot"
+}
