@@ -129,6 +129,12 @@ Level 1 (showreel) needs only the first line. Prove the setup with `scripts/self
 
 ## Mascot Explainer
 
+<p><img src="assets/mascot-explainer.gif" width="60%" alt="mascot-explainer demo: text slam, planet bubbles, zoom-through into a 24-frame push-up loop"></p>
+
+The demo: a 52 s, 4K, narrated explainer ("Two sets are enough to start"), 19 shots on 12 of the 17 templates, made
+from 7 Nano Banana images for **$0.76** (character sheet, pose sheet, prop sheet, a 24-frame push-up and an 8-frame
+squat, each with its base pose). Its inputs are in `skills/mascot-explainer/examples/demo/`.
+
 Built from an analysed 8:25 calisthenics explainer (its shot-by-shot breakdown is text only, in
 `skills/mascot-explainer/references/reference-video*.md`). Code draws everything geometric; Gemini draws only the
 character, poses and props on a flat chroma sheet, which `asset_sheet.py` cuts and traces to clipped SVGs. Body
