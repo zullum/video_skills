@@ -4,6 +4,7 @@ Writes PROJECT/assets/svg/<name>.svg and assets/manifest.json entries {file, w, 
 Without --grid every large connected shape is one asset (reading order); with it, every non-empty cell."""
 import argparse
 import importlib
+import json
 import os
 import sys
 
@@ -26,10 +27,22 @@ def anchor_kinds(spec, names):
     return kinds
 
 
+def dark_fills(spec, project):
+    """Dark colours that are fills, not ink (navy shorts): given, or the dark character colours of style.json."""
+    rgb = lambda h: tuple(int(h.strip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    if spec != "auto":
+        return [rgb(h) for h in spec.split(",") if h] or None
+    path = os.path.join(project, "style.json")
+    pal = json.load(open(path)).get("palette", {}) if os.path.exists(path) else {}
+    dark = [rgb(pal[r]) for r in ("skin", "shorts", "sleeve", "accent") if r in pal]
+    return [c for c in dark if c[0] * .299 + c[1] * .587 + c[2] * .114 < 80] or None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("sheet"); ap.add_argument("project")
     ap.add_argument("--names", required=True); ap.add_argument("--grid"); ap.add_argument("--anchor")
+    ap.add_argument("--ink-keep", default="auto", help='dark fill colours that are not ink: "#23305A,..." or auto (style.json)')
     A = ap.parse_args(argv)
     a = np.array(Image.open(A.sheet).convert("RGB")).astype(int)
     H, W = a.shape[:2]
@@ -41,6 +54,7 @@ def main(argv=None):
     if len(boxes) != len(names):
         sys.exit(f"found {len(boxes)} assets, --names has {len(names)} (boxes: {boxes}); use --grid or fix the sheet")
     kinds = anchor_kinds(A.anchor, names)
+    keep = dark_fills(A.ink_keep, A.project)
     sys.path.insert(0, os.path.join(deps.locate("sv"), "scripts"))
     trace2 = importlib.import_module("trace2")
     pal = sheet.palette(a, bg)
@@ -54,7 +68,7 @@ def main(argv=None):
         inside[y0 - Y0:y1 - Y0, x0 - X0:x1 - X0] = True
         crop[mc & ~inside] = bg                                  # a neighbour reaching into the padding
         mc &= inside
-        trace2.trace(crop.astype("uint8"), pal, bg, os.path.join(out_dir, f"{name}.svg"), clip=True)
+        trace2.trace(crop.astype("uint8"), pal, bg, os.path.join(out_dir, f"{name}.svg"), clip=True, ink_keep=keep)
         man["assets"][name] = {"file": f"assets/svg/{name}.svg", "w": int(X1 - X0), "h": int(Y1 - Y0),
                                "anchor": sheet.anchor(mc, kinds[name]), "holes": sheet.holes(mc)}
         print(f"{name}: {X1 - X0}x{Y1 - Y0}, anchor {man['assets'][name]['anchor']}, holes {len(man['assets'][name]['holes'])}")

@@ -57,3 +57,11 @@ def test_grid_mode_and_per_name_anchor(tmp_path):
     assert r.returncode == 0, r.stderr
     m = json.load(open(tmp_path / "assets" / "manifest.json"))["assets"]
     assert m["b"]["anchor"] == [0.5, 0.5] and m["a"]["anchor"][1] > 0.9
+
+
+def test_dark_character_colours_come_from_style(tmp_path):
+    import asset_sheet
+    (tmp_path / "style.json").write_text(json.dumps({"palette": {"skin": "#FF8A5B", "shorts": "#23305A", "accent": "#FFD166"}}))
+    assert asset_sheet.dark_fills("auto", str(tmp_path)) == [(35, 48, 90)]
+    assert asset_sheet.dark_fills("auto", str(tmp_path / "none")) is None
+    assert asset_sheet.dark_fills("#102030", str(tmp_path)) == [(16, 32, 48)]

@@ -6,9 +6,14 @@ import re, io, numpy as np, potrace, vtracer, tempfile, os
 from PIL import Image, ImageFilter
 from scipy import ndimage
 INK = "#141418"
-def ink_paths(rgb, up=4, lo=45, hi=95):
+def _near(rgb, keep):                                                # distance to the nearest kept dark fill colour
+    c = rgb[..., :3].astype(int)
+    return np.min([np.abs(c - np.array(k)).max(2) for k in keep], 0)
+def ink_paths(rgb, up=4, lo=45, hi=95, ink_keep=None):
     L = rgb[..., :3] @ np.array([.299, .587, .114])
     dark = np.clip((hi - L) / (hi - lo), 0, 1)                      # 1 = line, 0 = fill
+    if ink_keep:                                                     # a dark fill colour (navy shorts) is not ink
+        dark *= np.clip((_near(rgb, ink_keep) - 24) / 16, 0, 1)
     big = np.array(Image.fromarray((dark * 255).astype("uint8")).resize(
         (rgb.shape[1] * up, rgb.shape[0] * up), Image.BICUBIC)).astype(float)
     big = ndimage.gaussian_filter(big, up * .9) > 127                   # blur before threshold: no edge ripple
@@ -34,8 +39,10 @@ def clip_def(rgb, bg, up=4):
     big = np.array(Image.fromarray((m * 255).astype("uint8")).resize(
         (rgb.shape[1] * up, rgb.shape[0] * up), Image.BICUBIC)) > 127
     return f'<clipPath id="fig"><path clip-rule="evenodd" d="{_outline(big, up)}"/></clipPath>'
-def fill_layer(rgb, pal, bg, up=2):
+def fill_layer(rgb, pal, bg, up=2, ink_keep=None):
     L = rgb[..., :3] @ np.array([.299, .587, .114])
+    if ink_keep:
+        L = np.where(_near(rgb, ink_keep) <= 32, 255, L)            # kept dark fills are fills
     # ink = what ink_paths draws (L below the 45..95 midpoint); dark gray fills (shorts, L ~ 90) are NOT
     # ink, else they get refilled from the nearest light pixel and show a cream stripe inside the outline
     line = ndimage.binary_dilation(L < 72, iterations=2)          # include the anti-aliased rim (else a pale halo)
@@ -56,11 +63,12 @@ def fill_layer(rgb, pal, bg, up=2):
         c = [int(m.group(1)[i:i + 2], 16) for i in (0, 2, 4)]
         return f'fill="#{bgx}"' if min(c) > 190 and sum(abs(c[i] - bg[i]) for i in range(3)) < 28 else m.group(0)
     return f'<g transform="scale({1 / up})">' + re.sub(r'fill="#([0-9A-Fa-f]{6})"', nb, inner) + "</g>"
-def trace(rgb, pal, bg, out, clip=False):
+def trace(rgb, pal, bg, out, clip=False, ink_keep=None):
     # clip=True: transparent outside the figure (for scenes whose background differs from the sheet's)
+    # ink_keep=[(35,48,90)]: dark fill colours (navy shorts) stay fills; every other dark pixel is ink
     h, w = rgb.shape[:2]
-    fills = fill_layer(rgb, pal, bg)
+    fills = fill_layer(rgb, pal, bg, ink_keep=ink_keep)
     if clip:
         fills = f'<defs>{clip_def(rgb, bg)}</defs><g clip-path="url(#fig)">{fills}</g>'
     open(out, "w").write(f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
-                         + fills + ink_paths(rgb) + "</svg>")
+                         + fills + ink_paths(rgb, ink_keep=ink_keep) + "</svg>")
