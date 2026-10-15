@@ -18,5 +18,9 @@
   {"shot": "dy", "t": 1.0, "kind": "area", "rect": [624, 300, 32, 400], "color": "text", "min": 0.15, "note": "separator drawn (camera push moves it a few px)"},
   {"shot": "dy", "t": 1.0, "kind": "area", "rect": [220, 30, 200, 80], "color": "text", "min": 0.05, "note": "MON label"},
   {"shot": "dy", "t": 1.6, "kind": "px", "x": 320, "y": 620, "color": "#FF7A59", "tol": 60, "note": "column 0 bubble"},
-  {"shot": "dy", "t": 1.9, "kind": "area", "rect": [380, 440, 200, 140], "color": "#FFFFFF", "min": 0.15, "note": "tag beside bubble"}
+  {"shot": "dy", "t": 1.9, "kind": "area", "rect": [380, 440, 200, 140], "color": "#FFFFFF", "min": 0.15, "note": "tag beside bubble"},
+  {"shot": "wr", "t": 0.1, "kind": "px", "x": 960, "y": 120, "color": "bgDeep", "tol": 25, "note": "glass"},
+  {"shot": "wr", "t": 0.1, "kind": "notpx", "x": 960, "y": 1060, "color": "bgDeep", "tol": 20, "note": "floor"},
+  {"shot": "wr", "t": 1.2, "kind": "px", "x": 960, "y": 400, "color": "#FF7A59", "tol": 60, "note": "bubble behind the glass"},
+  {"shot": "wr", "t": 1.6, "kind": "px", "x": 1650, "y": 950, "color": "#FF7A59", "tol": 60, "note": "foreground figure in"}
 ]
