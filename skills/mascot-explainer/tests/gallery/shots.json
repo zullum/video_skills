@@ -1,0 +1,4 @@
+{"style": "style.json", "shots": [
+  {"id": "sp", "dur": 1.5, "scene": "space", "params": {"tone": "deep"},
+   "beats": [{"at": 0.3, "do": "title", "args": {"text": "MASCOT"}}]}
+]}

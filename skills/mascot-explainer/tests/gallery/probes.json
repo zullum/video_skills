@@ -1,0 +1,5 @@
+[
+ {"shot": "sp", "t": 0.1, "kind": "area", "rect": [0, 0, 1920, 1080], "color": "bgDeep", "min": 0.85, "note": "deep backdrop"},
+ {"shot": "sp", "t": 0.1, "kind": "noarea", "rect": [760, 470, 400, 140], "color": "text", "max": 0.02, "note": "title hidden before its beat (sparkles are white too)"},
+ {"shot": "sp", "t": 1.2, "kind": "area", "rect": [760, 470, 400, 140], "color": "text", "min": 0.05, "note": "title visible"}
+]

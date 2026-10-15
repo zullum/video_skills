@@ -2,6 +2,20 @@
 (function () {
   var T = window.TOON, S = T.shape;
 
+  // CSS of the two fonts: o.font "display" (TDisplay 800 italic, default) or "label" (TLabel 700).
+  S.font = function (o) {
+    var label = o.font === "label";
+    return "font-family:" + (label ? "TLabel" : "TDisplay") + ";font-weight:" + (label ? 700 : 800) + ";font-style:" +
+      (label ? "normal" : "italic") + ";font-size:" + (o.size || 96) + "px;line-height:1;color:" + T.c(o.color || "text") + ";white-space:nowrap;";
+  };
+  // A line of text centred on (x, y) (pop the returned holder).
+  S.title = function (parent, x, y, text, o) {
+    o = o || {};
+    var b = S.center(parent, x, y);
+    T.el("div", { text: o.upper === false ? text : String(text).toUpperCase(), style: S.font(o) }, b);
+    return b;
+  };
+
   function disc(parent, x, y, r, fill, border) {
     var b = T.box(parent, x, y, 2 * r, 2 * r), s = T.svg(b, 2 * r, 2 * r);
     T.el("circle", { cx: r, cy: r, r: r - border / 2, fill: T.c(fill), stroke: T.c("ink"), "stroke-width": border }, s);

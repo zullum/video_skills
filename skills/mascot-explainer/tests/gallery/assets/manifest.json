@@ -1,0 +1,3 @@
+{"assets": {"blob": {"file": "assets/svg/blob.svg", "w": 200, "h": 200, "anchor": [0.5, 0.5], "holes": []}},
+ "sprites": {"tick": {"dir": "assets/sprites/tick", "cell": [200, 200], "floor": null,
+   "frames": [{"file": "f00.svg", "x": 20, "y": 20, "w": 160, "h": 160}, {"file": "f01.svg", "x": 20, "y": 20, "w": 160, "h": 160}]}}}
