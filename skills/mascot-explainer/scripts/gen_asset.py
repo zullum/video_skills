@@ -1,6 +1,7 @@
 """One budgeted Nano Banana call.   scripts/py scripts/gen_asset.py PROJECT OUT.png "prompt" [ref ...]
 env SIZE=1K|2K|4K (default 2K), ASPECT (default 16:9). An existing OUT is reused (delete it to regenerate);
 a call that would pass gen/budget.json "limit" is refused (exit 3). The key is never printed."""
+import fcntl
 import json
 import os
 import subprocess
@@ -31,10 +32,13 @@ def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None):
     r = subprocess.run(cmd + [out, prompt] + list(refs), env=dict(os.environ, SIZE=size, ASPECT=aspect))
     if r.returncode or not os.path.exists(out):
         return r.returncode or 1
-    led["spent"] = round(led["spent"] + price, 3)
-    led["calls"].append({"file": os.path.relpath(out, project), "size": size, "price": price, "prompt": prompt[:160]})
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    json.dump(led, open(path, "w"), indent=1)
+    with open(path + ".lock", "w") as lock:                   # parallel calls: re-read and write under a lock
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        _, led = _ledger(project)
+        led["spent"] = round(led["spent"] + price, 3)
+        led["calls"].append({"file": os.path.relpath(out, project), "size": size, "price": price, "prompt": prompt[:160]})
+        json.dump(led, open(path, "w"), indent=1)
     return 0
 
 

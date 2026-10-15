@@ -39,3 +39,14 @@ def test_manifest_defaults_and_round_trip(tmp_path):
     assert manifest.load(str(tmp_path)) == {"assets": {}, "sprites": {}}
     manifest.save(str(tmp_path), {"assets": {"a": {"w": 1}}, "sprites": {}})
     assert manifest.load(str(tmp_path))["assets"] == {"a": {"w": 1}}
+
+
+def test_a_call_made_meanwhile_is_not_lost(tmp_path):
+    # Another gen_asset run records its call while ours is generating: both must stay in the ledger.
+    other = ("import json, sys; p = sys.argv[1].rsplit('/', 1)[0] + '/gen/budget.json'; "
+             "json.dump({'limit': 1.5, 'spent': 0.101, 'calls': [{'file': 'other.png', 'size': '2K', 'price': 0.101}]}, open(p, 'w')); "
+             "open(sys.argv[1], 'wb').write(b'png')")
+    (tmp_path / "gen").mkdir()
+    assert gen_asset.run(str(tmp_path), str(tmp_path / "a.png"), "x", [], gen_cmd=[sys.executable, "-c", other]) == 0
+    led = json.load(open(tmp_path / "gen" / "budget.json"))
+    assert [c["file"] for c in led["calls"]] == ["other.png", "a.png"] and led["spent"] == 0.202
