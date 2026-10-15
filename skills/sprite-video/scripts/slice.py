@@ -45,7 +45,7 @@ for k in range(A.cols * A.rows):
     if k in drop: continue
     r, c = divmod(k, A.cols); m_ = 10                                   # stay off the grid lines
     X0, Y0 = int(c * cw) + m_, int(r * ch) + m_; X1, Y1 = int((c + 1) * cw) - m_, int((r + 1) * ch) - m_
-    cell = a[Y0:Y1, X0:X1].copy(); dark = cell.sum(2) < 260
+    cell = a[Y0:Y1, X0:X1].copy(); dark = (cell.sum(2) < 260) & (np.abs(cell - bg).sum(2) > 70)   # a dark chroma bg is not ink
     if A.floor:
         band = np.where(dark.mean(1) > .55)[0]
         if len(band):
