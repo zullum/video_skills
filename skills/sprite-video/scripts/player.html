@@ -2,6 +2,7 @@
 html,body{margin:0;overflow:hidden;width:1920px;height:1080px}
 #cam{position:absolute;left:0;top:0;width:1920px;height:1080px}
 #cam img{position:absolute;display:none}
+#cam img.mus{mix-blend-mode:multiply;z-index:1}
 #floor{position:absolute;left:0;width:1920px;background:#141418;z-index:2;display:none}
 </style></head><body><div id="cam"><div id="floor"></div></div>
 <script>const Q = new URLSearchParams(location.search); const DIR = Q.get("dir") || "frames";
@@ -17,10 +18,15 @@ document.write(`<script src="${DIR}/frames.js"><\/script>`);</script>
 //   ax,ay                 zoom anchor in cell px (stays still on screen), default cell centre
 //   cx,cx2                horizontal view centre at start / end (slow pan), default cell centre
 //   pop=<frame index>     small punch-in when that frame first appears (a flex peak)
+//   hl=0.8&hlin=2&hlw=[..] working-muscle overlay (muscles.py): max opacity, second it fades in from,
+//                         per-frame weights (e.g. brighter where the muscle is loaded); it pulses gently
 // The view never goes below the lowest frame edge, so a figure cut at the cell bottom never floats.
 document.body.style.background = `rgb(${FR.bg})`;
 const FPS = 30, F = FR.frames, cam = document.getElementById('cam'), floor = document.getElementById('floor'), imgs = [];
 for (const f of F) { const im = new Image(); im.src = DIR + '/' + f.file; cam.appendChild(im); imgs.push(im); }
+const HL = Number(Q.get('hl') || 0), HLIN = Number(Q.get('hlin') || 0), HLW = JSON.parse(Q.get('hlw') || 'null'), mus = [];
+if (HL) for (const f of F) { if (!f.muscle) { mus.push(null); continue; }
+  const im = new Image(); im.src = DIR + '/' + f.muscle; im.className = 'mus'; cam.appendChild(im); mus.push(im); }
 let SEQ;
 if (Q.get('seq')) SEQ = JSON.parse(Q.get('seq'));
 else { const REP = JSON.parse(Q.get('rep')); SEQ = []; for (let r = 0; r < Number(Q.get('reps') || 3); r++) SEQ.push(...REP);
@@ -56,8 +62,14 @@ window.render = t => {
     im.style.width = f.w * (f.s || 1) * c.k + 'px';
     im.style.left = (f.x - c.x0) * c.k + 'px'; im.style.top = (f.y - c.y0) * c.k + 'px';
   });
+  mus.forEach((im, i) => { if (!im) return; const f = F[i]; im.style.display = i === cur ? 'block' : 'none';
+    if (i !== cur) return;
+    const fade = Math.min(Math.max((t - HLIN) / 0.6, 0), 1), w = HLW ? HLW[i] : 1;
+    im.style.opacity = HL * fade * w * (0.85 + 0.15 * Math.sin(t * 2 * Math.PI * 1.2));
+    im.style.width = f.w * (f.s || 1) * c.k + 'px';
+    im.style.left = (f.x - c.x0) * c.k + 'px'; im.style.top = (f.y - c.y0) * c.k + 'px'; });
   if (FR.floor) { floor.style.display = 'block';
     floor.style.top = (FR.floor[0] - c.y0) * c.k + 'px'; floor.style.height = Math.max((FR.floor[1] - FR.floor[0]) * c.k, 2) + 'px'; }
 };
-Promise.all(imgs.map(i => i.decode())).then(() => { render(0); window.ready = true; });
+Promise.all([...imgs, ...mus.filter(Boolean)].map(i => i.decode())).then(() => { render(0); window.ready = true; });
 </script></body></html>

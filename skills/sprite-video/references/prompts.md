@@ -99,6 +99,37 @@ The model removed the template's floor lines and the shorts drawstring in cells 
 it, a small pop between frame 1 and 2). Slice with `--ground`, which puts the floor back. To avoid the
 pop, erase small details like the drawstring from the base before building the template.
 
+## Character variants (colour, physique)
+
+Change the character in the base pose prompt only; every later step copies it from the base. Tested:
+"same design as the reference images ... but with BRIGHT ORANGE skin instead of blue, and as an extreme
+MR. OLYMPIA bodybuilder: massive round shoulders, huge thick pectorals, wide lats, very thin waist,
+enormous arms, thick legs, clear muscle separation". Worked on the first call.
+
+## Two-arm guided grid (flyes, front view)
+
+Template from `examples/fly_spec.py` (both arms erased, mirrored guides, bar-angle line).
+
+```text
+FINISH this ANIMATION SPRITE SHEET of incline DUMBBELL FLYES, seen from the front: a 3 x 2 grid of 6 cells (frames 1 to 6, left to right, top to bottom). Frame 1 is the top position (finished key frame, leave it exactly as it is); frame 6 is the bottom position with both arms opened wide; the frames between open the arms step by step in one smooth arc.
+In cells 2 to 6 both arms and both dumbbells were erased and replaced by RED GUIDES: on each side three red dots joined by red lines (shoulder, elbow, wrist), a red circle at the hand and a short straight red line through the circle that shows the angle of the dumbbell bar. In each of these cells:
+- Draw BOTH of the character's arms EXACTLY along the red guides: upper arm from the shoulder dot to the elbow dot, forearm from the elbow dot to the wrist dot, the fist inside the red circle. The red line is only the CENTRE of the arm: draw the arms as huge and thick as in cell 1 (massive biceps, triceps, forearms, same bright orange colour, same cel shading, same thick black outline). Each cell has a different arm angle; follow the guides, do not copy cell 1.
+- Each fist holds the same heavy black dumbbell as in cell 1 (same size and plates), the handle inside the fist, its bar lying EXACTLY along the short red line through the circle (the bar turns a little more in every frame, from horizontal in frame 1 to vertical in frame 6).
+- This is a FLY, not a press: the arms stay long and almost straight, with only a slight bend at the elbow, exactly as the guides show.
+- Repair the deltoids, shoulders and chest edges where they were erased so the body looks complete; the shoulders stay as massive and round as in cell 1.
+- Then remove every trace of red: no red lines, dots or circles may remain.
+STRICT RULES: do NOT move, resize, zoom or re-crop the character. Head, glowing eyes, chest, abs, shorts, legs, feet and the bench stay identical in all 6 cells, same size and same place. Arms and dumbbells stay fully inside their own cell. Keep the gray grid lines exactly where they are. Same flat cartoon style, plain cream background. No numbers, no text, no extra characters.
+```
+
+## Muscle map (for `muscles.py`, 1K)
+
+Send the finished sheet. Name the muscles for the move (fly: pectorals + front deltoids; squat:
+quadriceps + glutes; curl: biceps).
+
+```text
+EDIT this animation sprite sheet (a 3 x 2 grid of 6 frames). In EVERY cell, recolor ONLY the muscles that work in a dumbbell fly: both PECTORAL muscles (the whole left and right chest, down to the lower edge of the chest) and the FRONT part of both DELTOIDS. Paint those areas solid pure bright RED (#FF0000), flat, no shading, keeping their black outlines and inner lines. Everything else stays EXACTLY identical in every cell: same position, same size, same pose, same orange skin elsewhere (arms, neck, abs, legs), head, shorts, bench, dumbbells, gray grid lines and background. Do not move, zoom or re-crop anything. No text.
+```
+
 ## Checks after every generation
 
 - Same character size in every row (slice and compare, or look at head size in row 1 vs row 4).

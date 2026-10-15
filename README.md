@@ -5,12 +5,14 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | Skill | What it does |
 |---|---|
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
+| [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `python scripts/yellow_dude_4k_pipeline.py [pose_sheet.png]`; without an argument it uses the example `assets/pullup_poses.jpg`. |
 | [`viral-motion`](skills/viral-motion/SKILL.md) | Motion-graphics videos at three levels (showreel, lyric video with an original song, story film with score and sound design) through HyperFrames. Music, voice and sound effects are made locally: **$0**, no Gemini. See [Viral Motion](#viral-motion). |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
 <img src="assets/pushup.gif" width="38%" alt="push-up animation">
 <img src="assets/squat.gif" width="18%" alt="squat animation">
+<img src="assets/fly.gif" width="45%" alt="incline dumbbell fly with chest highlight">
 </p>
 
 ## How it works (short)
@@ -24,7 +26,9 @@ Agent skills for making short animated videos cheaply, without video-generation 
    and position, limb drawn along the guides.
 4. Code slices the sheet, traces each frame to **SVG** (potrace ink + vtracer colour fills), aligns
    frames, and films them with a slow camera at **3840×2160**.
-5. The agent reviews every frame like a film critic (shake, floating torso, jumps, missing
+5. Optional: one more cheap edit (1K) paints the working muscles red on the sheet; the player fades
+   them in as a pulsing highlight (e.g. chest and front delts in a fly).
+6. The agent reviews every frame like a film critic (shake, floating torso, jumps, missing
    in-betweens) and fixes it over three rounds.
 
 Why 2K is enough: the SVG keeps edges sharp at any size, so the 4K video comes from the vector, not
@@ -39,12 +43,12 @@ git clone https://github.com/zullum/video_skills.git
 cd video_skills
 ```
 
-Then install for the tool you use (copies the skill; add `--link` to symlink so `git pull` updates it):
+Then install for the tool you use (`install.sh` installs every skill in `skills/`; copies by default, add `--link` to symlink so `git pull` updates it):
 
 ### Claude Code
 
-Working inside this repo? Nothing to install: `.claude/skills/sprite-video` links to the skill, so Claude
-Code loads it automatically in any session opened on this repository.
+Working inside this repo? Nothing to install: `.claude/skills/` links to every skill, so Claude
+Code loads them automatically in any session opened on this repository.
 
 
 ```bash
@@ -81,9 +85,9 @@ copy it there as well.
 bash install.sh all --deps     # installs the skill for every tool + Python packages + Chromium
 ```
 
-## Requirements (sprite-video)
+## Requirements (sprite-video, yellow-dude-4k-animator)
 
-- Python 3.10+ with `numpy scipy pillow vtracer potracer` (`pip install -r requirements.txt`)
+- Python 3.10+ with `numpy scipy pillow vtracer potracer` (+ `opencv-python-headless` for yellow-dude-4k-animator) (`pip install -r requirements.txt`)
 - Node 18+ with Playwright (`npm i -D playwright && npx playwright install chromium`) and `ffmpeg`
 - A Gemini API key in `GEMINI_API_KEY` (image model `gemini-3.1-flash-image`). Keep it in your
   environment or secret manager; never commit it.
@@ -133,10 +137,16 @@ skills/sprite-video/
   scripts/trace2.py      two-layer vectorizer: potrace ink + vtracer fills
   scripts/colorfix.py    match an extra sheet's colours to the main sheet
   scripts/merge.py       join frames from several sheets
+  scripts/muscles.py     working-muscle overlay per frame from one marked copy of the sheet
   scripts/player.html    frame sequencer + camera (push-in, pan, punch), floor line
   scripts/shoot.cjs      film the player to MP4 / PNG, --scale 2 for 4K
   references/            prompt templates, film-critic checklist, costs
-  examples/              push-up IK rig, squat multi-joint rig, flex all-cells template, arm-raise guides
+  examples/              push-up IK rig, squat multi-joint rig, two-arm fly guides, flex all-cells template, arm-raise guides
+skills/yellow-dude-4k-animator/
+  SKILL.md               7 golden rules + 6-point critique protocol
+  scripts/yellow_dude_4k_pipeline.py   v15 pipeline: 3 poses → 24 frames → 30 s 4K MP4
+  references/            Remotion + HyperFrames 3-layer templates
+  assets/pullup_poses.jpg  example pose sheet (default input)
 skills/viral-motion/
   SKILL.md               levels, director's brief, ban list, checkpoints, quality gates
   references/            level guides, music, sound design, narration, recording, critic, watercolor, lessons
