@@ -50,6 +50,16 @@ passing the template first and the base second. 24 cells (6×4) at 4K for a smoo
 cells (4×2, 3×3) at 2K for a whole-body move. Slice with `slice.py --clip` (+ `--ground` for standing moves), then
 `sprite_import.py`.
 
+## What the demo taught
+- Grid sheets: the model may draw grid lines anyway (harmless: `--grid` keeps a margin) and crops full-body poses
+  at the cell edge (3 of 6 in the demo). Cropped poses work at the bottom edge of the frame (cardWall, powerUp);
+  for a full-body pose standing on something, slice the character sheet itself (`asset_sheet.py gen/character.png P
+  --names …` without `--grid`), which costs nothing.
+- Dark character colours (navy shorts) are traced as fills, not ink, through `--ink-keep` (asset_sheet reads them from
+  `style.json` by default; give `slice.py --ink-keep "#23305A"` for sprites).
+- A 24-cell side-view push-up came out right first time with a 4K sheet and the template's erase reaching the
+  floor (otherwise the rotated hands show twice).
+
 ## What to check, and when to pay for a retry
 
 Retry only when a rule is broken: a different character (proportions, colours, a sleeve that shouldn't be there),

@@ -27,7 +27,14 @@ sheets yourself first, then give their paths and this file to a fresh Critic age
 > narration line under each row. Grade every shot 1-10 against this checklist: {the 6 items}. For each shot give the
 > grade and the single worst problem with the frame where it shows. Then list the three problems that would most
 > improve the video, each with a concrete fix (which shot, which param or beat). Do not praise. Grade 8 means "a
-> viewer would not notice anything wrong".
+> viewer would not notice anything wrong". The sheet cells are 384 px wide: before you call anything too small,
+> unreadable or blurred, open that cell's full frame in snaps/. A pop sampled 0.15 s after its beat is still
+> mid-animation by design. A sprite loop can land on similar phases in several cells: call it frozen only if two
+> full frames of the same shot are identical.
+
+(Round 1 of the demo without those three sentences flagged a looping push-up as frozen and a figure in front of a
+wall as hidden behind it; both were artefacts of the small cells. Use a mid-size model for the Critic: it grades
+against a checklist.)
 
 Write the grades to `critique/round-<n>.md`; the last round's table goes to the user.
 
