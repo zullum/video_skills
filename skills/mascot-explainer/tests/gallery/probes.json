@@ -35,5 +35,10 @@
   {"shot": "fb", "t": 1.8, "kind": "noarea", "rect": [150, 490, 100, 100], "color": "#FF7A59", "tol": 50, "max": 0.01, "note": "left the start"},
   {"shot": "fb", "t": 1.8, "kind": "area", "rect": [1700, 400, 200, 140], "color": "#FFFFFF", "min": 0.1, "note": "badge rides along"},
   {"shot": "fl", "t": 1.4, "kind": "px", "x": 960, "y": 500, "color": "#FF7A59", "tol": 50, "note": "launched into place"},
-  {"shot": "fl", "t": 1.4, "kind": "area", "rect": [900, 600, 120, 160], "color": "rim", "tol": 60, "min": 0.05, "note": "exhaust flame below"}
+  {"shot": "fl", "t": 1.4, "kind": "area", "rect": [900, 600, 120, 160], "color": "rim", "tol": 60, "min": 0.05, "note": "exhaust flame below"},
+  {"shot": "pu", "t": 0.2, "kind": "noarea", "rect": [860, 300, 200, 80], "color": "bgDeep", "tol": 30, "max": 0.02, "note": "no aura yet"},
+  {"shot": "pu", "t": 1.2, "kind": "area", "rect": [860, 300, 200, 80], "color": "bgDeep", "tol": 30, "min": 0.3, "note": "flame aura above"},
+  {"shot": "pz", "t": 1.0, "kind": "area", "rect": [880, 460, 160, 160], "color": "#FFFFFF", "min": 0.1, "note": "pause badge"},
+  {"shot": "pz", "t": 1.0, "kind": "noarea", "rect": [0, 0, 1920, 1080], "color": "#FF7A59", "tol": 40, "max": 0.001, "note": "frozen grey"},
+  {"shot": "pb", "t": 0.3, "kind": "area", "rect": [0, 0, 1920, 1080], "color": "accent", "tol": 40, "min": 0.004, "note": "lightning bolts"}
 ]

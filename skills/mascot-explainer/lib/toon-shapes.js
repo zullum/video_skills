@@ -102,21 +102,25 @@
       pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, transform: "rotate(-90 " + x + " " + y + ")" }, svg);
   };
 
-  // Flame aura: a solid body with 9 spiky tongues on top, an inner lighter flame, rising from `base`.
+  // Flame aura: an arch of n tongues around a figure, rising from `base` (w wide, h tall), with a lighter inner
+  // flame. Tongues lean upward like fire; each seed gives another variant (cycle them to flicker).
   S.flame = function (svg, cx, base, w, h, seed, o) {
     o = o || {};
-    var rnd = T.rng(seed || 1), n = 9, x0 = cx - w / 2, g = T.el("g", {}, svg), d = "M" + x0 + "," + base;
-    for (var i = 0; i < n; i++) {
-      var u0 = i / n, u1 = (i + 1) / n, um = (i + 0.5) / n, env = Math.sin(Math.PI * um);
-      var valley = base - h * (0.5 + 0.3 * Math.sin(Math.PI * u0)), tip = base - h * (0.72 + 0.28 * env) * (0.9 + 0.2 * rnd());
-      d += "L" + (x0 + u0 * w) + "," + valley + "Q" + (x0 + um * w) + "," + (valley - h * 0.05) + " " +
-        (x0 + (um + (rnd() - 0.5) * 0.04) * w) + "," + tip + "Q" + (x0 + (um + 0.1 / n) * w) + "," + (valley - h * 0.04) + " " +
-        (x0 + u1 * w) + "," + (base - h * (0.5 + 0.3 * Math.sin(Math.PI * u1)));
+    var rnd = T.rng(seed || 1), n = o.n || 9, rx = w / 2, g = T.el("g", {}, svg);
+    function at(th, r) { return [cx + rx * Math.cos(th) * r, base - h * Math.sin(th) * r]; }
+    function path(scale) {
+      var v0 = at(Math.PI, 0.86 * scale), d = "M" + (cx - rx * scale) + "," + base + "L" + v0[0] + "," + v0[1];
+      for (var i = 0; i < n; i++) {
+        var a0 = Math.PI * (1 - i / n), a1 = Math.PI * (1 - (i + 1) / n), am = (a0 + a1) / 2;
+        var tip = at(am, (1.02 + 0.16 * rnd()) * scale), v1 = at(a1, 0.86 * scale), c0 = at(a0 - 0.15 / n * Math.PI, 0.95 * scale);
+        tip[1] -= h * 0.1 * scale;                                   // flames rise
+        tip[0] += (cx - tip[0]) * 0.08;
+        d += "Q" + c0[0] + "," + c0[1] + " " + tip[0] + "," + tip[1] + "Q" + at(am, 0.9 * scale).join(",") + " " + v1.join(",");
+      }
+      return d + "L" + (cx + rx * scale) + "," + base + "Z";
     }
-    d += "L" + (cx + w / 2) + "," + base + "Z";
-    T.el("path", { d: d, fill: T.c(o.color || "bgDeep"), stroke: T.c("ink"), "stroke-width": 4, "stroke-linejoin": "round" }, g);
-    T.el("path", { d: d, fill: T.c(o.color2 || "bgLight"), opacity: 0.55,
-      transform: "translate(" + cx + "," + base + ") scale(0.62,0.6) translate(" + -cx + "," + -base + ")" }, g);
+    T.el("path", { d: path(1), fill: T.c(o.color || "bgDeep"), stroke: T.c("ink"), "stroke-width": 4, "stroke-linejoin": "round" }, g);
+    T.el("path", { d: path(0.72), fill: T.c(o.color2 || "bgLight"), opacity: 0.5 }, g);
     return g;
   };
 

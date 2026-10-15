@@ -10,5 +10,8 @@
   {"id": "wr", "dur": 2.0, "scene": "windowRoom", "params": {"items": [{"asset": "blob", "x": 960, "y": 400, "r": 120}], "fg": {"asset": "blob", "x": 1650, "y": 1000, "h": 420}}, "beats": [{"at": 0.3, "do": "pop", "args": {"items": [0]}}, {"at": 0.6, "do": "fgIn"}]},
   {"id": "ed", "dur": 2.0, "scene": "exerciseDemo", "params": {"sprite": "tick", "x": 960, "y": 800, "h": 400, "rep": [[0, 15], [1, 15]], "reps": "fill"}, "beats": [{"at": 0.2, "do": "callout", "args": {"x": 960, "y": 600, "r": 220}}, {"at": 0.5, "do": "tag", "args": {"lines": ["2x12", "3/WEEK"], "x": 1400, "y": 300}}, {"at": 0.6, "do": "arrow", "args": {"x0": 1250, "y0": 750, "x1": 1250, "y1": 450}}, {"at": 0.9, "do": "insets", "args": {"items": [{"asset": "blob", "x": 1500, "y": 750, "r": 110}]}}]},
   {"id": "fb", "dur": 2.0, "scene": "flyBy", "params": {"asset": "blob", "h": 160, "path": [[200, 540], [1700, 540]], "flame": false, "badge": {"text": "15 MIN"}}, "beats": [{"at": 0.2, "do": "fly", "args": {"dur": 1.4}}, {"at": 0.4, "do": "badge"}]},
-  {"id": "fl", "dur": 1.6, "scene": "flyBy", "params": {"asset": "blob", "h": 200, "path": [[960, 500]], "rot0": -90}, "beats": [{"at": 0.1, "do": "launch", "args": {"dur": 1.0}}]}
+  {"id": "fl", "dur": 1.6, "scene": "flyBy", "params": {"asset": "blob", "h": 200, "path": [[960, 500]], "rot0": -90}, "beats": [{"at": 0.1, "do": "launch", "args": {"dur": 1.0}}]},
+  {"id": "pu", "dur": 2.0, "scene": "powerUp", "params": {"target": {"asset": "blob", "x": 960, "y": 540, "h": 300}}, "beats": [{"at": 0.3, "do": "ignite"}]},
+  {"id": "pz", "dur": 1.5, "scene": "powerUp", "params": {"target": {"asset": "blob", "x": 960, "y": 540, "h": 300}}, "beats": [{"at": 0.3, "do": "freeze"}]},
+  {"id": "pb", "dur": 1.2, "scene": "powerUp", "params": {"tone": "deep", "target": {"asset": "blob", "x": 960, "y": 540, "h": 240}}, "beats": [{"at": 0.2, "do": "burst"}]}
 ]}
