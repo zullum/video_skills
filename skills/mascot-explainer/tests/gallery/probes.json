@@ -13,5 +13,10 @@
   {"shot": "ts", "t": 0.2, "kind": "noarea", "rect": [560, 440, 800, 200], "color": "text", "max": 0.02, "note": "hidden before slam"},
   {"shot": "ts", "t": 1.2, "kind": "area", "rect": [560, 440, 800, 200], "color": "text", "min": 0.06, "note": "slammed in"},
   {"shot": "tt", "t": 0.1, "kind": "noarea", "rect": [360, 440, 1200, 200], "color": "text", "max": 0.02, "note": "hidden before typing"},
-  {"shot": "tt", "t": 1.4, "kind": "area", "rect": [360, 440, 1200, 200], "color": "text", "min": 0.04, "note": "typed"}
+  {"shot": "tt", "t": 1.4, "kind": "area", "rect": [360, 440, 1200, 200], "color": "text", "min": 0.04, "note": "typed"},
+  {"shot": "dy", "t": 0.1, "kind": "noarea", "rect": [637, 300, 6, 400], "color": "text", "max": 0.01, "note": "separator not drawn yet"},
+  {"shot": "dy", "t": 1.0, "kind": "area", "rect": [624, 300, 32, 400], "color": "text", "min": 0.15, "note": "separator drawn (camera push moves it a few px)"},
+  {"shot": "dy", "t": 1.0, "kind": "area", "rect": [220, 30, 200, 80], "color": "text", "min": 0.05, "note": "MON label"},
+  {"shot": "dy", "t": 1.6, "kind": "px", "x": 320, "y": 620, "color": "#FF7A59", "tol": 60, "note": "column 0 bubble"},
+  {"shot": "dy", "t": 1.9, "kind": "area", "rect": [380, 440, 200, 140], "color": "#FFFFFF", "min": 0.15, "note": "tag beside bubble"}
 ]
