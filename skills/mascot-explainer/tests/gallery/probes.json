@@ -63,5 +63,10 @@
   {"shot": "st", "t": 0.1, "kind": "noarea", "rect": [120, 860, 1680, 30], "color": "panel", "tol": 30, "max": 0.05, "note": "no steps yet"},
   {"shot": "st", "t": 1.4, "kind": "px", "x": 330, "y": 895, "color": "panel", "tol": 30, "note": "first step"},
   {"shot": "st", "t": 1.4, "kind": "px", "x": 1590, "y": 895, "color": "panel", "tol": 30, "note": "last step"},
-  {"shot": "st", "t": 1.7, "kind": "px", "x": 330, "y": 440, "color": "#FF7A59", "tol": 50, "note": "item on the top step"}
+  {"shot": "st", "t": 1.7, "kind": "px", "x": 330, "y": 440, "color": "#FF7A59", "tol": 50, "note": "item on the top step"},
+  {"shot": "sr", "t": 0.1, "kind": "noarea", "rect": [570, 350, 780, 380], "color": "#FF7A59", "tol": 50, "max": 0.001, "note": "rows hidden"},
+  {"shot": "sr", "t": 1.5, "kind": "px", "x": 640, "y": 470, "color": "#FF7A59", "tol": 60, "note": "row 0 from"},
+  {"shot": "sr", "t": 1.5, "kind": "px", "x": 1280, "y": 610, "color": "#FF7A59", "tol": 60, "note": "row 1 to"},
+  {"shot": "sr", "t": 1.5, "kind": "area", "rect": [740, 425, 440, 40], "color": "ink", "tol": 40, "min": 0.05, "note": "arrow row 0"},
+  {"shot": "sr", "t": 1.7, "kind": "area", "rect": [660, 360, 70, 70], "color": "#FFFFFF", "min": 0.3, "note": "set badge"}
 ]
