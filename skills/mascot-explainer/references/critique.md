@@ -5,9 +5,9 @@ and asks a new Critic. Up to 3 rounds; every shot must reach 8/10. The Critic on
 `mix_check.py`'s job and sync is `av_check.py`'s.
 
 ## Snapshots to give the Critic
-For every shot: start + 0.2 s, the middle, end − 0.2 s, and 0.15 s after every beat. One `hf snapshot P --at …
---no-end` call (times from `audio/timing.json` + the resolved beats), then a contact sheet:
-`ffmpeg -i <snapshots>/frame-%02d-at-*.png` is awkward; tile with PIL or the viral-motion contact_sheet.sh on the MP4.
+`scripts/py scripts/critic_frames.py P --out critique/round-<n>`: every shot at start + 0.25 s, the middle, end − 0.25 s
+and 0.15 s after every beat, tiled into `sheet-*.png` (one row per shot, its narration line under it). Read the
+sheets yourself first, then give their paths and this file to a fresh Critic agent.
 
 ## The checklist (score each shot 1-10 on the worst item)
 1. **Style fidelity:** palette roles respected; every traced asset has the same ink weight as the code ink; no chroma

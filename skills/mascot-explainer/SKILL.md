@@ -74,9 +74,9 @@ heard stops with the words that were. Then `(cd P && $VM/scripts/hf check .)` mu
   true peak ≤ −1 dBTP). Tune `style.json` `mix` and rebuild.
 
 ## 6. Critique loop (`references/critique.md`)
-Snapshots of every shot (start, middle, end, each beat) → a fresh Critic agent grades every shot 1-10 → fix the
-three worst problems (timing and params first, scene code next, a new image last) → repeat until every shot is 8+,
-3 rounds at most.
+`SKILL/scripts/py SKILL/scripts/critic_frames.py P --out critique/round-1` snapshots every shot (start, middle, end,
+each beat) into labelled sheets → a fresh Critic agent grades every shot 1-10 → fix the three worst problems (timing
+and params first, scene code next, a new image last) → repeat until every shot is 8+, 3 rounds at most.
 
 ## 7. Render and verify
 `(cd P && $VM/scripts/hf render -o renders/<name>-4k.mp4 --resolution landscape-4k --fps 30 --workers 2 -q delivery)`;
@@ -103,4 +103,5 @@ The MP4 path (open it), the contact sheet, length and resolution, the Critic's f
 | `sprite_import.py FRAMES P NAME` | a sliced sprite → the project |
 | `timing.py P [--recording …] [--no-voice]` | narration + word times → `audio/timing.json` |
 | `build.py P [--only ids] [--no-sfx]` | the HyperFrames project, SFX stem, music duck |
+| `critic_frames.py P [--out critique/round-N]` | the Critic's labelled frame sheets |
 | `probe.py`, `selftest.sh [--only ids] [--render]` | pixel probes; the $0 self test |
