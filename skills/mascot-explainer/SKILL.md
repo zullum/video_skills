@@ -81,7 +81,11 @@ and params first, scene code next, a new image last) → repeat until every shot
 ## 7. Render and verify
 Build once more without `--no-sfx` first (a `--no-sfx` build leaves the SFX stem out).
 `(cd P && $VM/scripts/hf render -o renders/<name>-4k.mp4 --resolution landscape-4k --fps 30 --workers 2 -q delivery)`;
-`ffprobe` shows 3840×2160; `$VM/scripts/py $VM/scripts/qa/av_check.py renders/<name>-4k.mp4 --duration <total>
+then `$VM/scripts/py $VM/scripts/qa/mix_check.py P/index.html --out P/renders/mix.wav` and
+`SKILL/scripts/py SKILL/scripts/finish_audio.py renders/<name>-4k.mp4 renders/mix.wav renders/<name>-final.mp4`: it puts the
+clean mix into the render (HyperFrames' normal render can add AAC glitches and then lower the whole track by ~4 dB;
+the render log says "Audio lowered by") and checks the -14 LUFS / -1 dBTP gate on the result.
+`ffprobe` shows 3840×2160; `$VM/scripts/py $VM/scripts/qa/av_check.py renders/<name>-final.mp4 --duration <total>
 --expect <slam times>`; a contact sheet (`bash $VM/scripts/qa/contact_sheet.sh <mp4> <jpg> <times…>`) for a last look.
 
 ## 8. Deliver
@@ -105,4 +109,5 @@ The MP4 path (open it), the contact sheet, length and resolution, the Critic's f
 | `timing.py P [--recording …] [--no-voice]` | narration + word times → `audio/timing.json` |
 | `build.py P [--only ids] [--no-sfx]` | the HyperFrames project, SFX stem, music duck |
 | `critic_frames.py P [--out critique/round-N]` | the Critic's labelled frame sheets |
+| `finish_audio.py RENDER MIX OUT` | the clean simulated mix into the rendered MP4 + the loudness gate |
 | `probe.py`, `selftest.sh [--only ids] [--render]` | pixel probes; the $0 self test |
