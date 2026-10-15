@@ -46,5 +46,9 @@
   {"shot": "sh", "t": 2.0, "kind": "area", "rect": [1450, 1000, 460, 60], "color": "#FFFFFF", "min": 0.2, "note": "citation card"},
   {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [1000, 400, 900, 380], "color": "#FF7A59", "tol": 50, "min": 0.06, "note": "24 on the right"},
   {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [100, 600, 760, 180], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "6 moved left"},
-  {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [950, 100, 20, 600], "color": "ink", "tol": 40, "min": 0.15, "note": "divider"}
+  {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [950, 100, 20, 600], "color": "ink", "tol": 40, "min": 0.15, "note": "divider"},
+  {"shot": "cr", "t": 0.1, "kind": "noarea", "rect": [916, 492, 88, 88], "color": "#FFFFFF", "max": 0.01, "note": "no thought yet"},
+  {"shot": "cr", "t": 1.0, "kind": "area", "rect": [916, 492, 88, 88], "color": "#FFFFFF", "min": 0.3, "note": "? above head 2"},
+  {"shot": "cr", "t": 1.0, "kind": "px", "x": 960, "y": 700, "color": "#FF7A59", "tol": 50, "note": "front-row figure"},
+  {"shot": "cr", "t": 1.7, "kind": "area", "rect": [140, 480, 110, 110], "color": "accent", "tol": 40, "min": 0.2, "note": "coin above head 0"}
 ]
