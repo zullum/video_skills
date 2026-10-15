@@ -1,0 +1,6 @@
+#!/bin/sh
+# Runs the skill's Python 3.12 venv (numpy, soundfile, kokoro-onnx). check.sh verifies it.
+D="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -x "$D/.venv/bin/python" ]; then exec "$D/.venv/bin/python" "$@"; fi
+if [ -x "$D/.venv/Scripts/python.exe" ]; then exec "$D/.venv/Scripts/python.exe" "$@"; fi
+exec python3 "$@"
