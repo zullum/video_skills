@@ -13,5 +13,7 @@
   {"id": "fl", "dur": 1.6, "scene": "flyBy", "params": {"asset": "blob", "h": 200, "path": [[960, 500]], "rot0": -90}, "beats": [{"at": 0.1, "do": "launch", "args": {"dur": 1.0}}]},
   {"id": "pu", "dur": 2.0, "scene": "powerUp", "params": {"target": {"asset": "blob", "x": 960, "y": 540, "h": 300}}, "beats": [{"at": 0.3, "do": "ignite"}]},
   {"id": "pz", "dur": 1.5, "scene": "powerUp", "params": {"target": {"asset": "blob", "x": 960, "y": 540, "h": 300}}, "beats": [{"at": 0.3, "do": "freeze"}]},
-  {"id": "pb", "dur": 1.2, "scene": "powerUp", "params": {"tone": "deep", "target": {"asset": "blob", "x": 960, "y": 540, "h": 240}}, "beats": [{"at": 0.2, "do": "burst"}]}
+  {"id": "pb", "dur": 1.2, "scene": "powerUp", "params": {"tone": "deep", "target": {"asset": "blob", "x": 960, "y": 540, "h": 240}}, "beats": [{"at": 0.2, "do": "burst"}]},
+  {"id": "sh", "dur": 2.5, "scene": "shelf", "params": {"item": "blob", "itemH": 90, "counts": [6, 24], "citation": "Author et al., Journal, 2000"}, "beats": [{"at": 0.2, "do": "fill", "args": {"set": 0, "count": 6}}, {"at": 1.0, "do": "cite"}]},
+  {"id": "sh2", "dur": 2.0, "scene": "shelf", "params": {"item": "blob", "itemH": 70, "counts": [6, 24]}, "beats": [{"at": 0.1, "do": "fill", "args": {"set": 0, "count": 6}}, {"at": 0.5, "do": "split"}, {"at": 0.9, "do": "fill", "args": {"set": 1, "count": 24, "stagger": 0.02}}]}
 ]}

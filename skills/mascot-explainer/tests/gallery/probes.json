@@ -40,5 +40,11 @@
   {"shot": "pu", "t": 1.2, "kind": "area", "rect": [860, 300, 200, 80], "color": "bgDeep", "tol": 30, "min": 0.3, "note": "flame aura above"},
   {"shot": "pz", "t": 1.0, "kind": "area", "rect": [880, 460, 160, 160], "color": "#FFFFFF", "min": 0.1, "note": "pause badge"},
   {"shot": "pz", "t": 1.0, "kind": "noarea", "rect": [0, 0, 1920, 1080], "color": "#FF7A59", "tol": 40, "max": 0.001, "note": "frozen grey"},
-  {"shot": "pb", "t": 0.3, "kind": "area", "rect": [0, 0, 1920, 1080], "color": "accent", "tol": 40, "min": 0.004, "note": "lightning bolts"}
+  {"shot": "pb", "t": 0.3, "kind": "area", "rect": [0, 0, 1920, 1080], "color": "accent", "tol": 40, "min": 0.004, "note": "lightning bolts"},
+  {"shot": "sh", "t": 0.1, "kind": "noarea", "rect": [400, 560, 1100, 240], "color": "#FF7A59", "tol": 50, "max": 0.001, "note": "shelf empty"},
+  {"shot": "sh", "t": 1.0, "kind": "area", "rect": [400, 560, 1100, 240], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "six on the shelf"},
+  {"shot": "sh", "t": 2.0, "kind": "area", "rect": [1450, 1000, 460, 60], "color": "#FFFFFF", "min": 0.2, "note": "citation card"},
+  {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [1000, 400, 900, 380], "color": "#FF7A59", "tol": 50, "min": 0.06, "note": "24 on the right"},
+  {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [100, 600, 760, 180], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "6 moved left"},
+  {"shot": "sh2", "t": 1.9, "kind": "area", "rect": [950, 100, 20, 600], "color": "ink", "tol": 40, "min": 0.15, "note": "divider"}
 ]
