@@ -46,7 +46,8 @@
   // Round badge with a short text ("15 MIN", "3x12").
   S.badge = function (parent, x, y, r, text) {
     var d = disc(parent, x, y, r, "#ffffff", 5);
-    glyph(d.b, text, r * (String(text).length > 3 ? 0.5 : 0.8), "ink");
+    var n = String(text).length;
+    glyph(d.b, text, r * (n <= 3 ? 0.8 : n === 4 ? 0.62 : 0.5), "ink");
     return d.b;
   };
 

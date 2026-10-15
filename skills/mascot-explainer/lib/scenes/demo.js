@@ -34,7 +34,7 @@
         T.draw(tl, T.shape.callout(st.svg, a.x, a.y, a.r || 90, { color: a.color }), t, a.dur || 0.4);
       },
       arrow: function (tl, st, t, a) {
-        var d = T.shape.doubleArrow(st.svg, a.x0, a.y0, a.x1, a.y1, { color: a.color || "bgDeep" });
+        var d = T.shape.doubleArrow(st.svg, a.x0, a.y0, a.x1, a.y1, { color: a.color || "bgDeep", w: a.w || 10, head: 30 });
         T.draw(tl, d.line, t, a.dur || 0.5);
         d.heads.forEach(function (hd) { tl.fromTo(hd, { opacity: 0 }, { opacity: 1, duration: 0.1 }, t + (a.dur || 0.5) * 0.8); });
       },
@@ -46,7 +46,9 @@
           var b = T.shape.bubble(st.layer, it.x, it.y, it.r, { texture: "none", fill: it.fill || "panel", key: st.ctx.id + "in" + k });
           var rr = it.r * 0.97, as = T.manifest.assets[it.asset];
           if (as) T.img(b.content, it.asset, { x: rr, y: rr, h: 2 * it.r * (it.zoom || 2.2), anchor: [it.fx == null ? 0.5 : it.fx, it.fy == null ? 0.35 : it.fy] });
-          T.pop(tl, b.el, t + k * (a.stagger == null ? 0.2 : a.stagger));
+          var at = t + k * (a.stagger == null ? 0.2 : a.stagger);
+          T.pop(tl, b.el, at);
+          if (it.label) T.pop(tl, T.shape.tag(st.layer, it.x, it.y + it.r + 34, [it.label], { size: it.labelSize || 30, rot: 0 }), at + 0.1);
         });
       },
       out: function (tl, st, t) { if (st.sp) T.out(tl, st.sp.el, t); }

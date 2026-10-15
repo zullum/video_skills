@@ -19,8 +19,8 @@ range, a "2×12 / 3/WEEK" tag top left; on the push-up close-up muscle circles p
 This is the one place with frame-by-frame animation: a sprite (≤24 frames from one Nano Banana sheet).
 **Params:** `sprite`, `x=960`, `y=900` (floor), `h=600` (cell height), `rep: [[frame, holdFrames], …]`,
 `reps="fill"|n|"beats"`, `start=0`, `prop: {asset, x, y, h}`, `shadow=true`, `anchor`.
-**Actions:** `reps {n, rep}` (with `reps: "beats"`) · `callout {x, y, r=90}` (snap) · `arrow {x0, y0, x1, y1}` (tick)
-· `tag {lines=["2x12","3/WEEK"], x=230, y=110}` (tick) · `insets {items: [{asset, x, y, r, zoom=2.2, fx=.5, fy=.35}],
+**Actions:** `reps {n, rep}` (with `reps: "beats"`) · `callout {x, y, r=90}` (snap) · `arrow {x0, y0, x1, y1, w=10}` (tick)
+· `tag {lines=["2x12","3/WEEK"], x=230, y=110}` (tick) · `insets {items: [{asset, x, y, r, zoom=2.2, fx=.5, fy=.35, label}],
 stagger=.2}` (pops; a magnified crop of any asset, so a muscle close-up needs no extra image) · `out`.
 ```json
 {"id": "s10", "say": "Push-ups: hands under shoulders, chest to the floor.", "scene": "exerciseDemo", "in": "zoomIn",

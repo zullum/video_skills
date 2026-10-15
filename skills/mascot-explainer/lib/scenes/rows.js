@@ -16,7 +16,7 @@
         var arrow = T.shape.arrow(svg, x0 + r + 20, y, x1 - r - 20, y, { color: p.arrow || "ink" });
         ctx.tl.set(arrow.head, { opacity: 0 }, 0);
         ctx.tl.set(arrow.line, { attr: { "stroke-dashoffset": 1 } }, 0);
-        var badge = row.tag ? T.shape.badge(top, x0 + 0.75 * r, y - 0.75 * r, Math.max(26, r * 0.42), row.tag) : null;
+        var badge = row.tag ? T.shape.badge(top, x0 + 0.75 * r, y - 0.75 * r, Math.max(30, r * 0.5), row.tag) : null;
         if (badge) ctx.tl.set(badge, { opacity: 0 }, 0);
         return { bs: bs, arrow: arrow, badge: badge };
       });
