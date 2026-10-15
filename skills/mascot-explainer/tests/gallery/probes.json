@@ -50,5 +50,11 @@
   {"shot": "cr", "t": 0.1, "kind": "noarea", "rect": [916, 492, 88, 88], "color": "#FFFFFF", "max": 0.01, "note": "no thought yet"},
   {"shot": "cr", "t": 1.0, "kind": "area", "rect": [916, 492, 88, 88], "color": "#FFFFFF", "min": 0.3, "note": "? above head 2"},
   {"shot": "cr", "t": 1.0, "kind": "px", "x": 960, "y": 700, "color": "#FF7A59", "tol": 50, "note": "front-row figure"},
-  {"shot": "cr", "t": 1.7, "kind": "area", "rect": [140, 480, 110, 110], "color": "accent", "tol": 40, "min": 0.2, "note": "coin above head 0"}
+  {"shot": "cr", "t": 1.7, "kind": "area", "rect": [140, 480, 110, 110], "color": "accent", "tol": 40, "min": 0.2, "note": "coin above head 0"},
+  {"shot": "ph", "t": 0.5, "kind": "px", "x": 960, "y": 540, "color": "accent", "tol": 30, "note": "screen"},
+  {"shot": "ph", "t": 1.4, "kind": "area", "rect": [0, 0, 1920, 1080], "color": "#FFFFFF", "min": 0.004, "note": "bookmarks flew out"},
+  {"shot": "ph2", "t": 0.5, "kind": "px", "x": 960, "y": 540, "color": "accent", "tol": 40, "note": "screen shows through the traced hole"},
+  {"shot": "ph3", "t": 1.6, "kind": "area", "rect": [800, 200, 320, 700], "color": "accent", "tol": 40, "min": 0.1, "note": "feed cards"},
+  {"shot": "ph4", "t": 0.8, "kind": "area", "rect": [800, 150, 320, 820], "color": "accent", "tol": 40, "min": 0.03, "note": "app header"},
+  {"shot": "ph4", "t": 0.8, "kind": "area", "rect": [800, 150, 320, 820], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "app figure"}
 ]
