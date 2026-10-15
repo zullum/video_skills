@@ -68,5 +68,9 @@
   {"shot": "sr", "t": 1.5, "kind": "px", "x": 640, "y": 470, "color": "#FF7A59", "tol": 60, "note": "row 0 from"},
   {"shot": "sr", "t": 1.5, "kind": "px", "x": 1280, "y": 610, "color": "#FF7A59", "tol": 60, "note": "row 1 to"},
   {"shot": "sr", "t": 1.5, "kind": "area", "rect": [740, 425, 440, 40], "color": "ink", "tol": 40, "min": 0.05, "note": "arrow row 0"},
-  {"shot": "sr", "t": 1.7, "kind": "area", "rect": [660, 360, 70, 70], "color": "#FFFFFF", "min": 0.3, "note": "set badge"}
+  {"shot": "sr", "t": 1.7, "kind": "area", "rect": [660, 360, 70, 70], "color": "#FFFFFF", "min": 0.3, "note": "set badge"},
+  {"shot": "dc", "t": 0.7, "kind": "area", "rect": [700, 200, 520, 680], "color": "#FFFFFF", "min": 0.5, "note": "cover"},
+  {"shot": "dc", "t": 0.7, "kind": "area", "rect": [700, 200, 520, 680], "color": "ink", "tol": 40, "min": 0.01, "note": "cover title"},
+  {"shot": "dc", "t": 2.0, "kind": "area", "rect": [460, 180, 1000, 700], "color": "#FFFFFF", "min": 0.5, "note": "spread"},
+  {"shot": "dc", "t": 2.0, "kind": "area", "rect": [460, 180, 1000, 700], "color": "#FF7A59", "tol": 50, "min": 0.01, "note": "spread figure"}
 ]
