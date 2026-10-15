@@ -197,9 +197,9 @@
         1
        ]
       ],
-      "x": 640,
+      "x": 600,
       "y": 520,
-      "r": 200
+      "r": 240
      },
      {
       "sprite": "squat",
@@ -261,9 +261,9 @@
         3
        ]
       ],
-      "x": 1280,
+      "x": 1320,
       "y": 520,
-      "r": 200
+      "r": 240
      }
     ]
    },
@@ -486,7 +486,7 @@
       ],
       "dx": -110,
       "dy": 40,
-      "r": 95
+      "r": 115
      },
      {
       "sprite": "squat",
@@ -550,21 +550,46 @@
       ],
       "dx": 110,
       "dy": 200,
-      "r": 95
+      "r": 115
      }
-    ]
+    ],
+    "labelSize": 110,
+    "labelY": 115
    },
    "beats": [
     {
-     "at": "word:monday",
+     "at": 0.05,
      "do": "split",
      "args": {
-      "stagger": 0.35
+      "stagger": 0.3
+     }
+    },
+    {
+     "at": "word:monday+0.2",
+     "do": "fill",
+     "args": {
+      "cols": [
+       0
+      ]
+     }
+    },
+    {
+     "at": "word:wednesday+0.2",
+     "do": "fill",
+     "args": {
+      "cols": [
+       1
+      ]
      }
     },
     {
      "at": "word:friday+0.2",
-     "do": "fill"
+     "do": "fill",
+     "args": {
+      "cols": [
+       2
+      ]
+     }
     }
    ]
   },
@@ -575,20 +600,21 @@
    "hold": 0.3,
    "params": {
     "asset": "satellite",
-    "h": 300,
+    "h": 420,
     "flame": false,
     "path": [
      [
-      -250,
-      820
+      -300,
+      860
      ],
      [
-      2150,
-      260
+      1450,
+      430
      ]
     ],
     "badge": {
-     "text": "15 MIN"
+     "text": "15 MIN",
+     "r": 120
     }
    },
    "beats": [
@@ -596,8 +622,8 @@
      "at": 0,
      "do": "fly",
      "args": {
-      "dur": 2.4,
-      "ease": "none"
+      "dur": 2.2,
+      "ease": "power2.out"
      }
     },
     {
@@ -611,7 +637,8 @@
    "say": "That's the whole plan.",
    "scene": "textSlam",
    "params": {
-    "text": "THE WHOLE PLAN"
+    "text": "THE WHOLE PLAN",
+    "size": 230
    },
    "beats": [
     {
@@ -887,9 +914,9 @@
     ],
     "fg": {
      "asset": "astro",
-     "x": 1600,
-     "y": 1100,
-     "h": 600
+     "x": 1500,
+     "y": 1150,
+     "h": 780
     }
    },
    "beats": [
@@ -1065,8 +1092,10 @@
    "params": {
     "text": "SHOWING UP",
     "sub": {
-     "text": "not volume"
-    }
+     "text": "not volume",
+     "size": 96
+    },
+    "size": 210
    },
    "beats": [
     {
@@ -1555,7 +1584,8 @@
       1,
       1
      ]
-    ]
+    ],
+    "tone": "light"
    },
    "beats": [
     {
@@ -1563,13 +1593,18 @@
      "do": "callout",
      "args": {
       "x": 1243,
-      "y": 930,
-      "r": 110
+      "y": 880,
+      "r": 105
      }
     },
     {
      "at": "word:floor",
-     "do": "tag"
+     "do": "tag",
+     "args": {
+      "size": 64,
+      "x": 330,
+      "y": 170
+     }
     }
    ],
    "hold": 0.5
@@ -1767,7 +1802,8 @@
       1,
       1
      ]
-    ]
+    ],
+    "tone": "light"
    },
    "beats": [
     {
@@ -1777,9 +1813,9 @@
       "items": [
        {
         "asset": "hips",
-        "x": 1580,
-        "y": 300,
-        "r": 130,
+        "x": 1650,
+        "y": 250,
+        "r": 150,
         "fx": 0.5,
         "fy": 0.52,
         "zoom": 3
@@ -1795,9 +1831,9 @@
       "items": [
        {
         "asset": "hips",
-        "x": 330,
-        "y": 330,
-        "r": 130,
+        "x": 300,
+        "y": 280,
+        "r": 150,
         "fx": 0.18,
         "fy": 0.43,
         "zoom": 3
@@ -1812,9 +1848,9 @@
       "items": [
        {
         "asset": "hips",
-        "x": 1600,
-        "y": 720,
-        "r": 130,
+        "x": 1000,
+        "y": 230,
+        "r": 150,
         "fx": 0.08,
         "fy": 0.6,
         "zoom": 3
@@ -1891,7 +1927,8 @@
       1,
       3
      ]
-    ]
+    ],
+    "tone": "light"
    },
    "beats": [
     {
@@ -1899,7 +1936,7 @@
      "do": "callout",
      "args": {
       "x": 944,
-      "y": 930,
+      "y": 920,
       "r": 110
      }
     },
@@ -1915,7 +1952,12 @@
     },
     {
      "at": "word:depth+0.3",
-     "do": "tag"
+     "do": "tag",
+     "args": {
+      "size": 64,
+      "x": 330,
+      "y": 170
+     }
     }
    ],
    "hold": 0.6
@@ -2433,7 +2475,9 @@
       "tag": "2x12"
      }
     ],
-    "r": 110
+    "r": 150,
+    "x0": 560,
+    "x1": 1360
    },
    "beats": [
     {
@@ -2457,22 +2501,22 @@
      {
       "asset": "parallettes",
       "step": 0,
-      "h": 110
+      "h": 140
      },
      {
       "asset": "dumbbell",
       "step": 1,
-      "h": 110
+      "h": 140
      },
      {
       "asset": "rings",
       "step": 2,
-      "h": 180
+      "h": 220
      },
      {
       "asset": "stand",
       "step": 3,
-      "h": 420
+      "h": 520
      }
     ]
    },
@@ -2507,7 +2551,12 @@
    "beats": [
     {
      "at": "word:researching",
-     "do": "freeze"
+     "do": "freeze",
+     "args": {
+      "x": 1450,
+      "y": 330,
+      "r": 130
+     }
     }
    ]
   },
@@ -2522,7 +2571,7 @@
      "asset": "cheer",
      "x": 960,
      "y": 1080,
-     "h": 820
+     "h": 700
     }
    },
    "beats": [
@@ -2731,9 +2780,9 @@
         1
        ]
       ],
-      "x": 640,
+      "x": 600,
       "y": 520,
-      "r": 200
+      "r": 240
      },
      {
       "sprite": "squat",
@@ -2795,9 +2844,9 @@
         3
        ]
       ],
-      "x": 1280,
+      "x": 1320,
       "y": 520,
-      "r": 200
+      "r": 240
      }
     ]
    },
@@ -2813,10 +2862,29 @@
       "i": 0,
       "dimOthers": false
      }
+    }
+   ]
+  },
+  {
+   "id": "s19",
+   "dur": 2.4,
+   "scene": "textSlam",
+   "in": "pop",
+   "params": {
+    "text": "TWO SETS. START.",
+    "size": 200
+   },
+   "beats": [
+    {
+     "at": 0.1,
+     "do": "slam"
     },
     {
      "at": "end-0.5",
-     "do": "fadeOut"
+     "do": "fadeOut",
+     "args": {
+      "dur": 0.5
+     }
     }
    ]
   }

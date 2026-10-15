@@ -49,9 +49,9 @@
         T.out(tl, glow, t + 0.5, { dur: 0.3, scale: 1.2 });
         T.actions.shake(tl, st, t, { amp: 10 });
       },
-      freeze: function (tl, st, t) {
+      freeze: function (tl, st, t, a) {
         tl.set(st.cam, { filter: "grayscale(1) brightness(0.85)" }, t);
-        T.pop(tl, T.shape.pauseIcon(st.top, T.W / 2, T.H / 2, 150), t, { dur: 0.25 });
+        T.pop(tl, T.shape.pauseIcon(st.top, a.x || T.W / 2, a.y || T.H / 2, a.r || 150), t, { dur: 0.25 });
       },
       rays: function (tl, st, t) {
         var r = T.shape.rays(st.rays, st.x, st.cy, st.h * 1.4, { color: "accent", key: st.ctx.id + "rays" });

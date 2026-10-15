@@ -72,5 +72,7 @@
   {"shot": "dc", "t": 0.7, "kind": "area", "rect": [700, 200, 520, 680], "color": "#FFFFFF", "min": 0.5, "note": "cover"},
   {"shot": "dc", "t": 0.7, "kind": "area", "rect": [700, 200, 520, 680], "color": "ink", "tol": 40, "min": 0.01, "note": "cover title"},
   {"shot": "dc", "t": 2.0, "kind": "area", "rect": [460, 180, 1000, 700], "color": "#FFFFFF", "min": 0.5, "note": "spread"},
-  {"shot": "dc", "t": 2.0, "kind": "area", "rect": [460, 180, 1000, 700], "color": "#FF7A59", "tol": 50, "min": 0.01, "note": "spread figure"}
+  {"shot": "dc", "t": 2.0, "kind": "area", "rect": [460, 180, 1000, 700], "color": "#FF7A59", "tol": 50, "min": 0.01, "note": "spread figure"},
+  {"shot": "pz2", "t": 0.9, "kind": "area", "rect": [1440, 240, 120, 120], "color": "#FFFFFF", "min": 0.15, "note": "pause badge where asked"},
+  {"shot": "pz2", "t": 0.9, "kind": "noarea", "rect": [900, 480, 120, 120], "color": "#FFFFFF", "max": 0.01, "note": "not over the target"}
 ]

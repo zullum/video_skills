@@ -55,7 +55,7 @@ object along its path), `flame=true`, `badge: {text, r=70}`.
 freezes grey under a pause badge ("Quick pause", 3:12); lightning bursts round the phone ("Go bananas", 3:15).
 **Params:** `target: {asset | sprite, x, y, h, rep}`, `color="bgDeep"`, `color2="bgLight"`.
 **Actions:** `ignite` (shimmer; the aura cycles 3 variants every 0.1 s) · `burst {n=8}` (impact; bolts + glow +
-shake) · `freeze` (stamp; grey + pause badge) · `rays` · `off`.
+shake) · `freeze {x, y, r=150}` (stamp; grey + pause badge, keep it off the face) · `rays` · `off`.
 ```json
 {"id": "s16", "say": "Start today.", "scene": "powerUp", "in": "flash", "params": {"target": {"asset": "hips", "x": 960, "y": 1000, "h": 720}},
  "beats": [{"at": "word:start", "do": "ignite"}]}
