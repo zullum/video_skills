@@ -56,5 +56,8 @@
   {"shot": "ph2", "t": 0.5, "kind": "px", "x": 960, "y": 540, "color": "accent", "tol": 40, "note": "screen shows through the traced hole"},
   {"shot": "ph3", "t": 1.6, "kind": "area", "rect": [800, 200, 320, 700], "color": "accent", "tol": 40, "min": 0.1, "note": "feed cards"},
   {"shot": "ph4", "t": 0.8, "kind": "area", "rect": [800, 150, 320, 820], "color": "accent", "tol": 40, "min": 0.03, "note": "app header"},
-  {"shot": "ph4", "t": 0.8, "kind": "area", "rect": [800, 150, 320, 820], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "app figure"}
+  {"shot": "ph4", "t": 0.8, "kind": "area", "rect": [800, 150, 320, 820], "color": "#FF7A59", "tol": 50, "min": 0.03, "note": "app figure"},
+  {"shot": "cw", "t": 0.1, "kind": "noarea", "rect": [60, 40, 1800, 720], "color": "accent", "tol": 40, "max": 0.01, "note": "wall empty"},
+  {"shot": "cw", "t": 1.6, "kind": "area", "rect": [60, 40, 1800, 720], "color": "accent", "tol": 40, "min": 0.15, "note": "cards in"},
+  {"shot": "cw", "t": 1.9, "kind": "px", "x": 960, "y": 960, "color": "#FF7A59", "tol": 50, "note": "figure in front"}
 ]
