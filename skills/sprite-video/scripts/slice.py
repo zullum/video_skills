@@ -1,4 +1,4 @@
-# usage: python3 slice.py SHEET.png OUTDIR --cols 3 --rows 3 [--floor] [--drop 4,7] [--keep-small]
+# usage: python3 slice.py SHEET.png OUTDIR --cols 3 --rows 3 [--floor] [--drop 4,7] [--keep-small] [--clip]
 # Cuts a generated sprite sheet into frames and traces each one to SVG (trace2: potrace ink + vtracer fills).
 # Frames keep their CELL coordinates: the template pre-drew the character in every cell, so no
 # alignment is needed and nothing shakes. Writes OUTDIR/frames.json and OUTDIR/frames.js:
@@ -10,6 +10,7 @@
 #                 of the cell width) must not move. Use it when the head stays still (flex, curls); the
 #                 model drifts a few px from row to row, which shows as a jump. Skip it when the whole
 #                 body moves (push-up) and the cells are already locked by the template.
+#   --clip        transparent outside the figure (for scenes on another background)
 #   --ground      align every frame on its planted foot: the heel (left end of the lowest ink) and
 #                 the sole stay where they are in frame 0. Use it for standing moves (squat, lunge,
 #                 jumps land) where the model slides the feet a few % per cell. Adds a floor line
@@ -25,7 +26,7 @@ ap.add_argument("sheet"); ap.add_argument("out")
 ap.add_argument("--cols", type=int, required=True); ap.add_argument("--rows", type=int, required=True)
 ap.add_argument("--floor", action="store_true"); ap.add_argument("--drop", default="")
 ap.add_argument("--keep-small", action="store_true"); ap.add_argument("--anchor", default="")
-ap.add_argument("--ground", action="store_true")
+ap.add_argument("--ground", action="store_true"); ap.add_argument("--clip", action="store_true")
 A = ap.parse_args(); os.makedirs(A.out, exist_ok=True)
 drop = {int(x) for x in A.drop.split(",") if x}
 a = np.array(Image.open(A.sheet).convert("RGB")).astype(int); H, W = a.shape[:2]
@@ -78,7 +79,7 @@ for k in range(A.cols * A.rows):
         yb = np.where(keep.any(1))[0].max(); band = keep[max(yb - int(.07 * ch), 0):yb + 1]
         gnd = [float(m_ + np.where(band.any(0))[0].min()), float(m_ + yb)]
     name = f"f{len(frames):02d}.svg"
-    trace2.trace(cc.astype("uint8"), pal, BGQ, f"{A.out}/{name}")
+    trace2.trace(cc.astype("uint8"), pal, BGQ, f"{A.out}/{name}", clip=A.clip)
     frames.append(dict(file=name, src=k, x=float(m_ + bx0), y=float(m_ + by0), w=int(bx1 - bx0), h=int(by1 - by0), anc=anc, gnd=gnd))
     print(k, "->", name)
 fl = None

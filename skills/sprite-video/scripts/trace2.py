@@ -13,7 +13,9 @@ def ink_paths(rgb, up=4, lo=45, hi=95):
         (rgb.shape[1] * up, rgb.shape[0] * up), Image.BICUBIC)).astype(float)
     big = ndimage.gaussian_filter(big, up * .9) > 127                   # blur before threshold: no edge ripple
     big = ndimage.binary_opening(big, iterations=1)
-    plist = potrace.Bitmap(~big).trace(  # potracer fills the False pixels
+    return f'<path fill="{INK}" fill-rule="evenodd" d="{_outline(big, up)}"/>'
+def _outline(mask, up):                                              # True pixels -> SVG path data (1/up px)
+    plist = potrace.Bitmap(~mask).trace(  # potracer fills the False pixels
         turdsize=up * up * 3, alphamax=1.2, opticurve=True, opttolerance=0.4)
     f = lambda p: f"{p.x / up:.2f},{p.y / up:.2f}"
     d = []
@@ -23,7 +25,15 @@ def ink_paths(rgb, up=4, lo=45, hi=95):
             d.append(("L" + f(s.c) + "L" + f(s.end_point)) if s.is_corner else
                      ("C" + f(s.c1) + " " + f(s.c2) + " " + f(s.end_point)))
         d.append("Z")
-    return f'<path fill="{INK}" fill-rule="evenodd" d="{"".join(d)}"/>'
+    return "".join(d)
+def clip_def(rgb, bg, up=4):
+    # Figure mask (same test as slice.py) eroded 2 px, so the clip edge hides under the ink outline and no
+    # background-coloured fill survives outside the figure or inside its holes.
+    m = np.abs(rgb[..., :3].astype(int) - np.array(bg)).sum(2) > 70
+    m = ndimage.binary_erosion(ndimage.binary_opening(m, iterations=1), iterations=2)
+    big = np.array(Image.fromarray((m * 255).astype("uint8")).resize(
+        (rgb.shape[1] * up, rgb.shape[0] * up), Image.BICUBIC)) > 127
+    return f'<clipPath id="fig"><path clip-rule="evenodd" d="{_outline(big, up)}"/></clipPath>'
 def fill_layer(rgb, pal, bg, up=2):
     L = rgb[..., :3] @ np.array([.299, .587, .114])
     # ink = what ink_paths draws (L below the 45..95 midpoint); dark gray fills (shorts, L ~ 90) are NOT
@@ -46,7 +56,11 @@ def fill_layer(rgb, pal, bg, up=2):
         c = [int(m.group(1)[i:i + 2], 16) for i in (0, 2, 4)]
         return f'fill="#{bgx}"' if min(c) > 190 and sum(abs(c[i] - bg[i]) for i in range(3)) < 28 else m.group(0)
     return f'<g transform="scale({1 / up})">' + re.sub(r'fill="#([0-9A-Fa-f]{6})"', nb, inner) + "</g>"
-def trace(rgb, pal, bg, out):
+def trace(rgb, pal, bg, out, clip=False):
+    # clip=True: transparent outside the figure (for scenes whose background differs from the sheet's)
     h, w = rgb.shape[:2]
+    fills = fill_layer(rgb, pal, bg)
+    if clip:
+        fills = f'<defs>{clip_def(rgb, bg)}</defs><g clip-path="url(#fig)">{fills}</g>'
     open(out, "w").write(f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
-                         + fill_layer(rgb, pal, bg) + ink_paths(rgb) + "</svg>")
+                         + fills + ink_paths(rgb) + "</svg>")
