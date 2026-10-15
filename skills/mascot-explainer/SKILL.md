@@ -1,6 +1,6 @@
 ---
 name: mascot-explainer
-description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. Nano Banana (Gemini image) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 17 HyperFrames scene templates driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code with cheap Gemini assets.
+description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. Nano Banana (Gemini image) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 15 HyperFrames scene templates (plus zoom-through and muscle-inset actions) driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code with cheap Gemini assets.
 ---
 
 # Mascot explainer
@@ -11,7 +11,7 @@ loops about a third of the time. Code draws everything geometric; Gemini draws o
 
 | layer | who draws it | cost |
 |---|---|---|
-| backgrounds, bubbles, window room, day columns, text, tags, arrows, rays, flames, phones, cards, pages | code (17 scene templates in `lib/scenes/`) | $0 |
+| backgrounds, bubbles, window room, day columns, text, tags, arrows, rays, flames, phones, cards, pages | code (15 scene templates in `lib/scenes/`) | $0 |
 | the character in poses, hands, props, silhouettes | Nano Banana sheets → `asset_sheet.py` → clipped SVGs | ~$0.10 / sheet |
 | exercise loops | one sprite sheet (≤24 cells) → sprite-video `slice.py --clip` → SVG frames | ~$0.20-0.25 / move |
 | narration, music, SFX | Kokoro / the user's recording, ACE-Step or the user's track, synthesized SFX | $0 |
@@ -45,7 +45,7 @@ pixel probes; `--render` adds a draft render).
    It refuses when the count is wrong and writes `assets/svg/*.svg` + `assets/manifest.json`. A phone screen drawn in
    the chroma colour becomes a hole (`holes`), which the `phone` scene fills.
 3. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call), then
-   `$SV/scripts/slice.py sheet.png frames --cols C --rows R --clip [--ground]` and
+   `$SV/scripts/slice.py sheet.png frames --cols C --rows R --clip --ink-keep "<dark fill colours, e.g. the shorts>" [--ground]` and
    `SKILL/scripts/py SKILL/scripts/sprite_import.py frames P <name>`. Without `--clip` the frames keep a background box.
 4. Check them on an asset board: a temporary `bubbles` shot with every asset, `build.py --only board`, one snapshot.
    No chroma fringe, the same ink weight, the same character everywhere.
@@ -79,6 +79,7 @@ each beat) into labelled sheets → a fresh Critic agent grades every shot 1-10 
 and params first, scene code next, a new image last) → repeat until every shot is 8+, 3 rounds at most.
 
 ## 7. Render and verify
+Build once more without `--no-sfx` first (a `--no-sfx` build leaves the SFX stem out).
 `(cd P && $VM/scripts/hf render -o renders/<name>-4k.mp4 --resolution landscape-4k --fps 30 --workers 2 -q delivery)`;
 `ffprobe` shows 3840×2160; `$VM/scripts/py $VM/scripts/qa/av_check.py renders/<name>-4k.mp4 --duration <total>
 --expect <slam times>`; a contact sheet (`bash $VM/scripts/qa/contact_sheet.sh <mp4> <jpg> <times…>`) for a last look.

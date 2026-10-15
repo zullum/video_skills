@@ -29,7 +29,7 @@ def test_builds_project(tmp_path):
     build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))
     idx = (p / "index.html").read_text()
     assert 'data-composition-src="compositions/s02.html" data-start="2.000" data-duration="1.000"' in idx
-    assert 'data-duration="3.000"' in idx and "TDisplay" in idx and "assets/js/scenes/demo.js" in idx
+    assert 'data-duration="3.000"' in idx and "TDisplay" in idx and "assets/js/lib/scenes/demo.js" in idx
     events = json.loads((p / "compositions" / "s01.motion.json").read_text())["events"]
     assert [e["t"] for e in events] == [0.2, 0.32]
     cues = json.loads((p / "audio" / "sfx_cues.json").read_text())
@@ -72,3 +72,28 @@ def test_sfx_kinds_sit_under_the_voice_and_style_overrides(tmp_path):
     build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))
     kinds = json.loads((p / "audio" / "sfx_cues.json").read_text())["event_kinds"]
     assert kinds["impact"][1] <= -12 and kinds["pop"] == ["pop", -20, {}]
+
+
+def test_a_project_scene_with_a_lib_name_survives_the_build(tmp_path):
+    p = project(tmp_path / "p", [{"id": "s01", "dur": 1, "scene": "oneoff", "beats": [{"at": 0, "do": "wave"}]}])
+    own = p / "assets" / "js" / "scenes"; own.mkdir(parents=True)
+    (own / "demo.js").write_text("// @scene oneoff @actions wave\n// mine\n")
+    build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))
+    assert (own / "demo.js").read_text().endswith("// mine\n")
+    idx = (p / "index.html").read_text()
+    assert "assets/js/lib/scenes/demo.js" in idx and "assets/js/scenes/demo.js" in idx
+
+
+def test_no_sfx_drops_a_stale_stem_but_keeps_the_music(tmp_path):
+    p = project(tmp_path / "p", [{"id": "s01", "dur": 1, "scene": "demo"}])
+    (p / "assets" / "audio").mkdir(); (p / "assets" / "audio" / "sfx.wav").write_bytes(b"old")
+    (p / "assets" / "audio" / "music.wav").write_bytes(b"x")
+    build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))
+    idx = (p / "index.html").read_text()
+    assert 'id="sfx-main"' not in idx and 'id="music"' in idx
+
+
+def test_unknown_transition_is_refused(tmp_path):
+    p = project(tmp_path / "p", [{"id": "s01", "dur": 1, "scene": "demo", "in": "zoomThrough"}])
+    with pytest.raises(SystemExit, match="s01: unknown transition 'zoomThrough'; use: cut, pop, zoomIn, whip, flash"):
+        build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))

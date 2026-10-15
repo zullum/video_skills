@@ -85,7 +85,7 @@ Generic actions on any scene: `push {x, y, to=1.12, dur=1.2}` · `zoomInto {x, y
 `flash {color}` · `shake {amp=8}` · `fadeOut {dur=.3}`.
 
 ## A beat no template covers
-Write a one-off scene in the project: `assets/js/scenes/<name>.js`, first line `// @scene <name> @actions a,b`,
+Write a one-off scene in the project: `assets/js/scenes/<name>.js` (lib scenes are copied to `assets/js/lib/scenes/`), first line `// @scene <name> @actions a,b`,
 `TOON.scene.<name> = {build, idle?, actions}` like the ones in `lib/scenes/`. build.py's registry reads the project's
 scenes too and never overwrites them. Rules that cost a debug round once:
 - tween HTML boxes (`TOON.box`, `TOON.item`, layers), not SVG groups: GSAP `scale` with `svgOrigin` on a full-frame
@@ -93,5 +93,7 @@ scenes too and never overwrites them. Rules that cost a debug round once:
 - an element is hidden before its pop because `fromTo` renders its start state at once; anything never popped is
   visible from frame 0;
 - never set a CSS `transform` on an element GSAP also scales or moves (put the rotation on a child);
+- never `to()` a property that another live tween animates (the idle camera drift owns `rig.scale` for the whole
+  shot; `push` has its own `zoom` layer): the frame would depend on the order frames are rendered in;
 - no `Math.random`, `Date` or CSS animations: `TOON.rng(TOON.hash(id))` and the timeline only;
 - mark decorative layering with `data-layout-allow-overlap` / `data-layout-allow-overflow`, and keep `hf check` at 0 errors.

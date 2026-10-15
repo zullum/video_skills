@@ -27,5 +27,6 @@
   {"id": "dc", "dur": 2.4, "scene": "document", "params": {"pages": [{"kind": "cover", "title": "THE GUIDE", "subtitle": "three moves, two sets", "asset": "blob"}, {"kind": "spread", "heading": "PUSH-UPS", "lines": 12, "figures": ["blob"]}]}, "beats": [{"at": 0.1, "do": "in"}, {"at": 1.0, "do": "flip", "args": {"to": 1}}]},
   {"id": "pz2", "dur": 1.2, "scene": "powerUp", "params": {"target": {"asset": "blob", "x": 960, "y": 540, "h": 300}}, "beats": [{"at": 0.2, "do": "freeze", "args": {"x": 1500, "y": 300, "r": 110}}]},
   {"id": "ed2", "dur": 1.5, "scene": "exerciseDemo", "params": {"sprite": "tick", "x": 700, "y": 800, "h": 400, "rep": [[0, 15], [1, 15]], "tone": "light"}, "beats": [{"at": 0.2, "do": "insets", "args": {"items": [{"asset": "blob", "x": 1400, "y": 400, "r": 120, "label": "CHEST"}]}}, {"at": 0.3, "do": "arrow", "args": {"x0": 1100, "y0": 900, "x1": 1100, "y1": 600}}]},
-  {"id": "sr2", "dur": 1.5, "scene": "seqRows", "params": {"rows": [{"from": {"asset": "blob"}, "to": {"asset": "blob"}, "tag": "2x12", "toTag": "2x13"}], "r": 100}, "beats": [{"at": 0.1, "do": "show"}, {"at": 0.6, "do": "tag"}]}
+  {"id": "sr2", "dur": 1.5, "scene": "seqRows", "params": {"rows": [{"from": {"asset": "blob"}, "to": {"asset": "blob"}, "tag": "2x12", "toTag": "2x13"}], "r": 100}, "beats": [{"at": 0.1, "do": "show"}, {"at": 0.6, "do": "tag"}]},
+  {"id": "pp", "dur": 2.5, "scene": "bubbles", "params": {"items": [{"asset": "blob", "x": 1500, "y": 540, "r": 120}]}, "beats": [{"at": 0.5, "do": "push", "args": {"x": 960, "y": 540, "to": 1.5, "dur": 0.5}}]}
 ]}

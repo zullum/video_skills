@@ -7,7 +7,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
 | [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `python scripts/yellow_dude_4k_pipeline.py [pose_sheet.png]`; without an argument it uses the example `assets/pullup_poses.jpg`. |
 | [`viral-motion`](skills/viral-motion/SKILL.md) | Motion-graphics videos at three levels (showreel, lyric video with an original song, story film with score and sound design) through HyperFrames. Music, voice and sound effects are made locally: **$0**, no Gemini. See [Viral Motion](#viral-motion). |
-| [`mascot-explainer`](skills/mascot-explainer/SKILL.md) | A whole narrated cartoon explainer from code (one mascot, planet bubbles, zoom-throughs, text slams, schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K: 17 HyperFrames scene templates driven by a `shots.json` storyboard, Nano Banana only for the character, poses and props (traced to SVG), sprite sheets of up to 24 frames for body motion, Kokoro narration, ducked music, synthesized SFX. About **$1** of images for a 50 s video. See [Mascot Explainer](#mascot-explainer). |
+| [`mascot-explainer`](skills/mascot-explainer/SKILL.md) | A whole narrated cartoon explainer from code (one mascot, planet bubbles, zoom-throughs, text slams, schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K: 15 HyperFrames scene templates driven by a `shots.json` storyboard, Nano Banana only for the character, poses and props (traced to SVG), sprite sheets of up to 24 frames for body motion, Kokoro narration, ducked music, synthesized SFX. About **$1** of images for a 50 s video. See [Mascot Explainer](#mascot-explainer). |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
@@ -131,9 +131,10 @@ Level 1 (showreel) needs only the first line. Prove the setup with `scripts/self
 
 <p><img src="assets/mascot-explainer.gif" width="60%" alt="mascot-explainer demo: text slam, planet bubbles, zoom-through into a 24-frame push-up loop"></p>
 
-The demo: a 52 s, 4K, narrated explainer ("Two sets are enough to start"), 19 shots on 12 of the 17 templates, made
+The demo: a 52 s, 4K, narrated explainer ("Two sets are enough to start"), 19 shots on 12 of the 15 scene templates, made
 from 7 Nano Banana images for **$0.76** (character sheet, pose sheet, prop sheet, a 24-frame push-up and an 8-frame
-squat, each with its base pose). Its inputs are in `skills/mascot-explainer/examples/demo/`.
+squat, each with its base pose). Its inputs are in `skills/mascot-explainer/examples/demo/`. Honest grade: after
+three critique rounds a separate Critic scored the shots 6-8/10 (most 7); the skill's own target is 8+ for every shot.
 
 Built from an analysed 8:25 calisthenics explainer (its shot-by-shot breakdown is text only, in
 `skills/mascot-explainer/references/reference-video*.md`). Code draws everything geometric; Gemini draws only the
@@ -144,7 +145,7 @@ beats land on narration words, and the SFX come from the same beats.
 Setup: install the repo's skills (`bash install.sh claude`); mascot-explainer uses sprite-video and viral-motion
 (set viral-motion up first, see above). Then `bash ~/.claude/skills/mascot-explainer/scripts/setup_venv.sh` (a
 Python 3.12 venv via `uv`) and `bash ~/.claude/skills/mascot-explainer/scripts/check.sh`. `scripts/selftest.sh` proves
-the install for $0: a gallery of all 17 scenes checked by pixel probes. `GEMINI_API_KEY` is needed only for the asset
+the install for $0: a gallery of all 15 scenes checked by pixel probes. `GEMINI_API_KEY` is needed only for the asset
 stage; every image call goes through `gen_asset.py`, which caches and stops at the project's budget.
 
 | | Price |
@@ -182,7 +183,7 @@ skills/viral-motion/
   examples/ templates/   the three original prompts, song / score / cue templates, a self-test clip
 skills/mascot-explainer/
   SKILL.md               brief -> checkpoint -> assets -> timing -> build -> audio -> critique -> 4K render
-  lib/                   TOON runtime (core, shapes, sprite player) and 17 scene templates (lib/scenes/)
+  lib/                   TOON runtime (core, shapes, sprite player) and 15 scene templates (lib/scenes/)
   scripts/               gen_asset (budgeted Gemini), asset_sheet, sprite_import, timing, build, probe, selftest
   references/            scene catalog, reference-video breakdown, style bible, asset prompts, storyboard, critique
   tests/                 unit tests, catalog-example builds, the scene gallery with pixel probes

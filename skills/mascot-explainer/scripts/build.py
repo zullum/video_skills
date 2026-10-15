@@ -30,9 +30,14 @@ def _walk(obj, key):
             yield from _walk(v, key)
 
 
+TRANSITIONS = ("cut", "pop", "zoomIn", "whip", "flash")
+
+
 def validate(shots, reg, man):
     for s in shots:
         sid, sc = s["id"], s.get("scene")
+        if s.get("in", "cut") not in TRANSITIONS:
+            sys.exit(f"{sid}: unknown transition '{s['in']}'; use: {', '.join(TRANSITIONS)}")
         if sc not in reg["scenes"]:
             sys.exit(f"{sid}: unknown scene '{sc}'; known: {', '.join(sorted(reg['scenes']))}")
         acts = reg["scenes"][sc] + reg["generic"]
@@ -65,18 +70,20 @@ def shot_times(P, shots):
 
 
 def copy_lib(lib_dir, P):
+    """lib/*.js -> assets/js/, lib/scenes -> assets/js/lib/scenes/ (the project's own one-off scenes live in
+    assets/js/scenes/ and are never touched); returns the script list: core, runtime, lib scenes, project scenes."""
     js = os.path.join(P, "assets", "js")
-    os.makedirs(os.path.join(js, "scenes"), exist_ok=True)
+    os.makedirs(os.path.join(js, "lib", "scenes"), exist_ok=True)
     for f in glob.glob(os.path.join(lib_dir, "*.js")):
         shutil.copy(f, js)
     for f in glob.glob(os.path.join(lib_dir, "scenes", "*.js")):
-        shutil.copy(f, os.path.join(js, "scenes"))
+        shutil.copy(f, os.path.join(js, "lib", "scenes"))
     if os.path.isdir(os.path.join(lib_dir, "fonts")):
         shutil.copytree(os.path.join(lib_dir, "fonts"), os.path.join(P, "assets", "fonts"), dirs_exist_ok=True)
-    rest = sorted(os.path.basename(f) for f in glob.glob(os.path.join(js, "*.js")) if not f.endswith("toon-core.js"))
-    return (["assets/js/toon-core.js"] if os.path.exists(os.path.join(js, "toon-core.js")) else []) + \
-        [f"assets/js/{f}" for f in rest] + \
-        sorted(f"assets/js/scenes/{os.path.basename(f)}" for f in glob.glob(os.path.join(js, "scenes", "*.js")))
+    rel = lambda sub: sorted(f"assets/js/{sub}{os.path.basename(f)}" for f in glob.glob(os.path.join(js, sub, "*.js")))
+    core = "assets/js/toon-core.js"
+    return ([core] if os.path.exists(os.path.join(P, core)) else []) + [f for f in rel("") if f != core] + \
+        rel("lib/scenes/") + rel("scenes/")
 
 
 def main(project, only=None, sfx=True, lib_dir=None):
@@ -111,10 +118,11 @@ def main(project, only=None, sfx=True, lib_dir=None):
             "cues": beats.transition_cues(resolved, [st for _, st, _ in slots], ids),
             "event_kinds": dict(audio.SFX_KINDS, **style.get("sfx_kinds", {}))}
     json.dump(cues, open(os.path.join(P, "audio", "sfx_cues.json"), "w"), indent=1)
-    vm = deps.locate("vm") if sfx else None
-    if vm:
+    music = os.path.exists(os.path.join(P, "assets", "audio", "music.wav"))
+    vm = deps.locate("vm") if sfx or music else None
+    if sfx:
         audio.build_sfx(P, vm)
-    tags = audio.tags(P, t, vm, style.get("mix", {}))
+    tags = audio.tags(P, t, vm, style.get("mix", {}), with_sfx=sfx)
     open(os.path.join(P, "index.html"), "w").write(html.index_html(style, man, slots, tags, scripts))
     print(f"{len(shots)} shots, {t['duration']:.2f} s, {len(tags)} audio tags -> {os.path.join(P, 'index.html')}")
 

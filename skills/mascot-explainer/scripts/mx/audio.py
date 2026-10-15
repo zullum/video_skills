@@ -26,8 +26,10 @@ def music(project, timing, vm, base):
     spoken = [f'{os.path.join(project, s["voice"])}@{s["start"] + s["lead"]:.3f}' for s in timing["shots"] if s.get("voice")]
     lane = ""
     if spoken:
-        out = subprocess.run(_vm(vm, "sfx", "duck_lane.py") + spoken + ["--base", str(base)],
-                             capture_output=True, text=True, check=True).stdout
+        r = subprocess.run(_vm(vm, "sfx", "duck_lane.py") + spoken + ["--base", str(base)], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit("duck_lane failed:\n" + r.stderr[-800:])
+        out = r.stdout
         lane = f" data-automation='{json.dumps(json.loads(out))}'"
     return [f'<audio id="music" src="assets/audio/music.wav" data-start="0" data-duration="{timing["duration"]:.3f}" '
             f'data-track-index="10" data-volume="{base}"{lane}></audio>']
@@ -46,5 +48,9 @@ def sfx(project, timing, vol):
             f'data-track-index="11" data-volume="{vol}"></audio>']
 
 
-def tags(project, timing, vm, mix):
-    return narration(timing) + music(project, timing, vm, mix.get("music", 0.7)) + sfx(project, timing, mix.get("sfx", 0.35))
+def tags(project, timing, vm, mix, with_sfx=True):
+    stem = sfx(project, timing, mix.get("sfx", 0.35))
+    if stem and not with_sfx:                       # an old stem would be out of sync with edited beats
+        print("note: SFX left out (--no-sfx); build without --no-sfx before rendering", file=sys.stderr)
+        stem = []
+    return narration(timing) + music(project, timing, vm, mix.get("music", 0.7)) + stem

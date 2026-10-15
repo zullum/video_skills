@@ -105,9 +105,11 @@
     flash: function (tl, cam, stage, dur) { tl.fromTo(overlay(stage), { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, dur - 0.12); }
   };
 
+  // A push-in on its own layer (zoom): the idle camera drift tweens rig.scale for the whole shot, and two live
+  // tweens on one property make the frame depend on the order frames are rendered in.
   T.actions.push = function (tl, st, t, a) {
-    tl.set(st.rig, { transformOrigin: (a.x == null ? T.W / 2 : a.x) + "px " + (a.y == null ? T.H / 2 : a.y) + "px" }, t);
-    tl.to(st.rig, { scale: a.to || 1.12, duration: a.dur || 1.2, ease: a.ease || "power2.inOut" }, t);
+    st.zoom.style.transformOrigin = (a.x == null ? T.W / 2 : a.x) + "px " + (a.y == null ? T.H / 2 : a.y) + "px";
+    tl.fromTo(st.zoom, { scale: 1 }, { scale: a.to || 1.12, duration: a.dur || 1.2, ease: a.ease || "power2.inOut" }, t);
   };
   T.actions.zoomInto = function (tl, st, t, a) {
     tl.set(st.cam, { transformOrigin: a.x + "px " + a.y + "px" }, t);
@@ -125,9 +127,9 @@
   T.run = function (id, shot, dur) {
     var stage = document.getElementById(id + "-stage"), tl = gsap.timeline({ paused: true });
     var S = T.scene[shot.scene]; if (!S) throw new Error(id + ": unknown scene " + shot.scene);
-    var p = shot.params || {}, cam = T.layer(stage), rig = T.layer(cam);
+    var p = shot.params || {}, cam = T.layer(stage), zoom = T.layer(cam), rig = T.layer(zoom);
     var ctx = { id: id, dur: dur, tl: tl, rng: T.rng(T.hash(id)) };
-    var st = S.build(rig, p, ctx) || {}; st.cam = cam; st.rig = rig; st.stage = stage; st.dur = dur; st.ctx = ctx;
+    var st = S.build(rig, p, ctx) || {}; st.cam = cam; st.zoom = zoom; st.rig = rig; st.stage = stage; st.dur = dur; st.ctx = ctx;
     if (p.push !== 0) tl.fromTo(rig, { scale: 1 }, { scale: p.push || 1.03, duration: dur, ease: "none" }, 0);
     if (S.idle) S.idle(tl, st, dur);
     if (ENTER[shot["in"]]) ENTER[shot["in"]](tl, cam, stage);
