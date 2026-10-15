@@ -3,5 +3,7 @@
   {"id": "bb", "dur": 2.2, "scene": "bubbles", "params": {"items": [{"asset": "blob", "x": 960, "y": 540, "r": 200}]}, "beats": [{"at": 0.3, "do": "pop", "args": {"items": [0]}}, {"at": 1.2, "do": "highlight", "args": {"i": 0}}]},
   {"id": "bb2", "dur": 1.2, "scene": "bubbles", "params": {"items": [{"asset": "ring", "x": 960, "y": 540, "r": 220}]}},
   {"id": "bz", "dur": 1.5, "scene": "bubbles", "params": {"items": [{"asset": "blob", "x": 500, "y": 540, "r": 150}, {"asset": "blob", "x": 1400, "y": 540, "r": 150}]}, "beats": [{"at": 0.8, "do": "zoom", "args": {"i": 0}}]},
-  {"id": "bs", "dur": 1.5, "scene": "bubbles", "params": {"items": [{"asset": "blob", "x": 960, "y": 540, "r": 120}]}, "beats": [{"at": 0.2, "do": "swarm", "args": {"n": 24}}]}
+  {"id": "bs", "dur": 1.5, "scene": "bubbles", "params": {"items": [{"asset": "blob", "x": 960, "y": 540, "r": 120}]}, "beats": [{"at": 0.2, "do": "swarm", "args": {"n": 24}}]},
+  {"id": "ts", "dur": 1.6, "scene": "textSlam", "params": {"text": "BIG IDEA"}, "beats": [{"at": 0.4, "do": "slam"}]},
+  {"id": "tt", "dur": 1.6, "scene": "textSlam", "params": {"text": "THE WEEKLY PLAN"}, "beats": [{"at": 0.2, "do": "type", "args": {"cps": 20}}]}
 ]}
