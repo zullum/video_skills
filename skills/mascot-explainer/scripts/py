@@ -1,0 +1,5 @@
+#!/bin/sh
+# Runs the skill's Python 3.12 venv (scripts/setup_venv.sh creates it).
+D="$(cd "$(dirname "$0")/.." && pwd)"
+[ -x "$D/.venv/bin/python" ] || { echo "no venv: bash $D/scripts/setup_venv.sh" >&2; exit 2; }
+exec "$D/.venv/bin/python" "$@"
