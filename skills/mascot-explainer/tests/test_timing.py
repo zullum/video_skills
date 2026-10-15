@@ -28,3 +28,9 @@ def test_missing_dur_names_shot():
 def test_silent_mode_ignores_say():
     t = timing.layout([{"id": "s1", "say": "x", "dur": 2}], {}, {}, silent=True)
     assert t["shots"][0]["voice"] is None and t["shots"][0]["dur"] == 2
+
+
+def test_cache_key_changes_with_the_audio_chain(monkeypatch):
+    a = timing.cache_key("Two sets.", "af_heart", 1.0)
+    monkeypatch.setattr(timing, "CHAIN", timing.CHAIN + ",volume=1")
+    assert timing.cache_key("Two sets.", "af_heart", 1.0) != a

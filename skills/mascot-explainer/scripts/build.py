@@ -108,7 +108,8 @@ def main(project, only=None, sfx=True, lib_dir=None):
     slots = [(sid, row["start"], row["dur"]) for sid, row in zip(ids, t["shots"])]
     os.makedirs(os.path.join(P, "audio"), exist_ok=True)
     cues = {"duration": t["duration"], "slots": {i: st for i, st, _ in slots},
-            "cues": beats.transition_cues(resolved, [st for _, st, _ in slots], ids)}
+            "cues": beats.transition_cues(resolved, [st for _, st, _ in slots], ids),
+            "event_kinds": dict(audio.SFX_KINDS, **style.get("sfx_kinds", {}))}
     json.dump(cues, open(os.path.join(P, "audio", "sfx_cues.json"), "w"), indent=1)
     vm = deps.locate("vm") if sfx else None
     if vm:

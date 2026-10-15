@@ -14,8 +14,11 @@ import deps
 from mx import whisper
 from mx.beats import norm
 
-CHAIN = ("pan=stereo|c0=c0|c1=c0,acompressor=threshold=0.063:ratio=3:attack=5:release=120:makeup=2,"
-         "loudnorm=I=-16:TP=-3:LRA=11")
+# The voice leads an explainer (the music is ducked under it nearly all the time), so it carries the mix's
+# loudness: -13.5 LUFS. Kokoro speech peaks ~13 dB above its loudness; a broadcast-style limiter brings that to
+# ~8 dB, so every line lands at -13.5 with its peaks near -6 dBFS and the mix passes -14 LUFS / -1 dBTP.
+CHAIN = ("pan=stereo|c0=c0|c1=c0,acompressor=threshold=0.05:ratio=4:attack=2:release=80:makeup=3,"
+         "alimiter=limit=0.3:attack=1:release=40:level=disabled,loudnorm=I=-13.5:TP=-3:LRA=11")
 
 
 def layout(shots, speech, words, lead=0.2, tail=0.3, silent=False):
@@ -50,10 +53,14 @@ def _paths(P, sid):
     return nar, os.path.join(P, "assets", "audio", "narration", f"{sid}.wav")
 
 
+def cache_key(text, voice, speed):
+    return hashlib.sha1(f"{text}|{voice}|{speed}|{CHAIN}".encode()).hexdigest()
+
+
 def from_kokoro(P, shot, voice, speed, vm):
     sid, text = shot["id"], shot["say"]
     nar, dst = _paths(P, sid)
-    cache, key = os.path.join(nar, f"{sid}.json"), hashlib.sha1(f"{text}|{voice}|{speed}".encode()).hexdigest()
+    cache, key = os.path.join(nar, f"{sid}.json"), cache_key(text, voice, speed)
     if os.path.exists(cache) and os.path.exists(dst):
         c = json.load(open(cache))
         if c["key"] == key:

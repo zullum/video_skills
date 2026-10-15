@@ -11,8 +11,8 @@ ACTION_SFX = {
     **dict.fromkeys(["zoom", "zoomInto", "fly", "launch", "flip", "split"], "whoosh"),
     **dict.fromkeys(["tag", "cite", "build", "arrow"], "tick"), "callout": "snap", "type": "blip"}
 LISTS = ("items", "rows", "cols", "heads")
-TRANSITIONS = {"whip": {"fx": "whoosh", "gain_db": -10, "peak": True, "args": {"dur": 0.5}},
-               "flash": {"fx": "impact", "gain_db": -8}, "pop": {"fx": "pop", "gain_db": -14}}
+TRANSITIONS = {"whip": {"fx": "whoosh", "gain_db": -15, "peak": True, "args": {"dur": 0.5}},
+               "flash": {"fx": "impact", "gain_db": -15}, "pop": {"fx": "pop", "gain_db": -19}}
 MAX_EVENTS = 8
 
 
@@ -46,7 +46,7 @@ def events_for(beat):
     a, t = beat.get("args") or {}, beat["t"]
     if beat["do"] in ("zoom", "zoomInto"):
         return [{"t": round(max(0.0, t + a.get("dur", 0.6) - 0.3), 3), "kind": "whoosh", "note": beat["do"]}]
-    n = next((len(a[k]) for k in LISTS if isinstance(a.get(k), list)), a.get("count"))
+    n = next((len(a[k]) for k in LISTS if isinstance(a.get(k), list)), a.get("count", a.get("n")))
     if not n or n == 1:
         return [{"t": t, "kind": kind, "note": beat["do"]}]
     st, k = a.get("stagger", 0.12), min(n, MAX_EVENTS)

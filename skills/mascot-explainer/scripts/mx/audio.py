@@ -1,4 +1,9 @@
 """<audio> tags of the project: narration per shot, the music bed ducked under it, the SFX stem."""
+# Event gains for build_sfx.py in a voice-led explainer: about 10 dB under the narration (viral-motion's own
+# defaults, e.g. impact -6, are for films without wall-to-wall voice). style.json "sfx_kinds" overrides any.
+SFX_KINDS = {"pop": ["pop", -19, {}], "whoosh": ["whoosh", -17, {"dur": 0.45}], "shimmer": ["shimmer", -16, {}],
+             "impact": ["impact", -14, {}], "stamp": ["impact", -15, {"dur": 1.2}], "tick": ["tick", -21, {}],
+             "snap": ["snap", -17, {}], "chime": ["chime", -18, {}], "blip": ["blip", -22, {}]}
 import json
 import os
 import subprocess
@@ -42,4 +47,4 @@ def sfx(project, timing, vol):
 
 
 def tags(project, timing, vm, mix):
-    return narration(timing) + music(project, timing, vm, mix.get("music", 0.5)) + sfx(project, timing, mix.get("sfx", 0.6))
+    return narration(timing) + music(project, timing, vm, mix.get("music", 0.7)) + sfx(project, timing, mix.get("sfx", 0.35))

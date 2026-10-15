@@ -63,3 +63,12 @@ def test_project_scene_extends_registry(tmp_path):
 
 def test_scene_html_escapes_script_end():
     assert "<\\/script>" in html.scene_html("s01", {"params": {"text": "</script>"}}, 1, (1920, 1080))
+
+
+def test_sfx_kinds_sit_under_the_voice_and_style_overrides(tmp_path):
+    p = project(tmp_path / "p", [{"id": "s01", "dur": 1, "scene": "demo"}])
+    st = json.loads((p / "style.json").read_text()); st["sfx_kinds"] = {"pop": ["pop", -20, {}]}
+    (p / "style.json").write_text(json.dumps(st))
+    build.main(str(p), sfx=False, lib_dir=str(lib(tmp_path)))
+    kinds = json.loads((p / "audio" / "sfx_cues.json").read_text())["event_kinds"]
+    assert kinds["impact"][1] <= -12 and kinds["pop"] == ["pop", -20, {}]

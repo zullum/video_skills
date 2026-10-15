@@ -49,9 +49,13 @@ def test_resolve_shot_out_and_auto_zoom():
 def test_transition_cues():
     shots = [{"in": "cut"}, {"in": "whip"}, {"in": "flash"}]
     cues = beats.transition_cues(shots, [0, 2.0, 4.5], ["a", "b", "c"])
-    assert cues[0] == {"t": 2.0, "fx": "whoosh", "gain_db": -10, "peak": True, "args": {"dur": 0.5}, "label": "b in:whip"}
+    assert cues[0] == {"t": 2.0, "fx": "whoosh", "gain_db": -15, "peak": True, "args": {"dur": 0.5}, "label": "b in:whip"}
     assert cues[1]["fx"] == "impact" and cues[1]["t"] == 4.5
 
 
 def test_whisper_words():
     assert whisper.words(str(FIX), 0.2)[:2] == [{"w": "push-ups", "t": 0.26}, {"w": "rows", "t": 1.43}]
+
+
+def test_n_counts_like_count():
+    assert len(beats.events_for({"t": 1, "do": "icons", "args": {"n": 8, "stagger": 0.06}})) == 8
