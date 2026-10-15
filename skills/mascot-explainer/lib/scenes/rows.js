@@ -1,6 +1,6 @@
 // @scene seqRows @actions show,tag,out
 // Progressions as rows: this exercise -> its harder variation, each row a bubble, an arrow and a bubble, with a
-// set badge ("3x12") on the first one.
+// set badge on the first one ("tag": "2x12") and optionally on the second ("toTag": "2x13").
 (function () {
   var T = window.TOON, K = function () { return T.bubbleKit; };
 
@@ -16,9 +16,13 @@
         var arrow = T.shape.arrow(svg, x0 + r + 20, y, x1 - r - 20, y, { color: p.arrow || "ink" });
         ctx.tl.set(arrow.head, { opacity: 0 }, 0);
         ctx.tl.set(arrow.line, { attr: { "stroke-dashoffset": 1 } }, 0);
-        var badge = row.tag ? T.shape.badge(top, x0 + 0.75 * r, y - 0.75 * r, Math.max(30, r * 0.5), row.tag) : null;
-        if (badge) ctx.tl.set(badge, { opacity: 0 }, 0);
-        return { bs: bs, arrow: arrow, badge: badge };
+        var mk = function (text, x) {
+          if (!text) return null;
+          var b = T.shape.badge(top, x + 0.75 * r, y - 0.75 * r, Math.max(30, r * 0.5), text);
+          ctx.tl.set(b, { opacity: 0 }, 0);
+          return b;
+        };
+        return { bs: bs, arrow: arrow, badges: [mk(row.tag, x0), mk(row.toTag, x1)].filter(Boolean) };
       });
       return { rows: out };
     },
@@ -35,7 +39,7 @@
       },
       tag: function (tl, st, t, a) {
         (a.rows || st.rows.map(function (_, i) { return i; })).forEach(function (i, k) {
-          if (st.rows[i].badge) T.pop(tl, st.rows[i].badge, t + k * 0.1);
+          st.rows[i].badges.forEach(function (b, j) { T.pop(tl, b, t + k * 0.1 + j * 0.25); });
         });
       },
       out: function (tl, st, t) { st.rows.forEach(function (row) { K().out(tl, row.bs, t, {}); }); }

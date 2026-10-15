@@ -6,7 +6,7 @@
 
   function fill(b, it, tl, ctx) {
     if (it.sprite) {
-      b.sp = T.sprite(b.content, it.sprite, { x: it.r * 0.97, y: it.r * 1.72, h: it.r * 1.45 });
+      b.sp = T.sprite(b.content, it.sprite, { x: it.r * 0.97, y: it.r * 1.72, h: it.r * (it.h || 1.45) });
       if (it.rep) T.playReps(tl, b.sp, 0, ctx.dur, it.rep);
     } else if (it.asset) {
       var feet = T.manifest.assets[it.asset].anchor[1] > 0.9;

@@ -22,7 +22,7 @@ on screen from the first frame.
 the next shot (3:39).
 **Sees:** a pale disc with a crater or stripe texture, a white rim, the figure inside; each floats ±6 px.
 **Params:** `items: [{asset | sprite, x, y, r, texture: "craters"|"stripes", rep, h}]` (a feet-anchored pose stands
-at the bottom of the disc; a sprite loops `rep`).
+at the bottom of the disc; a sprite loops `rep`; `h` = figure height in radii, default 1.45).
 **Actions:** `pop {items, stagger=.12}` (pop) · `highlight {i, color="accent", dimOthers=true}` (shimmer) ·
 `dim {items}` · `undim` · `zoom {i, scale=7, dur=.6}` (whoosh; give the next shot `"in": "zoomIn"`) ·
 `swarm {n=24, rmin=26, rmax=50, stagger=.04}` (pops) · `out {items, stagger}`.

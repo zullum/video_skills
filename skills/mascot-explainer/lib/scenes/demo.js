@@ -31,7 +31,7 @@
         T.show(tl, st.sp, rep[0][0], t);
       },
       callout: function (tl, st, t, a) {
-        T.draw(tl, T.shape.callout(st.svg, a.x, a.y, a.r || 90, { color: a.color }), t, a.dur || 0.4);
+        T.draw(tl, T.shape.callout(st.svg, a.x, a.y, a.r || 90, { color: a.color, w: a.w || 9 }), t, a.dur || 0.4);
       },
       arrow: function (tl, st, t, a) {
         var d = T.shape.doubleArrow(st.svg, a.x0, a.y0, a.x1, a.y1, { color: a.color || "bgDeep", w: a.w || 10, head: 30 });

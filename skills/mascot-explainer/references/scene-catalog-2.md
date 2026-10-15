@@ -19,7 +19,7 @@ range, a "2×12 / 3/WEEK" tag top left; on the push-up close-up muscle circles p
 This is the one place with frame-by-frame animation: a sprite (≤24 frames from one Nano Banana sheet).
 **Params:** `sprite`, `x=960`, `y=900` (floor), `h=600` (cell height), `rep: [[frame, holdFrames], …]`,
 `reps="fill"|n|"beats"`, `start=0`, `prop: {asset, x, y, h}`, `shadow=true`, `anchor`.
-**Actions:** `reps {n, rep}` (with `reps: "beats"`) · `callout {x, y, r=90}` (snap) · `arrow {x0, y0, x1, y1, w=10}` (tick)
+**Actions:** `reps {n, rep}` (with `reps: "beats"`) · `callout {x, y, r=90, w=9}` (snap) · `arrow {x0, y0, x1, y1, w=10}` (tick)
 · `tag {lines=["2x12","3/WEEK"], x=230, y=110}` (tick) · `insets {items: [{asset, x, y, r, zoom=2.2, fx=.5, fy=.35, label}],
 stagger=.2}` (pops; a magnified crop of any asset, so a muscle close-up needs no extra image) · `out`.
 ```json
@@ -63,7 +63,7 @@ shake) · `freeze {x, y, r=150}` (stamp; grey + pause badge, keep it off the fac
 
 ## seqRows
 **Reference:** "this exercise → harder variation" rows with a set badge (6:27-6:48).
-**Params:** `rows: [{from: {asset|sprite}, to: {…}, tag}]`, `r=70`, `x0=640`, `x1=1280`.
+**Params:** `rows: [{from: {asset|sprite}, to: {…}, tag, toTag}]`, `r=70`, `x0=640`, `x1=1280`.
 **Actions:** `show {rows, stagger=.2}` (pops) · `tag {rows}` · `out`.
 ```json
 {"id": "s13", "say": "When the top of the range feels easy, add one rep.", "scene": "seqRows", "params": {"rows": [
