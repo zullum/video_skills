@@ -1,10 +1,11 @@
 """One cached image call.   scripts/py scripts/gen_asset.py PROJECT OUT.png "prompt" [ref ...]
-By default (PROVIDER=gemini-web) it draws in the Gemini web app of the user's logged-in Chrome on CDP 9003
-(scripts/gemini_web.cjs): $0, ~2K, only the app's aspect ratios (the nearest one is asked for), the JPEG download
-stored as a PNG. PROVIDER=api pays for one Nano Banana API call instead: env SIZE=1K|2K|4K (default 2K), ASPECT
-(default 16:9), the key is never printed. Relative OUT and refs are inside PROJECT. An existing OUT is reused (delete
+env KIND picks the default provider: still (default: character, poses, props, sprite base poses) draws in the
+Gemini web app of the user's logged-in Chrome on CDP 9003 (scripts/gemini_web.cjs): $0, ~2K, only the app's aspect
+ratios (the nearest one is asked for), the JPEG download stored as a PNG. sprite (an animation sprite sheet) pays
+for one Nano Banana API call at 4K. PROVIDER=gemini-web|api overrides the kind's provider; SIZE=1K|2K|4K and ASPECT
+(default 16:9) apply to the API; the key is never printed. Relative OUT and refs are inside PROJECT. An existing OUT is reused (delete
 it to regenerate); a call that would pass gen/budget.json "limit" is refused (exit 3); a second call for the same OUT
-while one runs exits 4; an unknown PROVIDER exits 2. Every call is booked in the ledger under a lock before it runs."""
+while one runs exits 4; an unknown KIND or PROVIDER exits 2. Every call is booked in the ledger under a lock before it runs."""
 import fcntl
 import json
 import math
@@ -16,7 +17,8 @@ import deps
 
 PRICES = {"1K": 0.067, "2K": 0.101, "4K": 0.151}
 MODEL = "gemini-3.1-flash-image"                     # pinned: the prices above are this model's
-PROVIDERS = ("gemini-web", "api")                  # the first is the default
+PROVIDERS = ("gemini-web", "api")
+KINDS = {"still": ("gemini-web", "2K"), "sprite": ("api", "4K")}   # default provider and size per kind
 WEB_ASPECTS = ("1:1", "16:9", "9:16", "4:3", "3:4")  # the Gemini app's aspect-ratio menu
 WEB_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gemini_web.cjs")
 
@@ -56,8 +58,13 @@ def _locked(path, fn):
         return result
 
 
-def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None, provider=None):
-    provider = provider or os.environ.get("PROVIDER", PROVIDERS[0])
+def run(project, out, prompt, refs, size=None, aspect="16:9", gen_cmd=None, provider=None, kind=None):
+    kind = kind or os.environ.get("KIND", "still")
+    if kind not in KINDS:
+        print(f"unknown KIND {kind!r}; one of {', '.join(KINDS)}", file=sys.stderr)
+        return 2
+    provider = provider or os.environ.get("PROVIDER") or KINDS[kind][0]
+    size = size or KINDS[kind][1]
     if provider not in PROVIDERS:
         print(f"unknown PROVIDER {provider!r}; one of {', '.join(PROVIDERS)}", file=sys.stderr)
         return 2
@@ -120,4 +127,4 @@ if __name__ == "__main__":
     a = sys.argv[1:]
     if len(a) < 3:
         sys.exit(__doc__)
-    sys.exit(run(a[0], a[1], a[2], a[3:], os.environ.get("SIZE", "2K"), os.environ.get("ASPECT", "16:9")))
+    sys.exit(run(a[0], a[1], a[2], a[3:], os.environ.get("SIZE"), os.environ.get("ASPECT", "16:9")))

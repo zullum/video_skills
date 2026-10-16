@@ -124,3 +124,24 @@ SMALL = [sys.executable, "-c", "import sys; from PIL import Image; Image.new('RG
 def test_web_provider_warns_when_the_app_sends_less_than_2k(tmp_path, capsys):
     assert gen_asset.run(str(tmp_path), "gen/e.png", "x", [], provider="gemini-web", gen_cmd=SMALL) == 0
     assert "1376x768" in capsys.readouterr().out
+
+
+def test_a_sprite_sheet_goes_to_the_api_at_4k(tmp_path, monkeypatch):
+    for k in ("PROVIDER", "SIZE", "KIND"):
+        monkeypatch.delenv(k, raising=False)
+    assert gen_asset.run(str(tmp_path), "gen/s.png", "x", [], kind="sprite", gen_cmd=WRITE) == 0
+    call = json.load(open(tmp_path / "gen" / "budget.json"))["calls"][0]
+    assert (call["provider"], call["size"], call["price"]) == ("api", "4K", 0.151)
+
+
+def test_a_still_goes_to_the_web_app_and_an_explicit_provider_wins(tmp_path, monkeypatch):
+    for k in ("PROVIDER", "SIZE", "KIND"):
+        monkeypatch.delenv(k, raising=False)
+    assert gen_asset.run(str(tmp_path), "gen/p.png", "x", [], kind="still", gen_cmd=WRITE) == 0
+    assert gen_asset.run(str(tmp_path), "gen/q.png", "x", [], kind="sprite", provider="gemini-web", gen_cmd=WRITE) == 0
+    calls = json.load(open(tmp_path / "gen" / "budget.json"))["calls"]
+    assert [c["provider"] for c in calls] == ["gemini-web", "gemini-web"] and sum(c["price"] for c in calls) == 0
+
+
+def test_unknown_kind_is_refused(tmp_path):
+    assert gen_asset.run(str(tmp_path), "gen/k.png", "x", [], kind="video", gen_cmd=WRITE) == 2

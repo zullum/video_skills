@@ -1,6 +1,6 @@
 ---
 name: mascot-explainer
-description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. Nano Banana (Gemini image) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 15 HyperFrames scene templates (plus zoom-through and muscle-inset actions) driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code with free (Gemini web app, the default) or cheap (Gemini API) assets.
+description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. Nano Banana (Gemini image) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 15 HyperFrames scene templates (plus zoom-through and muscle-inset actions) driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code with free stills (Gemini web app) and 4K API sprite sheets.
 ---
 
 # Mascot explainer
@@ -12,12 +12,12 @@ loops about a third of the time. Code draws everything geometric; Gemini draws o
 | layer | who draws it | cost |
 |---|---|---|
 | backgrounds, bubbles, window room, day columns, text, tags, arrows, rays, flames, phones, cards, pages | code (15 scene templates in `lib/scenes/`) | $0 |
-| the character in poses, hands, props, silhouettes | Nano Banana sheets → `asset_sheet.py` → clipped SVGs | $0 (web) · ~$0.10 / sheet (API) |
-| exercise loops | one sprite sheet (≤24 cells) → sprite-video `slice.py --clip` → SVG frames | $0 (web) · ~$0.20-0.25 / move (API) |
+| the character in poses, hands, props, silhouettes | Nano Banana sheets (Gemini web app) → `asset_sheet.py` → clipped SVGs | $0 |
+| exercise loops | base pose ($0, web) + one 4K API sprite sheet (≤24 cells, `KIND=sprite`) → sprite-video `slice.py --clip` → SVG frames | ~$0.15 / move |
 | narration, music, SFX | Kokoro / the user's recording, ACE-Step or the user's track, synthesized SFX | $0 |
 
-Images are drawn in the Gemini web app of the user's plan by default ($0); with `PROVIDER=api` a ~50 s video costs
-about $0.75-1.50 in API calls. `SKILL` below is this folder; `SV` is the sprite-video skill and
+Stills are drawn in the Gemini web app of the user's plan ($0); only the animation sprite sheets are 4K API calls, so
+a two-exercise video costs ~$0.30 (everything through the API: ~$0.75-1.50). `SKILL` below is this folder; `SV` is the sprite-video skill and
 `VM` the viral-motion skill (`scripts/py scripts/deps.py sv|vm` prints them). Python runs only as `SKILL/scripts/py`;
 HyperFrames runs only as `$VM/scripts/hf` (it strips the Gemini keys: no frame ever goes to Gemini).
 
@@ -25,8 +25,8 @@ HyperFrames runs only as `$VM/scripts/hf` (it strips the Gemini keys: no frame e
 `bash SKILL/scripts/check.sh` lists what is missing and how to fix it. `bash SKILL/scripts/setup_venv.sh` makes the
 skill's Python 3.12 venv. It needs sprite-video and viral-motion installed next to it (with viral-motion's venv for
 Kokoro), ffmpeg, Node 18+, whisper.cpp large-v3-turbo and HyperFrames. The asset stage needs Playwright for Node and
-the Gemini Chrome (`bash SKILL/scripts/gemini_chrome.sh`, then the user logs in to Gemini once), or `GEMINI_API_KEY`
-for `PROVIDER=api`.
+the Gemini Chrome (`bash SKILL/scripts/gemini_chrome.sh`, then the user logs in to Gemini once) for the stills, and
+`GEMINI_API_KEY` for the 4K sprite sheets.
 `bash SKILL/scripts/selftest.sh` proves the install for $0 (unit tests + a gallery of every scene checked by
 pixel probes; `--render` adds a draft render).
 
@@ -47,7 +47,8 @@ pixel probes; `--render` adds a draft render).
    `SKILL/scripts/py SKILL/scripts/asset_sheet.py gen/poses.png P --grid 3x2 --names a,b,c,d,e,f [--anchor x=center]`.
    It refuses when the count is wrong and writes `assets/svg/*.svg` + `assets/manifest.json`. A phone screen drawn in
    the chroma colour becomes a hole (`holes`), which the `phone` scene fills.
-3. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call), then
+3. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call with `KIND=sprite`:
+   the 4K API), then
    `$SV/scripts/slice.py sheet.png frames --cols C --rows R --clip --ink-keep "<dark fill colours, e.g. the shorts>" [--ground]` and
    `SKILL/scripts/py SKILL/scripts/sprite_import.py frames P <name>`. Without `--clip` the frames keep a background box.
 4. Check them on an asset board: a temporary `bubbles` shot with every asset, `build.py --only board`, one snapshot.
@@ -55,17 +56,19 @@ pixel probes; `--render` adds a draft render).
 
 `gen_asset.py` never pays twice (an existing file is reused) and refuses a call past `gen/budget.json` "limit".
 
-**Image provider:** by default `gen_asset.py` draws each image in the Gemini web app of the user's logged-in Chrome
-on CDP 9003 (`gemini_chrome.sh`; the user logs in once by hand) through `scripts/gemini_web.cjs` + Playwright: $0,
-~40 s, ~2K, the JPEG download stored as a PNG. Only when the user asks for it, `PROVIDER=api` pays for Nano Banana API
-calls instead (2K/4K, any aspect ratio; quote the cost at the checkpoint). The web app offers only 1:1,
+**Image providers** (the user's choice): every still (character sheet, poses, props, sprite base poses) is drawn in
+the Gemini web app of the user's logged-in Chrome on CDP 9003 (`gemini_chrome.sh`; the user logs in once by hand)
+through `scripts/gemini_web.cjs` + Playwright: $0, ~40 s, ~2K, the JPEG download stored as a PNG. An animation
+sprite sheet is `KIND=sprite`: one Nano Banana API call at 4K (~$0.15, quote it at the checkpoint). `PROVIDER=api`
+or `PROVIDER=gemini-web` overrides either kind, e.g. a free sprite sheet on request. The web app offers only 1:1,
 16:9, 9:16, 4:3 and 3:4 and the nearest is asked for (3:2 → 4:3, 2:3 → 3:4, 5:4 → 4:3), so cut grids and build
-sprite templates at the ratio actually asked for; there is no 4K, so give a small figure fewer cells (12-16, not 24).
-The app reads cell 1 of a sprite sheet as the start of the move: a sheet that starts halfway gets its first row
-redrawn from the start. For more frames, give every sheet the start: frames 1-12 (start → halfway) on one 4×3 sheet
-plus every other frame of the whole move (2, 4 … 24) on another, keeping its second half (14-24): 18 frames, all 2K.
-Measure each cell's figure top before slicing (it must move steadily) and `--drop` a cell that jumps; a ~1K answer is
-warned about (delete it and run again). Calls on one Chrome run one at a time (a lock), about 40 s each.
+templates at the ratio actually asked for. A ~1K answer is warned about (delete it and run again). Calls on one Chrome
+run one at a time (a lock), about 40 s each.
+A free sprite sheet (`PROVIDER=gemini-web KIND=sprite`) has no 4K, so a small figure gets fewer cells (12-16, not 24),
+and the app reads cell 1 as the start of the move: a sheet that starts halfway gets its first row redrawn from the
+start. For more frames give every sheet the start: frames 1-12 (start → halfway) on one 4×3 sheet plus every other
+frame of the whole move (2, 4 … 24) on another, keeping its second half (14-24): 18 frames, all 2K. Measure each
+cell's figure top before slicing (it must move steadily) and `--drop` a cell that jumps.
 Exit 5 = Gemini is logged out: ask the user to log in there, never type credentials. It automates the consumer app,
 which Google's terms may not allow: say so once before the first free run. Each image leaves a chat in the history.
 
@@ -122,7 +125,7 @@ The MP4 path (open it), the contact sheet, length and resolution, the Critic's f
 |---|---|
 | `check.sh`, `setup_venv.sh`, `py`, `deps.py` | setup, the venv, finding sprite-video and viral-motion |
 | `new_project.sh <dir> [style]` | a new project |
-| `gen_asset.py P OUT "prompt" [refs]` | one cached image: the Gemini web app by default, `PROVIDER=api` for the paid API (`SIZE`, `ASPECT`) |
+| `gen_asset.py P OUT "prompt" [refs]` | one cached image: stills in the Gemini web app, `KIND=sprite` sheets through the 4K API (`PROVIDER`, `SIZE`, `ASPECT`) |
 | `gemini_web.cjs OUT "prompt" [refs]`, `gemini_chrome.sh` | one image from the Gemini web app; the Chrome it uses (CDP 9003) |
 | `asset_sheet.py SHEET P --names … [--grid CxR] [--anchor …]` | a sheet of poses/props → clipped SVGs + manifest |
 | `sprite_import.py FRAMES P NAME` | a sliced sprite → the project |

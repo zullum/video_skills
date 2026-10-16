@@ -7,7 +7,7 @@ Agent skills for making short animated videos cheaply, without video-generation 
 | [`sprite-video`](skills/sprite-video/SKILL.md) | One or two Nano Banana (Gemini image) sprite sheets → frames traced to SVG → camera moves → 4K MP4. A 5 s cartoon clip costs about **$0.20** in image calls. |
 | [`yellow-dude-4k-animator`](skills/yellow-dude-4k-animator/SKILL.md) | Yellow Dude (Gravgear) style 4K calisthenics explainers: 3 key poses → 24-frame contour-mesh warp loop with SDF blending, bar grip, effort face, 6-point critique checklist. Remotion and HyperFrames templates included. Run `python scripts/yellow_dude_4k_pipeline.py [pose_sheet.png]`; without an argument it uses the example `assets/pullup_poses.jpg`. |
 | [`viral-motion`](skills/viral-motion/SKILL.md) | Motion-graphics videos at three levels (showreel, lyric video with an original song, story film with score and sound design) through HyperFrames. Music, voice and sound effects are made locally: **$0**, no Gemini. See [Viral Motion](#viral-motion). |
-| [`mascot-explainer`](skills/mascot-explainer/SKILL.md) | A whole narrated cartoon explainer from code (one mascot, planet bubbles, zoom-throughs, text slams, schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K: 15 HyperFrames scene templates driven by a `shots.json` storyboard, Nano Banana only for the character, poses and props (traced to SVG), sprite sheets of up to 24 frames for body motion, Kokoro narration, ducked music, synthesized SFX. Images are **free** by default (drawn in the Gemini web app of your Gemini plan, in your own logged-in Chrome), or about **$1** per 50 s video through the API. See [Mascot Explainer](#mascot-explainer). |
+| [`mascot-explainer`](skills/mascot-explainer/SKILL.md) | A whole narrated cartoon explainer from code (one mascot, planet bubbles, zoom-throughs, text slams, schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K: 15 HyperFrames scene templates driven by a `shots.json` storyboard, Nano Banana only for the character, poses and props (traced to SVG), sprite sheets of up to 24 frames for body motion, Kokoro narration, ducked music, synthesized SFX. Stills are **free** (drawn in the Gemini web app of your Gemini plan, in your own logged-in Chrome); only the animation sprite sheets are 4K API calls, about **$0.30** for a two-exercise video. See [Mascot Explainer](#mascot-explainer). |
 
 <p>
 <img src="assets/flex.gif" width="38%" alt="flex animation">
@@ -146,16 +146,16 @@ Setup: install the repo's skills (`bash install.sh claude`); mascot-explainer us
 (set viral-motion up first, see above). Then `bash ~/.claude/skills/mascot-explainer/scripts/setup_venv.sh` (a
 Python 3.12 venv via `uv`) and `bash ~/.claude/skills/mascot-explainer/scripts/check.sh`. `scripts/selftest.sh` proves
 the install for $0: a gallery of all 15 scenes checked by pixel probes. Every image call goes through `gen_asset.py`,
-which caches and keeps a budget ledger. By default it draws in the Gemini web app: `scripts/gemini_chrome.sh` opens a
+which caches and keeps a budget ledger. Stills are drawn in the Gemini web app: `scripts/gemini_chrome.sh` opens a
 Chrome with its own profile on CDP port 9003, you log in to the Google account with your Gemini plan once, and
 `scripts/gemini_web.cjs` (Playwright) does the rest: ~40 s and $0 per image, about 2K, the app's five aspect ratios.
-This automates the consumer Gemini app, which Google's terms may not allow; it is your call. `PROVIDER=api` with a
-`GEMINI_API_KEY` uses the paid API instead (2K/4K, any aspect ratio).
+This automates the consumer Gemini app, which Google's terms may not allow; it is your call. Animation sprite sheets
+(`KIND=sprite`) go to the Nano Banana API at 4K with your `GEMINI_API_KEY`; `PROVIDER=api|gemini-web` overrides either.
 
-| | Gemini web (default) | `PROVIDER=api` |
+| | Default | Everything through the API |
 |---|---|---|
-| Character sheet, pose sheet, prop sheet | $0 | ~$0.30 (2K) |
-| Per exercise loop: base pose + sprite sheet | $0 (2K, ≤16 frames) | ~$0.20-0.25 (2K/4K, ≤24 frames) |
+| Character sheet, pose sheet, prop sheet | $0 (Gemini web, ~2K) | ~$0.30 (2K) |
+| Per exercise loop: base pose + sprite sheet | ~$0.15 (base $0, sheet 4K API, ≤24 frames) | ~$0.25 (2K/4K) |
 | Narration, music, SFX, tracing, rendering | $0 | $0 |
 
 ## Repo layout
