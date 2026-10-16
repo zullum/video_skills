@@ -6,7 +6,7 @@
 // waits for "Download full-sized image" and saves the download (a JPEG; gen_asset stores it as a PNG).
 // Exit 0: written, 5: Gemini is logged out (the tab stays open on it; nothing is ever typed into a login page),
 // 6: Gemini answered without an image (its words are printed), 1: anything else (a screenshot goes to OUT.fail.png).
-const os = require('os'), path = require('path');
+const fs = require('fs'), os = require('os'), path = require('path');
 const { execFileSync } = require('child_process');
 
 const CDP = process.env.GEMINI_CDP || 'http://127.0.0.1:9003';
@@ -30,6 +30,25 @@ async function ensureChrome() {
   if (!CDP.endsWith(':9003')) throw new Error(`no Chrome listening on ${CDP}`);
   execFileSync('bash', [path.join(__dirname, 'gemini_chrome.sh')], { stdio: 'ignore' });
   if (!(await cdpUp())) throw new Error(`Chrome did not come up on ${CDP}`);
+}
+
+// Calls on one Chrome run one at a time: every CDP connection resets the browser's download folder, so a call that
+// connects during another call's download sends that file to a folder that is gone (ENOENT on saveAs).
+async function lock() {
+  const file = path.join(os.tmpdir(), `gemini-web-${new URL(CDP).port}.lock`);
+  for (;;) {
+    try {
+      fs.writeFileSync(file, String(process.pid), { flag: 'wx' });
+      return () => fs.rmSync(file, { force: true });
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      const pid = Number(fs.readFileSync(file, 'utf8')) || 0;
+      let alive = true;
+      if (pid) try { process.kill(pid, 0); } catch { alive = false; }
+      if (!alive) { fs.rmSync(file, { force: true }); continue; }     // its owner died: a stale lock
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
 }
 
 // One-time tooltips and dialogs ("A new home for Spark") lay a backdrop over the page that swallows clicks.
@@ -104,6 +123,7 @@ async function save(page, button, out) {
   const [out, prompt, ...refs] = process.argv.slice(2);
   if (!out || !prompt) { console.error('usage: node gemini_web.cjs OUT.png "prompt" [ref.png ...]'); process.exit(1); }
   await ensureChrome();
+  const unlock = await lock();                            // a crashed holder's lock is dropped by the next call
   const browser = await loadPlaywright().chromium.connectOverCDP(CDP);
   const page = await browser.contexts()[0].newPage();     // its own tab: the user's tabs are left alone
   let code = 1;
@@ -130,6 +150,7 @@ async function save(page, button, out) {
   } finally {
     if (code !== 5) await page.close().catch(() => {});
     await browser.close();
+    unlock();
     process.exit(code);
   }
 })().catch(e => { log('FAIL', e.message); process.exit(1); });

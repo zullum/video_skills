@@ -57,6 +57,10 @@ figure: ... Do not reproduce the reference sheet." (an agent-side test redrew th
 At most 3 references per call. Only 1:1, 16:9, 9:16, 4:3 and 3:4 exist (gen_asset asks for the nearest and says so):
 lay out pose and prop grids for 4:3 or 16:9, and build sprite templates at the ratio that is asked for. Tested on Dr.
 Gains: one figure, exact skin colour, 2400x1792 at 4:3 and 2752x1536 at 16:9, no visible watermark, ~40 s per image.
+Sprite sheets: start every sheet at the start of the move and say "cell 1 is the top position ... every cell is a
+little lower than the one before"; a "frames 13 to 24" sheet came back with its first row redrawn from the top, twice.
+The template is the first reference, the base pose the second. The red the app draws is a little duller than the
+API's (headband 181,45,63 vs 204,34,60): fine for a sprite, but keep all sprite sheets of a move from the same provider.
 
 ## What the demo taught
 - Grid sheets: the model may draw grid lines anyway (harmless: `--grid` keeps a margin) and crops full-body poses

@@ -34,6 +34,17 @@ def _as_png(path):
         Image.open(path).convert("RGB").save(path, "PNG")
 
 
+def _warn_small(path):
+    """The web app usually sends ~2K but now and then 1K (1376x768 at 16:9): too small for a 12-cell sprite sheet."""
+    from PIL import Image
+    try:
+        w, h = Image.open(path).size
+    except OSError:                                   # not an image PIL reads: nothing to warn about
+        return
+    if max(w, h) < 2000:
+        print(f"warning: the Gemini app sent {w}x{h}, not ~2K; delete {os.path.basename(path)} and run again if detail matters")
+
+
 def _locked(path, fn):
     """Run fn(ledger) under an exclusive lock and write the ledger back; parallel calls see each other."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -87,6 +98,8 @@ def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None, prov
         ok = r.returncode == 0 and os.path.exists(out)
         if ok:
             _as_png(out)
+            if web:
+                _warn_small(out)
 
         def settle(led):                                # keep the booking, or refund a call that made nothing
             for c in led["calls"]:

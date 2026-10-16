@@ -116,3 +116,11 @@ def test_the_free_web_app_is_the_default(tmp_path, monkeypatch):
 def test_unknown_provider_is_refused(tmp_path):
     assert gen_asset.run(str(tmp_path), "gen/c.png", "x", [], provider="dalle", gen_cmd=WRITE) == 2
     assert not (tmp_path / "gen" / "c.png").exists()
+
+
+SMALL = [sys.executable, "-c", "import sys; from PIL import Image; Image.new('RGB', (1376, 768), (0, 177, 64)).save(sys.argv[1], 'JPEG')"]
+
+
+def test_web_provider_warns_when_the_app_sends_less_than_2k(tmp_path, capsys):
+    assert gen_asset.run(str(tmp_path), "gen/e.png", "x", [], provider="gemini-web", gen_cmd=SMALL) == 0
+    assert "1376x768" in capsys.readouterr().out

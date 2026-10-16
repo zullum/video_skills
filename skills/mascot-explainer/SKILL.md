@@ -61,6 +61,11 @@ on CDP 9003 (`gemini_chrome.sh`; the user logs in once by hand) through `scripts
 calls instead (2K/4K, any aspect ratio; quote the cost at the checkpoint). The web app offers only 1:1,
 16:9, 9:16, 4:3 and 3:4 and the nearest is asked for (3:2 → 4:3, 2:3 → 3:4, 5:4 → 4:3), so cut grids and build
 sprite templates at the ratio actually asked for; there is no 4K, so give a small figure fewer cells (12-16, not 24).
+The app reads cell 1 of a sprite sheet as the start of the move: a sheet that starts halfway gets its first row
+redrawn from the start. For more frames, give every sheet the start: frames 1-12 (start → halfway) on one 4×3 sheet
+plus every other frame of the whole move (2, 4 … 24) on another, keeping its second half (14-24): 18 frames, all 2K.
+Measure each cell's figure top before slicing (it must move steadily) and `--drop` a cell that jumps; a ~1K answer is
+warned about (delete it and run again). Calls on one Chrome run one at a time (a lock), about 40 s each.
 Exit 5 = Gemini is logged out: ask the user to log in there, never type credentials. It automates the consumer app,
 which Google's terms may not allow: say so once before the first free run. Each image leaves a chat in the history.
 
