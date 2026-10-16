@@ -17,7 +17,7 @@
         }
         labs.push(T.shape.title(layer, cx, p.labelY || 70, labels[k], { size: p.labelSize || 72 }));
         var items = (p.items || []).map(function (it) {
-          return { asset: it.asset, sprite: it.sprite, rep: it.rep, texture: it.texture, x: cx + (it.dx || 0), y: T.H / 2 + (it.dy || 0), r: it.r || 100 };
+          return { asset: it.asset, sprite: it.sprite, rep: it.rep, h: it.h, texture: it.texture, x: cx + (it.dx || 0), y: T.H / 2 + (it.dy || 0), r: it.r || 100 };
         });
         cols.push(K().make(layer, items, { id: ctx.id + "c" + k, dur: ctx.dur }, ctx.tl));
       }

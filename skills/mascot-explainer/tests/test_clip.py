@@ -1,4 +1,5 @@
 import importlib
+import re
 import sys
 
 import numpy as np
@@ -81,3 +82,12 @@ def test_thin_lines_on_skin_stay_ink(tmp_path):
     out = tmp_path / "m.svg"; trace2.trace(np.array(im), palette(), BG, str(out), clip=True, ink_keep=[NAVY])
     ink = out.read_text().split('fill="#141418"')[1]
     assert ink.count("M") >= 5                                         # outline (2) + the three lines
+
+
+def test_clipped_trace_has_no_chroma_fill(tmp_path):
+    im = Image.new("RGB", (240, 240), BG); d = ImageDraw.Draw(im)
+    d.rectangle([30, 30, 210, 210], fill=(255, 122, 89), outline=(20, 20, 24), width=8)
+    d.rectangle([100, 60, 112, 180], fill=(20, 20, 24)); d.rectangle([104, 64, 108, 176], fill=BG)  # chroma between two fingers
+    out = tmp_path / "g.svg"; trace2.trace(np.array(im), palette(), BG, str(out), clip=True)
+    fills = re.findall(r'fill="#([0-9A-Fa-f]{6})"', out.read_text())
+    assert not [f for f in fills if sum(abs(int(f[i:i + 2], 16) - BG[i // 2]) for i in (0, 2, 4)) < 30]

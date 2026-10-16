@@ -1,6 +1,5 @@
 """Pure helpers for asset_sheet.py: find the assets drawn on a flat (chroma) background sheet."""
 import numpy as np
-from PIL import Image
 from scipy import ndimage
 
 
@@ -73,13 +72,3 @@ def anchor(mc, kind="feet"):
     ys, xs = np.where(mc)
     low = ys >= ys.max() - max(1, int(0.05 * (ys.max() - ys.min() + 1)))
     return [round(float(xs[low].mean()) / w, 4), round((int(ys.max()) + 1) / h, 4)]
-
-
-def palette(a, bg):
-    """slice.py's palette: ink, white, the background, then 14 median-cut colours of the art."""
-    ink = a[::4, ::4][mask(a, bg)[::4, ::4]].astype("uint8")
-    auto = Image.fromarray(ink.reshape(1, -1, 3)).quantize(colors=14, method=Image.Quantize.MEDIANCUT).getpalette()[:42]
-    fixed = [18, 18, 22, 255, 255, 255] + list(bg)
-    pal = Image.new("P", (1, 1))
-    pal.putpalette(fixed + auto + [0] * (768 - len(fixed) - len(auto)))
-    return pal

@@ -57,7 +57,7 @@ def main(argv=None):
     keep = dark_fills(A.ink_keep, A.project)
     sys.path.insert(0, os.path.join(deps.locate("sv"), "scripts"))
     trace2 = importlib.import_module("trace2")
-    pal = sheet.palette(a, bg)
+    pal = trace2.palette(a[::4, ::4][m[::4, ::4]], bg)
     man = manifest.load(A.project)
     out_dir = os.path.join(A.project, "assets", "svg")
     os.makedirs(out_dir, exist_ok=True)

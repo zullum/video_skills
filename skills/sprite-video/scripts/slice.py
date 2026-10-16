@@ -34,12 +34,9 @@ drop = {int(x) for x in A.drop.split(",") if x}
 a = np.array(Image.open(A.sheet).convert("RGB")).astype(int); H, W = a.shape[:2]
 cw, ch = W / A.cols, H / A.rows
 bg = np.median(a[20:60, 20:200].reshape(-1, 3), 0); BGQ = tuple(int(c) for c in bg)
-# one palette for the whole sheet: background + white (eye glow, shine) + 14 colours of the art
+# one palette for the whole sheet: ink, white (eye glow, shine), the background and the art's colours
 m_all = np.abs(a - bg).sum(2) > 70
-ink = a[::4, ::4][m_all[::4, ::4]].astype("uint8")
-auto = Image.fromarray(ink.reshape(1, -1, 3)).quantize(colors=14, method=Image.Quantize.MEDIANCUT).getpalette()[:42]
-fixed = [18, 18, 22, 255, 255, 255] + list(BGQ)
-pal = Image.new("P", (1, 1)); pal.putpalette(fixed + auto + [0] * (768 - len(fixed) - len(auto)))
+pal = trace2.palette(a[::4, ::4][m_all[::4, ::4]], BGQ)
 frames, floors = [], []
 for k in range(A.cols * A.rows):
     if k in drop: continue

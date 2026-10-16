@@ -39,6 +39,29 @@ def clip_def(rgb, bg, up=4):
     big = np.array(Image.fromarray((m * 255).astype("uint8")).resize(
         (rgb.shape[1] * up, rgb.shape[0] * up), Image.BICUBIC)) > 127
     return f'<clipPath id="fig"><path clip-rule="evenodd" d="{_outline(big, up)}"/></clipPath>'
+def palette(art, bg, n=14, extra=6, miss=80, twin=30):
+    # one palette for a sheet: ink, white, the background, n median-cut colours of the art pixels (minus near-twins
+    # closer than `twin` to an earlier entry: sheet noise split one flat skin into mottled patches), then up to
+    # `extra` colours, one per round: the commonest colour (32-level bins) of the art pixels still more than `miss`
+    # (summed RGB) from every entry, while it covers 0.3 % of the art. The cut weighs by area: on a blue sheet it
+    # spent its slots on near-identical blues and merged a small red headband into navy, a blue hand into grey.
+    art = np.asarray(art, "uint8").reshape(-1, 3)
+    cut = Image.fromarray(art.reshape(1, -1, 3)).quantize(colors=n, method=Image.Quantize.MEDIANCUT).getpalette()[:3 * n]
+    cols = [18, 18, 22, 255, 255, 255, *(int(v) for v in bg)]
+    for c in np.array(cut).reshape(-1, 3):
+        if np.abs(np.array(cols).reshape(-1, 3) - c).sum(1).min() >= twin:
+            cols += [int(v) for v in c]
+    s = art[::max(1, len(art) // 100000)].astype(int)
+    for _ in range(extra):
+        far = s[np.abs(s[:, None] - np.array(cols).reshape(-1, 3)[None]).sum(2).min(1) > miss]
+        if not len(far):
+            break
+        _, inv, cnt = np.unique(far // 32, axis=0, return_inverse=True, return_counts=True)
+        if cnt.max() < 0.003 * len(s):
+            break
+        cols += [int(v) for v in np.median(far[inv.ravel() == cnt.argmax()], 0)]
+    pal = Image.new("P", (1, 1)); pal.putpalette(cols + [0] * (768 - len(cols)))
+    return pal
 def fill_layer(rgb, pal, bg, up=2, ink_keep=None):
     L = rgb[..., :3] @ np.array([.299, .587, .114])
     if ink_keep:
@@ -69,6 +92,12 @@ def trace(rgb, pal, bg, out, clip=False, ink_keep=None):
     h, w = rgb.shape[:2]
     fills = fill_layer(rgb, pal, bg, ink_keep=ink_keep)
     if clip:
+        # a background-coloured fill inside the clip is chroma trapped where the clip can't reach (between fingers):
+        # drop it, the stacked layer under it shows through
+        def chroma(m):
+            c = [int(m.group(1)[i:i + 2], 16) for i in (0, 2, 4)]
+            return "" if sum(abs(c[i] - bg[i]) for i in range(3)) < 30 else m.group(0)
+        fills = re.sub(r'<path[^>]*fill="#([0-9A-Fa-f]{6})"[^>]*/>', chroma, fills)
         fills = f'<defs>{clip_def(rgb, bg)}</defs><g clip-path="url(#fig)">{fills}</g>'
     open(out, "w").write(f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
                          + fills + ink_paths(rgb, ink_keep=ink_keep) + "</svg>")
