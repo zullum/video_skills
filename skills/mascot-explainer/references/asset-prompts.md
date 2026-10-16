@@ -1,7 +1,7 @@
 # Asset prompts (Nano Banana, through scripts/gen_asset.py)
 
-Every call: `SIZE=2K ASPECT=<a> scripts/py scripts/gen_asset.py PROJECT gen/<name>.png "<prompt>" [refs…]`. It
-prints the price, refuses past `gen/budget.json` "limit", and never regenerates a file that exists (delete it to
+Every call: `SIZE=2K ASPECT=<a> scripts/py scripts/gen_asset.py PROJECT gen/<name>.png "<prompt>" [refs…]` (the Gemini
+web app by default, `PROVIDER=api` for the paid API; see the last sections). It prints the price, refuses past `gen/budget.json` "limit", and never regenerates a file that exists (delete it to
 retry). Replace `{CHARACTER}` with `style.json` "character", `{CHROMA}` with "chroma" and the colours with the
 palette. After the character sheet, pass `gen/character.png` as the FIRST reference of every call.
 
@@ -49,6 +49,14 @@ generate the sheet with `<sprite-video>/references/prompts.md` → "All-cells gr
 passing the template first and the base second. 24 cells (6×4) at 4K for a smooth loop of a small figure; 8-9
 cells (4×2, 3×3) at 2K for a whole-body move. Slice with `slice.py --clip` (+ `--ground` for standing moves), then
 `sprite_import.py`.
+
+## Gemini web app (the default provider)
+The prompts below were written for the API and work in the Gemini web app with three changes. Ask for a NEW image and say what the reference is
+for: "Using exactly the character in the attached reference image (...), create a brand-new image with exactly ONE
+figure: ... Do not reproduce the reference sheet." (an agent-side test redrew the whole reference sheet without it).
+At most 3 references per call. Only 1:1, 16:9, 9:16, 4:3 and 3:4 exist (gen_asset asks for the nearest and says so):
+lay out pose and prop grids for 4:3 or 16:9, and build sprite templates at the ratio that is asked for. Tested on Dr.
+Gains: one figure, exact skin colour, 2400x1792 at 4:3 and 2752x1536 at 16:9, no visible watermark, ~40 s per image.
 
 ## What the demo taught
 - Grid sheets: the model may draw grid lines anyway (harmless: `--grid` keeps a margin) and crops full-body poses

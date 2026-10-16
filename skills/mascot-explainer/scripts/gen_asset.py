@@ -1,9 +1,13 @@
-"""One budgeted Nano Banana call.   scripts/py scripts/gen_asset.py PROJECT OUT.png "prompt" [ref ...]
-env SIZE=1K|2K|4K (default 2K), ASPECT (default 16:9). Relative OUT and refs are inside PROJECT. An existing OUT is
-reused (delete it to regenerate); a call that would pass gen/budget.json "limit" is refused (exit 3); a second call
-for the same OUT while one runs exits 4. The money is booked under a lock before the call. The key is never printed."""
+"""One cached image call.   scripts/py scripts/gen_asset.py PROJECT OUT.png "prompt" [ref ...]
+By default (PROVIDER=gemini-web) it draws in the Gemini web app of the user's logged-in Chrome on CDP 9003
+(scripts/gemini_web.cjs): $0, ~2K, only the app's aspect ratios (the nearest one is asked for), the JPEG download
+stored as a PNG. PROVIDER=api pays for one Nano Banana API call instead: env SIZE=1K|2K|4K (default 2K), ASPECT
+(default 16:9), the key is never printed. Relative OUT and refs are inside PROJECT. An existing OUT is reused (delete
+it to regenerate); a call that would pass gen/budget.json "limit" is refused (exit 3); a second call for the same OUT
+while one runs exits 4; an unknown PROVIDER exits 2. Every call is booked in the ledger under a lock before it runs."""
 import fcntl
 import json
+import math
 import os
 import subprocess
 import sys
@@ -12,6 +16,22 @@ import deps
 
 PRICES = {"1K": 0.067, "2K": 0.101, "4K": 0.151}
 MODEL = "gemini-3.1-flash-image"                     # pinned: the prices above are this model's
+PROVIDERS = ("gemini-web", "api")                  # the first is the default
+WEB_ASPECTS = ("1:1", "16:9", "9:16", "4:3", "3:4")  # the Gemini app's aspect-ratio menu
+WEB_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gemini_web.cjs")
+
+
+def web_aspect(aspect):
+    """The app's ratio nearest to `aspect` (by log ratio): 3:2 -> 4:3, 2:3 -> 3:4, 21:9 -> 16:9."""
+    r = lambda a: math.log(float(a.split(":")[0]) / float(a.split(":")[1]))
+    return min(WEB_ASPECTS, key=lambda w: abs(r(w) - r(aspect)))
+
+
+def _as_png(path):
+    """The web app downloads JPEGs: store the image as a real PNG under its .png name."""
+    if open(path, "rb").read(2) == b"\xff\xd8":
+        from PIL import Image
+        Image.open(path).convert("RGB").save(path, "PNG")
 
 
 def _locked(path, fn):
@@ -25,13 +45,22 @@ def _locked(path, fn):
         return result
 
 
-def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None):
+def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None, provider=None):
+    provider = provider or os.environ.get("PROVIDER", PROVIDERS[0])
+    if provider not in PROVIDERS:
+        print(f"unknown PROVIDER {provider!r}; one of {', '.join(PROVIDERS)}", file=sys.stderr)
+        return 2
+    web = provider == "gemini-web"
     inside = lambda p: p if os.path.isabs(p) else os.path.join(project, p)  # relative = inside the project
     out, refs = inside(out), [inside(r) for r in refs]
     if os.path.exists(out):
         print(f"cached {out}")
         return 0
-    path, price, rel = os.path.join(project, "gen", "budget.json"), PRICES[size], os.path.relpath(out, project)
+    if web and web_aspect(aspect) != aspect:
+        print(f"the Gemini app has no {aspect}: asking for {web_aspect(aspect)}")
+    aspect = web_aspect(aspect) if web else aspect
+    path, rel = os.path.join(project, "gen", "budget.json"), os.path.relpath(out, project)
+    price = 0.0 if web else PRICES[size]
     os.makedirs(os.path.dirname(out), exist_ok=True)
     try:
         os.close(os.open(out + ".pending", os.O_CREAT | os.O_EXCL | os.O_WRONLY))
@@ -43,17 +72,21 @@ def run(project, out, prompt, refs, size="2K", aspect="16:9", gen_cmd=None):
             if led["spent"] + price > led["limit"] + 1e-9:
                 return led["spent"], led["limit"]
             led["spent"] = round(led["spent"] + price, 3)
-            led["calls"].append({"file": rel, "size": size, "price": price, "prompt": prompt[:160], "status": "pending"})
+            led["calls"].append({"file": rel, "size": size, "price": price, "provider": provider,
+                                 "prompt": prompt[:160], "status": "pending"})
             return None
         refused = _locked(path, reserve)
         if refused:
             print(f"budget: ${refused[0]:.3f} of ${refused[1]:.2f} spent, this call costs ${price:.3f}; "
                   f"raise \"limit\" in {path} to go on", file=sys.stderr)
             return 3
-        print(f"Nano Banana {size} {aspect}: ${price:.3f} reserved")
-        cmd = gen_cmd or [sys.executable, os.path.join(deps.locate("sv"), "scripts", "gen.py")]
+        print(f"Gemini web {aspect}: $0" if web else f"Nano Banana {size} {aspect}: ${price:.3f} reserved")
+        cmd = gen_cmd or (["node", WEB_SCRIPT] if web else
+                          [sys.executable, os.path.join(deps.locate("sv"), "scripts", "gen.py")])
         r = subprocess.run(cmd + [out, prompt] + refs, env=dict(os.environ, SIZE=size, ASPECT=aspect, MODEL=MODEL))
         ok = r.returncode == 0 and os.path.exists(out)
+        if ok:
+            _as_png(out)
 
         def settle(led):                                # keep the booking, or refund a call that made nothing
             for c in led["calls"]:
