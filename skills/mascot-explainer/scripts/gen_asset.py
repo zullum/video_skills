@@ -1,9 +1,10 @@
 """One cached image call.   scripts/py scripts/gen_asset.py PROJECT OUT.png "prompt" [ref ...]
-env KIND picks the default provider: still (default: character, poses, props, sprite base poses) draws in the
-Gemini web app of the user's logged-in Chrome on CDP 9003 (scripts/gemini_web.cjs): $0, ~2K, only the app's aspect
-ratios (the nearest one is asked for), the JPEG download stored as a PNG. sprite (an animation sprite sheet) pays
-for one Nano Banana API call at 4K. PROVIDER=gemini-web|api overrides the kind's provider; SIZE=1K|2K|4K and ASPECT
-(default 16:9) apply to the API; the key is never printed. Relative OUT and refs are inside PROJECT. An existing OUT is reused (delete
+env KIND picks the defaults, all OpenAI GPT Image 2.5 on fal.ai (scripts/fal_gen.py, FAL_AI_API_KEY): still (the
+default: character, poses, props, sprite base poses) is low quality at Full HD (~$0.0045), sprite (an animation
+sprite sheet) medium quality at 4K (~$0.026); each reference adds ~$0.01. SIZE=1K|HD|2K|4K, QUALITY and ASPECT
+(default 16:9) override them. PROVIDER=gemini-web draws in the Gemini web app of the user's logged-in Chrome on CDP
+9003 instead ($0, ~2K, only the app's aspect ratios, the JPEG stored as a PNG); PROVIDER=api pays for Nano Banana.
+No key is ever printed. Relative OUT and refs are inside PROJECT. An existing OUT is reused (delete
 it to regenerate); a call that would pass gen/budget.json "limit" is refused (exit 3); a second call for the same OUT
 while one runs exits 4; an unknown KIND or PROVIDER exits 2. Every call is booked in the ledger under a lock before it runs."""
 import fcntl
@@ -17,10 +18,15 @@ import deps
 
 PRICES = {"1K": 0.067, "2K": 0.101, "4K": 0.151}
 MODEL = "gemini-3.1-flash-image"                     # pinned: the prices above are this model's
-PROVIDERS = ("gemini-web", "api")
-KINDS = {"still": ("gemini-web", "2K"), "sprite": ("api", "4K")}   # default provider and size per kind
+FAL_PRICES = {"low": {"1K": 0.004, "HD": 0.0045, "2K": 0.0062, "4K": 0.0111},       # GPT Image 2.5 Flare on fal,
+              "medium": {"1K": 0.009, "HD": 0.0103, "2K": 0.0143, "4K": 0.026},     # per image (the ledger's
+              "high": {"1K": 0.0361, "HD": 0.0396, "2K": 0.0553, "4K": 0.1001}}     # estimates)
+FAL_REF = 0.01                                        # each reference image
+PROVIDERS = ("fal", "gemini-web", "api")
+KINDS = {"still": ("fal", "HD", "low"), "sprite": ("fal", "4K", "medium")}   # provider, size, quality per kind
 WEB_ASPECTS = ("1:1", "16:9", "9:16", "4:3", "3:4")  # the Gemini app's aspect-ratio menu
 WEB_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gemini_web.cjs")
+FAL_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fal_gen.py")
 
 
 def web_aspect(aspect):
@@ -64,7 +70,8 @@ def run(project, out, prompt, refs, size=None, aspect="16:9", gen_cmd=None, prov
         print(f"unknown KIND {kind!r}; one of {', '.join(KINDS)}", file=sys.stderr)
         return 2
     provider = provider or os.environ.get("PROVIDER") or KINDS[kind][0]
-    size = size or KINDS[kind][1]
+    size = size or (KINDS[kind][1] if provider == "fal" else "4K" if kind == "sprite" else "2K")   # api has no HD
+    quality = os.environ.get("QUALITY") or KINDS[kind][2]
     if provider not in PROVIDERS:
         print(f"unknown PROVIDER {provider!r}; one of {', '.join(PROVIDERS)}", file=sys.stderr)
         return 2
@@ -78,7 +85,8 @@ def run(project, out, prompt, refs, size=None, aspect="16:9", gen_cmd=None, prov
         print(f"the Gemini app has no {aspect}: asking for {web_aspect(aspect)}")
     aspect = web_aspect(aspect) if web else aspect
     path, rel = os.path.join(project, "gen", "budget.json"), os.path.relpath(out, project)
-    price = 0.0 if web else PRICES[size]
+    price = 0.0 if web else (round(FAL_PRICES.get(quality, FAL_PRICES["high"])[size] + FAL_REF * len(refs), 4)
+                             if provider == "fal" else PRICES[size])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     try:
         os.close(os.open(out + ".pending", os.O_CREAT | os.O_EXCL | os.O_WRONLY))
@@ -90,7 +98,7 @@ def run(project, out, prompt, refs, size=None, aspect="16:9", gen_cmd=None, prov
             if led["spent"] + price > led["limit"] + 1e-9:
                 return led["spent"], led["limit"]
             led["spent"] = round(led["spent"] + price, 3)
-            led["calls"].append({"file": rel, "size": size, "price": price, "provider": provider,
+            led["calls"].append({"file": rel, "size": size, "quality": quality, "price": price, "provider": provider,
                                  "prompt": prompt[:160], "status": "pending"})
             return None
         refused = _locked(path, reserve)
@@ -98,10 +106,12 @@ def run(project, out, prompt, refs, size=None, aspect="16:9", gen_cmd=None, prov
             print(f"budget: ${refused[0]:.3f} of ${refused[1]:.2f} spent, this call costs ${price:.3f}; "
                   f"raise \"limit\" in {path} to go on", file=sys.stderr)
             return 3
-        print(f"Gemini web {aspect}: $0" if web else f"Nano Banana {size} {aspect}: ${price:.3f} reserved")
-        cmd = gen_cmd or (["node", WEB_SCRIPT] if web else
-                          [sys.executable, os.path.join(deps.locate("sv"), "scripts", "gen.py")])
-        r = subprocess.run(cmd + [out, prompt] + refs, env=dict(os.environ, SIZE=size, ASPECT=aspect, MODEL=MODEL))
+        label = {"gemini-web": "Gemini web", "fal": "GPT Image 2.5 (fal)", "api": "Nano Banana"}[provider]
+        print(f"{label} {aspect}: $0" if web else f"{label} {size} {quality} {aspect}: ${price:.4f} reserved")
+        cmd = gen_cmd or {"gemini-web": ["node", WEB_SCRIPT], "fal": [sys.executable, FAL_SCRIPT],
+                          "api": [sys.executable, os.path.join(deps.locate("sv"), "scripts", "gen.py")]}[provider]
+        r = subprocess.run(cmd + [out, prompt] + refs,
+                           env=dict(os.environ, SIZE=size, ASPECT=aspect, QUALITY=quality, MODEL=MODEL))
         ok = r.returncode == 0 and os.path.exists(out)
         if ok:
             _as_png(out)

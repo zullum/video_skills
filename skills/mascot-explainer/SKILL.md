@@ -1,36 +1,36 @@
 ---
 name: mascot-explainer
-description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. Nano Banana (Gemini image) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 15 HyperFrames scene templates (plus zoom-through and muscle-inset actions) driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code with free stills (Gemini web app) and 4K API sprite sheets.
+description: Make a whole narrated mascot explainer video from code, in the style of flat-cartoon fitness/education explainers (one character, a 4-5 shade palette, planet bubbles, zoom-through transitions, bold italic text slams, MON/WED/FRI schedules, study shelves, phones, rockets, frame-by-frame exercise loops) at 4K. An image model (GPT Image 2.5 on fal.ai by default) draws only the character, poses and props on a chroma sheet, traced to SVG; body motion comes from one sprite-sheet image of up to 24 frames; everything else is drawn in code by 15 HyperFrames scene templates (plus zoom-through and muscle-inset actions) driven by a shots.json storyboard; Kokoro narration (or the user's recording), a ducked music bed and SFX synthesized from the same beats. Use when the user wants an animated explainer or YouTube-style cartoon video, a "video like that calisthenics explainer", a mascot or character explainer, sprite-sheet character animation inside a full video, or a whole video generated from code for cents (GPT Image 2.5 on fal.ai: low-quality Full HD stills, medium 4K sprite sheets).
 ---
 
 # Mascot explainer
 
 A script becomes a 4K narrated cartoon explainer. The style comes from an analysed 8:25 reference
 (`references/reference-video.md`, text only): mostly still art moved by motion graphics, with frame-by-frame figure
-loops about a third of the time. Code draws everything geometric; Gemini draws only organic things.
+loops about a third of the time. Code draws everything geometric; the image model draws only organic things.
 
 | layer | who draws it | cost |
 |---|---|---|
 | backgrounds, bubbles, window room, day columns, text, tags, arrows, rays, flames, phones, cards, pages | code (15 scene templates in `lib/scenes/`) | $0 |
-| the character in poses, hands, props, silhouettes | Nano Banana sheets (Gemini web app) → `asset_sheet.py` → clipped SVGs | $0 |
-| exercise loops | base pose ($0, web) + one 4K API sprite sheet (≤24 cells, `KIND=sprite`) → sprite-video `slice.py --clip` → SVG frames | ~$0.15 / move |
+| the character in poses, hands, props, silhouettes | GPT Image 2.5 sheets (low, Full HD) → `asset_sheet.py` → clipped SVGs | ~$0.015 / sheet |
+| exercise loops | base pose (low, Full HD) + one sprite sheet (medium, 4K, ≤24 cells, `KIND=sprite`) → sprite-video `slice.py --clip` → SVG frames | ~$0.06 / move |
 | narration, music, SFX | Kokoro / the user's recording, ACE-Step or the user's track, synthesized SFX | $0 |
 
-Stills are drawn in the Gemini web app of the user's plan ($0); only the animation sprite sheets are 4K API calls, so
-a two-exercise video costs ~$0.30 (everything through the API: ~$0.75-1.50). `SKILL` below is this folder; `SV` is the sprite-video skill and
+Every image is an OpenAI GPT Image 2.5 call on fal.ai: a 50 s two-exercise video costs ~$0.15, a 5-minute video with
+five exercises ~$0.50 (Nano Banana: ~5x more). `SKILL` below is this folder; `SV` is the sprite-video skill and
 `VM` the viral-motion skill (`scripts/py scripts/deps.py sv|vm` prints them). Python runs only as `SKILL/scripts/py`;
 HyperFrames runs only as `$VM/scripts/hf` (it strips the Gemini keys: no frame ever goes to Gemini).
 
 ## 0. Setup (once per machine)
 `bash SKILL/scripts/check.sh` lists what is missing and how to fix it. `bash SKILL/scripts/setup_venv.sh` makes the
 skill's Python 3.12 venv. It needs sprite-video and viral-motion installed next to it (with viral-motion's venv for
-Kokoro), ffmpeg, Node 18+, whisper.cpp large-v3-turbo and HyperFrames. The asset stage needs Playwright for Node and
-the Gemini Chrome (`bash SKILL/scripts/gemini_chrome.sh`, then the user logs in to Gemini once) for the stills, and
-`GEMINI_API_KEY` for the 4K sprite sheets.
+Kokoro), ffmpeg, Node 18+, whisper.cpp large-v3-turbo and HyperFrames. The asset stage needs `FAL_AI_API_KEY`
+exported (fal.ai); the free Gemini web provider needs Playwright for Node and its Chrome (`gemini_chrome.sh`, one
+login), the Nano Banana provider `GEMINI_API_KEY`.
 `bash SKILL/scripts/selftest.sh` proves the install for $0 (unit tests + a gallery of every scene checked by
 pixel probes; `--render` adds a draft render).
 
-## 1. Brief → checkpoint (before any Gemini call)
+## 1. Brief → checkpoint (before any image call)
 1. `bash SKILL/scripts/new_project.sh <dir>`: a landscape HyperFrames project, `style.json`, `shots.json`, `gen/budget.json`.
 2. `style.json` (`references/style-bible.md`): palette roles, chroma, character description, voice. Use the user's
    own mascot or the demo bible; never another channel's mascot, brand, app or book name.
@@ -41,14 +41,14 @@ pixel probes; `--render` adds a draft render).
    the asset list and the cost estimate. Wait for "ok" or edits. This is the only stop before rendering.
 
 ## 2. Assets (`references/asset-prompts.md`)
-1. Character sheet first (1 call, 2K): `SIZE=2K ASPECT=16:9 SKILL/scripts/py SKILL/scripts/gen_asset.py P gen/character.png "<prompt>"`.
+1. Character sheet first (1 call): `ASPECT=16:9 SKILL/scripts/py SKILL/scripts/gen_asset.py P gen/character.png "<prompt>"`.
    Read it. Every later call passes `gen/character.png` as the first reference.
 2. Pose sheet (3×2) and prop sheet (3×3), then
    `SKILL/scripts/py SKILL/scripts/asset_sheet.py gen/poses.png P --grid 3x2 --names a,b,c,d,e,f [--anchor x=center]`.
    It refuses when the count is wrong and writes `assets/svg/*.svg` + `assets/manifest.json`. A phone screen drawn in
    the chroma colour becomes a hole (`holes`), which the `phone` scene fills.
 3. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call with `KIND=sprite`:
-   the 4K API), then
+   medium quality at 3840×2160, so build the template at that size, e.g. 6×4 cells of 640×540), then
    `$SV/scripts/slice.py sheet.png frames --cols C --rows R --clip --ink-keep "<dark fill colours, e.g. the shorts>" [--ground]` and
    `SKILL/scripts/py SKILL/scripts/sprite_import.py frames P <name>`. Without `--clip` the frames keep a background box.
 4. Check them on an asset board: a temporary `bubbles` shot with every asset, `build.py --only board`, one snapshot.
@@ -56,14 +56,17 @@ pixel probes; `--render` adds a draft render).
 
 `gen_asset.py` never pays twice (an existing file is reused) and refuses a call past `gen/budget.json` "limit".
 
-**Image providers** (the user's choice): every still (character sheet, poses, props, sprite base poses) is drawn in
-the Gemini web app of the user's logged-in Chrome on CDP 9003 (`gemini_chrome.sh`; the user logs in once by hand)
-through `scripts/gemini_web.cjs` + Playwright: $0, ~40 s, ~2K, the JPEG download stored as a PNG. An animation
-sprite sheet is `KIND=sprite`: one Nano Banana API call at 4K (~$0.15, quote it at the checkpoint). `PROVIDER=api`
-or `PROVIDER=gemini-web` overrides either kind, e.g. a free sprite sheet on request. The web app offers only 1:1,
-16:9, 9:16, 4:3 and 3:4 and the nearest is asked for (3:2 → 4:3, 2:3 → 3:4, 5:4 → 4:3), so cut grids and build
-templates at the ratio actually asked for. A ~1K answer is warned about (delete it and run again). Calls on one Chrome
-run one at a time (a lock), about 40 s each.
+**Image providers** (the user's choice): every image is OpenAI GPT Image 2.5 Flare on fal.ai through
+`scripts/fal_gen.py` (`FAL_AI_API_KEY`), ~30-40 s a call. A still (character sheet, poses, props, sprite base poses)
+is low quality at Full HD (1920×1072 at 16:9; ~$0.0045, ~$0.015 with the character reference); an animation sprite
+sheet is `KIND=sprite`, medium quality at 3840×2160 (~$0.026 + ~$0.01 a reference). Any aspect ratio up to 3:1 works;
+sides are multiples of 16. Quote the total at the checkpoint. Tested on Dr. Gains: the same character from the
+reference, a 24-frame push-up that follows its template within 1 % of the cell height, clean SVG traces; it draws
+the olive shorts a little greener. `PROVIDER=api` uses Nano Banana instead (2K/4K, ~5x the price);
+`PROVIDER=gemini-web` draws in the Gemini web app of the user's logged-in Chrome on CDP 9003 for $0 (the rest of this
+paragraph). That app offers only 1:1, 16:9, 9:16, 4:3 and 3:4 and the nearest is asked for (3:2 → 4:3, 2:3 → 3:4,
+5:4 → 4:3), so cut grids and build templates at the ratio actually asked for; ~2K, now and then ~1K (warned about:
+delete it and run again); calls on one Chrome run one at a time (a lock), about 40 s each.
 A free sprite sheet (`PROVIDER=gemini-web KIND=sprite`) has no 4K, so a small figure gets fewer cells (12-16, not 24),
 and the app reads cell 1 as the start of the move: a sheet that starts halfway gets its first row redrawn from the
 start. For more frames give every sheet the start: frames 1-12 (start → halfway) on one 4×3 sheet plus every other
@@ -111,11 +114,11 @@ under a voice the nearest onset can be the spoken word, so when it flags, measur
 a contact sheet (`bash $VM/scripts/qa/contact_sheet.sh <mp4> <jpg> <times…>`) for a last look.
 
 ## 8. Deliver
-The MP4 path (open it), the contact sheet, length and resolution, the Critic's final grades, the Gemini spend from
+The MP4 path (open it), the contact sheet, length and resolution, the Critic's final grades, the image spend from
 `gen/budget.json`, and what another round would improve.
 
 ## Rules
-- Gemini only in the asset stage, through `gen_asset.py`; the checkpoint comes first.
+- Image models only in the asset stage, through `gen_asset.py`; the checkpoint comes first.
 - Every key word in the narration lands an action; nothing on screen is still for 2 s.
 - No frame, still or audio of a reference video goes into any repo; describe it in text.
 - A beat no template covers: a one-off scene in `P/assets/js/scenes/` (`scene-catalog-2.md`, last section).
@@ -125,7 +128,8 @@ The MP4 path (open it), the contact sheet, length and resolution, the Critic's f
 |---|---|
 | `check.sh`, `setup_venv.sh`, `py`, `deps.py` | setup, the venv, finding sprite-video and viral-motion |
 | `new_project.sh <dir> [style]` | a new project |
-| `gen_asset.py P OUT "prompt" [refs]` | one cached image: stills in the Gemini web app, `KIND=sprite` sheets through the 4K API (`PROVIDER`, `SIZE`, `ASPECT`) |
+| `gen_asset.py P OUT "prompt" [refs]` | one cached, budgeted image: GPT Image 2.5 on fal (stills low/Full HD, `KIND=sprite` medium/4K; `PROVIDER`, `SIZE`, `QUALITY`, `ASPECT`) |
+| `fal_gen.py OUT "prompt" [refs]` | one GPT Image 2.5 call on fal.ai (gen_asset's default) |
 | `gemini_web.cjs OUT "prompt" [refs]`, `gemini_chrome.sh` | one image from the Gemini web app; the Chrome it uses (CDP 9003) |
 | `asset_sheet.py SHEET P --names … [--grid CxR] [--anchor …]` | a sheet of poses/props → clipped SVGs + manifest |
 | `sprite_import.py FRAMES P NAME` | a sliced sprite → the project |

@@ -1,7 +1,7 @@
 # Asset prompts (Nano Banana, through scripts/gen_asset.py)
 
-Every call: `SIZE=2K ASPECT=<a> scripts/py scripts/gen_asset.py PROJECT gen/<name>.png "<prompt>" [refs…]` (stills in the
-Gemini web app for $0; sprite sheets with `KIND=sprite`, one 4K API call; see the last sections). It prints the price, refuses past `gen/budget.json` "limit", and never regenerates a file that exists (delete it to
+Every call: `SIZE=2K ASPECT=<a> scripts/py scripts/gen_asset.py PROJECT gen/<name>.png "<prompt>" [refs…]` (GPT Image 2.5
+on fal: stills low at Full HD, sprite sheets with `KIND=sprite` medium at 4K; the prompts below work unchanged). It prints the price, refuses past `gen/budget.json` "limit", and never regenerates a file that exists (delete it to
 retry). Replace `{CHARACTER}` with `style.json` "character", `{CHROMA}` with "chroma" and the colours with the
 palette. After the character sheet, pass `gen/character.png` as the FIRST reference of every call.
 
@@ -45,7 +45,7 @@ stand, `center` for things that float (rocket, satellite).
 > ({one line of form: e.g. hands under the shoulders, body straight}). Centred, nothing cropped, {STYLE}
 
 Then build the grid template with `<sprite-video>/scripts/template.py` (the base in every cell plus red guides) and
-generate the sheet with `KIND=sprite` (the 4K API) and `<sprite-video>/references/prompts.md` → "All-cells grid" or "Guided in-betweens",
+generate the sheet with `KIND=sprite` (medium, 3840×2160: build the template at that size) and `<sprite-video>/references/prompts.md` → "All-cells grid" or "Guided in-betweens",
 passing the template first and the base second. 24 cells (6×4) at 4K for a smooth loop of a small figure; 8-9
 cells (4×2, 3×3) at 2K for a whole-body move. Slice with `slice.py --clip` (+ `--ground` for standing moves), then
 `sprite_import.py`.

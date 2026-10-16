@@ -106,11 +106,15 @@ def test_web_provider_asks_for_the_nearest_ratio_the_app_offers(tmp_path):
     assert [gen_asset.web_aspect(a) for a in ("16:9", "2:3", "5:4", "21:9", "1:1")] == ["16:9", "3:4", "4:3", "16:9", "1:1"]
 
 
-def test_the_free_web_app_is_the_default(tmp_path, monkeypatch):
-    monkeypatch.delenv("PROVIDER", raising=False)
-    assert gen_asset.run(str(tmp_path), "gen/d.png", "x", [], gen_cmd=WRITE) == 0
+def test_a_still_defaults_to_gpt_image_low_at_full_hd(tmp_path, monkeypatch):
+    for k in ("PROVIDER", "SIZE", "KIND", "QUALITY"):
+        monkeypatch.delenv(k, raising=False)
+    spy = [sys.executable, "-c", "import os, sys; open(sys.argv[1] + '.env', 'w').write(os.environ['SIZE'] + ' ' + "
+           "os.environ['QUALITY']); open(sys.argv[1], 'wb').write(b'png')"]
+    assert gen_asset.run(str(tmp_path), "gen/d.png", "x", [], gen_cmd=spy) == 0
     call = json.load(open(tmp_path / "gen" / "budget.json"))["calls"][0]
-    assert call["provider"] == "gemini-web" and call["price"] == 0
+    assert (call["provider"], call["size"], call["quality"], call["price"]) == ("fal", "HD", "low", 0.0045)
+    assert (tmp_path / "gen" / "d.png.env").read_text() == "HD low"
 
 
 def test_unknown_provider_is_refused(tmp_path):
@@ -126,21 +130,20 @@ def test_web_provider_warns_when_the_app_sends_less_than_2k(tmp_path, capsys):
     assert "1376x768" in capsys.readouterr().out
 
 
-def test_a_sprite_sheet_goes_to_the_api_at_4k(tmp_path, monkeypatch):
+def test_a_sprite_sheet_goes_to_gpt_image_on_fal_at_4k(tmp_path, monkeypatch):
     for k in ("PROVIDER", "SIZE", "KIND"):
         monkeypatch.delenv(k, raising=False)
-    assert gen_asset.run(str(tmp_path), "gen/s.png", "x", [], kind="sprite", gen_cmd=WRITE) == 0
+    (tmp_path / "t.png").write_bytes(b"png"); (tmp_path / "b.png").write_bytes(b"png")
+    assert gen_asset.run(str(tmp_path), "gen/s.png", "x", ["t.png", "b.png"], kind="sprite", gen_cmd=WRITE) == 0
     call = json.load(open(tmp_path / "gen" / "budget.json"))["calls"][0]
-    assert (call["provider"], call["size"], call["price"]) == ("api", "4K", 0.151)
+    assert (call["provider"], call["size"], call["quality"], call["price"]) == ("fal", "4K", "medium", 0.046)  # $0.026 + 2 refs
 
 
-def test_a_still_goes_to_the_web_app_and_an_explicit_provider_wins(tmp_path, monkeypatch):
-    for k in ("PROVIDER", "SIZE", "KIND"):
+def test_an_explicit_provider_wins_over_the_kind(tmp_path, monkeypatch):
+    for k in ("PROVIDER", "SIZE", "KIND", "QUALITY"):
         monkeypatch.delenv(k, raising=False)
-    assert gen_asset.run(str(tmp_path), "gen/p.png", "x", [], kind="still", gen_cmd=WRITE) == 0
     assert gen_asset.run(str(tmp_path), "gen/q.png", "x", [], kind="sprite", provider="gemini-web", gen_cmd=WRITE) == 0
-    calls = json.load(open(tmp_path / "gen" / "budget.json"))["calls"]
-    assert [c["provider"] for c in calls] == ["gemini-web", "gemini-web"] and sum(c["price"] for c in calls) == 0
+    assert json.load(open(tmp_path / "gen" / "budget.json"))["calls"][0]["price"] == 0
 
 
 def test_unknown_kind_is_refused(tmp_path):
