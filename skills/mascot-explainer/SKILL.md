@@ -36,9 +36,11 @@ pixel probes; `--render` adds a draft render).
    own mascot or the demo bible; never another channel's mascot, brand, app or book name.
 3. Write the script, one line per shot (≤18 words), and `shots.json` (`references/storyboard.md`): a scene per line
    (`references/scene-catalog.md`, `scene-catalog-2.md`), the beats on the key words, the transitions.
-4. List the assets the shots need (one pose per exercise, props, sprites) and the cost.
+4. Write the asset plan `P/assets.json` (`references/asset-plan.md`): every object a line names or implies, as code
+   SVGs ($0), items (one sheet of up to 24 per call), poses, props and sprites, and the cost of each kind. Plan items
+   generously: a camera popping in on "film yourself" or weights dropping onto a step make a shot richer for cents.
 5. **Checkpoint:** show the user the palette and character, the script, a shot table (shot · scene · key beats),
-   the asset list and the cost estimate. Wait for "ok" or edits. This is the only stop before rendering.
+   the asset plan and the cost estimate. Wait for "ok" or edits. This is the only stop before rendering.
 
 ## 2. Assets (`references/asset-prompts.md`)
 1. Character sheet first (1 call): `ASPECT=16:9 SKILL/scripts/py SKILL/scripts/gen_asset.py P gen/character.png "<prompt>"`.
@@ -47,11 +49,15 @@ pixel probes; `--render` adds a draft render).
    `SKILL/scripts/py SKILL/scripts/asset_sheet.py gen/poses.png P --grid 3x2 --names a,b,c,d,e,f [--anchor x=center]`.
    It refuses when the count is wrong and writes `assets/svg/*.svg` + `assets/manifest.json`. A phone screen drawn in
    the chroma colour becomes a hole (`holes`), which the `phone` scene fills.
-3. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call with `KIND=sprite`:
+3. Small things: write the `code` SVGs and add each with `svg_asset.py P NAME FILE.svg [--anchor feet]`; draw
+   the `items` with `SKILL/scripts/py SKILL/scripts/item_sheet.py P` (one call per 24, cut by shape, read the sheet).
+   Any shot can use them through the generic `item` beat (`scene-catalog-2.md`): pop, fly, drop or spin in on a word,
+   float or turn, leave.
+4. Sprites with sprite-video's method (base pose, `template.py` with red guides, one grid call with `KIND=sprite`:
    medium quality at 3840×2160, so build the template at that size, e.g. 6×4 cells of 640×540), then
    `$SV/scripts/slice.py sheet.png frames --cols C --rows R --clip --ink-keep "<dark fill colours, e.g. the shorts>" [--ground]` and
    `SKILL/scripts/py SKILL/scripts/sprite_import.py frames P <name>`. Without `--clip` the frames keep a background box.
-4. Check them on an asset board: a temporary `bubbles` shot with every asset, `build.py --only board`, one snapshot.
+5. Check them on an asset board: a temporary `bubbles` shot with every asset, `build.py --only board`, one snapshot.
    No chroma fringe, the same ink weight, the same character everywhere.
 
 `gen_asset.py` never pays twice (an existing file is reused) and refuses a call past `gen/budget.json` "limit".
@@ -130,6 +136,8 @@ The MP4 path (open it), the contact sheet, length and resolution, the Critic's f
 | `new_project.sh <dir> [style]` | a new project |
 | `gen_asset.py P OUT "prompt" [refs]` | one cached, budgeted image: GPT Image 2.5 on fal (stills low/Full HD, `KIND=sprite` medium/4K; `PROVIDER`, `SIZE`, `QUALITY`, `ASPECT`) |
 | `fal_gen.py OUT "prompt" [refs]` | one GPT Image 2.5 call on fal.ai (gen_asset's default) |
+| `item_sheet.py P [--dry]` | the asset plan's items: up to 24 per call → one SVG each |
+| `svg_asset.py P NAME FILE.svg [--anchor …]` | a hand-written SVG → an asset in the manifest |
 | `gemini_web.cjs OUT "prompt" [refs]`, `gemini_chrome.sh` | one image from the Gemini web app; the Chrome it uses (CDP 9003) |
 | `asset_sheet.py SHEET P --names … [--grid CxR] [--anchor …]` | a sheet of poses/props → clipped SVGs + manifest |
 | `sprite_import.py FRAMES P NAME` | a sliced sprite → the project |

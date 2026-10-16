@@ -78,5 +78,10 @@
   {"shot": "ed2", "t": 1.2, "kind": "area", "rect": [1320, 545, 160, 60], "color": "#FFFFFF", "min": 0.25, "note": "inset label under the circle"},
   {"shot": "ed2", "t": 1.2, "kind": "area", "rect": [1090, 650, 20, 200], "color": "bgDeep", "tol": 30, "min": 0.4, "note": "arrow 10 px wide"},
   {"shot": "sr2", "t": 1.3, "kind": "area", "rect": [1300, 420, 90, 90], "color": "#FFFFFF", "min": 0.3, "note": "badge on the to-bubble"},
-  {"shot": "pp", "t": 2.0, "kind": "px", "x": 1790, "y": 540, "color": "#FF7A59", "tol": 60, "note": "pushed in 1.5x"}
+  {"shot": "pp", "t": 2.0, "kind": "px", "x": 1790, "y": 540, "color": "#FF7A59", "tol": 60, "note": "pushed in 1.5x"},
+  {"shot": "it", "t": 0.1, "kind": "px", "x": 600, "y": 540, "color": "bgDeep", "tol": 20, "note": "item hidden before its beat"},
+  {"shot": "it", "t": 1.0, "kind": "px", "x": 600, "y": 540, "color": "#FF7A59", "tol": 50, "note": "item popped in"},
+  {"shot": "it", "t": 0.4, "kind": "px", "x": 1320, "y": 540, "color": "bgDeep", "tol": 20, "note": "flying item not there yet"},
+  {"shot": "it", "t": 1.4, "kind": "px", "x": 1320, "y": 540, "color": "#FF7A59", "tol": 50, "note": "item flew in"},
+  {"shot": "it", "t": 2.3, "kind": "px", "x": 1320, "y": 540, "color": "bgDeep", "tol": 20, "note": "item gone after out"}
 ]

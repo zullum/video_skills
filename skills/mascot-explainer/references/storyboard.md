@@ -45,6 +45,7 @@ A voiced shot lasts `lead (0.2 s) + spoken length + tail (0.3 s) + hold`. Words 
 | a study, a number from research | `shelf` + `crowd` + `cite` |
 | a term, a rule, a claim | `textSlam` (`slam` on the word) |
 | apps, feeds, "you saved 15 videos" | `phone` (`scroll`, `icons`), `cardWall` |
+| a small object the line names (a camera, weights, a bottle, a clock) | an `item` beat on that word, over any scene |
 | doubt, overthinking | `windowRoom` with the figure looking at a `swarm` |
 | how to do an exercise | `exerciseDemo` (`callout`, `arrow`, `tag`, `insets`) |
 | progression, "harder over time" | `seqRows`, `stairs` |

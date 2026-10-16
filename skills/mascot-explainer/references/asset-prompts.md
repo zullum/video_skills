@@ -50,7 +50,7 @@ passing the template first and the base second. 24 cells (6×4) at 4K for a smoo
 cells (4×2, 3×3) at 2K for a whole-body move. Slice with `slice.py --clip` (+ `--ground` for standing moves), then
 `sprite_import.py`.
 
-## Gemini web app (the default provider)
+## Gemini web app (PROVIDER=gemini-web)
 The prompts below were written for the API and work in the Gemini web app with three changes. Ask for a NEW image and say what the reference is
 for: "Using exactly the character in the attached reference image (...), create a brand-new image with exactly ONE
 figure: ... Do not reproduce the reference sheet." (an agent-side test redrew the whole reference sheet without it).
@@ -61,6 +61,13 @@ Sprite sheets: start every sheet at the start of the move and say "cell 1 is the
 little lower than the one before"; a "frames 13 to 24" sheet came back with its first row redrawn from the top, twice.
 The template is the first reference, the base pose the second. The red the app draws is a little duller than the
 API's (headband 181,45,63 vs 204,34,60): fine for a sprite, but keep all sprite sheets of a move from the same provider.
+
+## 5. Item sheet (`item_sheet.py` writes the prompt from `assets.json`)
+Up to 24 small objects, 4K low (~$0.011 a sheet), no reference needed. Lessons from the first sheet (8 gym things):
+the model lays out exactly N objects in its own rows (8 came back 4×2, not 4×3 with empty cells), so the sheet is cut
+by shape in reading order, and the items must not touch; black objects traced as solid black blobs until the prompt
+asked for dark grey fills (`#3C3C44`, kept as a fill, not ink), which keeps the black outline. Read the sheet before
+using it: one object per item, in the plan's order, nothing touching.
 
 ## What the demo taught
 - Grid sheets: the model may draw grid lines anyway (harmless: `--grid` keeps a margin) and crops full-body poses

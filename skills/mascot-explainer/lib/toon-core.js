@@ -1,4 +1,4 @@
-// @actions push,zoomInto,flash,shake,fadeOut
+// @actions push,zoomInto,flash,shake,fadeOut,item
 // TOON: the runtime every mascot-explainer scene shares. Everything goes on the scene's one paused GSAP
 // timeline, so any frame renders on its own (seek-safe): seeded random only, no clocks, no CSS animations.
 (function () {

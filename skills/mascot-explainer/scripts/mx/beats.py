@@ -5,7 +5,7 @@ import re
 WORD = re.compile(r"^word:(?P<w>.+?)(?:#(?P<n>\d+))?(?P<off>[+-](?:\d+\.?\d*|\.\d+))?$")
 END = re.compile(r"^end(?P<off>-(?:\d+\.?\d*|\.\d+))?$")
 ACTION_SFX = {
-    **dict.fromkeys(["pop", "show", "fill", "insets", "think", "icons", "place"], "pop"),
+    **dict.fromkeys(["pop", "show", "fill", "insets", "think", "icons", "place", "item"], "pop"),
     **dict.fromkeys(["highlight", "ignite"], "shimmer"), "coins": "chime",
     **dict.fromkeys(["slam", "burst", "flash"], "impact"), "freeze": "stamp",
     **dict.fromkeys(["zoom", "zoomInto", "fly", "launch", "flip", "split"], "whoosh"),
@@ -46,6 +46,8 @@ def events_for(beat):
     a, t = beat.get("args") or {}, beat["t"]
     if beat["do"] in ("zoom", "zoomInto"):
         return [{"t": round(max(0.0, t + a.get("dur", 0.6) - 0.3), 3), "kind": "whoosh", "note": beat["do"]}]
+    if beat["do"] == "item" and a.get("in") == "fly":
+        return [{"t": t, "kind": "whoosh", "note": "item"}]
     n = next((len(a[k]) for k in LISTS if isinstance(a.get(k), list)), a.get("count", a.get("n")))
     if not n or n == 1:
         return [{"t": t, "kind": kind, "note": beat["do"]}]

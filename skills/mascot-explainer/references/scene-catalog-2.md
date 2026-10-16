@@ -83,6 +83,15 @@ none, build.py adds a `zoomInto` to the frame centre), `whip` (whoosh at the cut
 whip out), `flash` (impact; the previous shot flashes out).
 Generic actions on any scene: `push {x, y, to=1.12, dur=1.2}` · `zoomInto {x, y, scale=6, dur=.5}` ·
 `flash {color}` · `shake {amp=8}` · `fadeOut {dur=.3}`.
+`item {asset, x, y, h=200, in=pop|fly|drop|spin, from=[x, y] (fly), rot, turn, float, out}` (pop; whoosh when it
+flies): a small asset from the item sheet or `svg_asset.py` enters on its beat above the scene, moves with its camera,
+optionally floats (`float: true`) or turns `turn` degrees while it stays, and leaves `out` seconds later. Several
+beats make several items; time them to the words that name them.
+```json
+{"id": "s05", "say": "Film your sets on your phone camera.", "scene": "space", "beats": [
+ {"at": "word:film", "do": "item", "args": {"asset": "camera", "x": 760, "y": 520, "h": 300, "in": "spin", "float": true}},
+ {"at": "word:phone", "do": "item", "args": {"asset": "phone_alarm", "x": 1240, "y": 540, "h": 280, "in": "fly", "from": [2200, 300], "turn": 12}}]}
+```
 
 ## A beat no template covers
 Write a one-off scene in the project: `assets/js/scenes/<name>.js` (lib scenes are copied to `assets/js/lib/scenes/`), first line `// @scene <name> @actions a,b`,
